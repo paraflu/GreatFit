@@ -131,7 +131,7 @@ public class CaloriesWidget extends AbstractWidget {
         for (int i = 0; i < text.toCharArray().length; i++) {
             char charToPrint = text.toCharArray()[i];
             int va = charToPrint - '0';
-            Bitmap charBmp = Util.decodeImage(mService.getResources(), this.settings.theme.getImagePath(spec.getImageIndex()) + i);
+            Bitmap charBmp = Util.decodeImage(mService.getResources(), this.settings.theme.getImagePath(spec.getImageIndex()+i));
             canvas.drawBitmap(charBmp, x, y, settings.mGPaint);
             x += charBmp.getWidth() + spacing;
         }
