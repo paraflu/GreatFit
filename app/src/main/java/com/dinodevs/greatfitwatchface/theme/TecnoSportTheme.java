@@ -1,3 +1,4 @@
+
 package com.dinodevs.greatfitwatchface.theme;
 
 import android.content.Context;
@@ -26,17 +27,17 @@ import org.json.JSONException;
 import java.io.File;
 import java.io.IOException;
 
-public class GtrTheme implements ITheme {
+public class TecnoSportTheme implements ITheme {
 
 
-    private GtrTheme() {
+    private TecnoSportTheme() {
     }
 
 
     public static ITheme load(Context context, String path) throws IOException, JSONException {
         File json = new File(path);
         byte[] data = Util.assetToBytes(context, path);
-        return new GtrTheme();
+        return new TecnoSportTheme();
     }
 
     public Background getBackground() {
@@ -50,42 +51,54 @@ public class GtrTheme implements ITheme {
     }
 
     public String[] getBattery() {
-        return new String[]{"gtr/0028.png", "gtr/0029.png", "gtr/0030.png", "gtr/0031.png", "gtr/0032.png", "gtr/0033.png", "gtr/0034.png",
-                "gtr/0035.png", "gtr/0036.png", "gtr/0037.png", "gtr/0038.png",};
+        return new String[]{"tecno_sport/0028.png", "tecno_sport/0029.png", "tecno_sport/0030.png", "tecno_sport/0031.png", "tecno_sport/0032.png", "tecno_sport/0033.png", "tecno_sport/0034.png",
+                "tecno_sport/0035.png", "tecno_sport/0036.png", "tecno_sport/0037.png", "tecno_sport/0038.png",};
     }
 
     public Text getBatterySpec() {
+        /**
+         *   "TopLeftX": 205,
+         *       "TopLeftY": 74,
+         *       "BottomRightX": 238,
+         *       "BottomRightY": 85,
+         *       "Alignment": "TopRight",
+         *       "Spacing": -2,
+         *       "ImageIndex": 70,
+         *       "ImagesCount": 10
+         */
         Text res = new Text();
-        res.setTopLeftX(138);
-        res.setTopLeftY(36);
-        res.setBottomRightX(180);
-        res.setBottomRightY(57);
-        res.setAlignment("Center");
-        res.setSpacing(0);
-        res.setImageIndex(28);
+        res.setTopLeftX(205);
+        res.setTopLeftY(74);
+        res.setBottomRightX(238);
+        res.setBottomRightY(85);
+        res.setAlignment("TopRight");
+        res.setSpacing(-2);
+        res.setImageIndex(70);
         res.setImagesCount(10);
         return res;
     }
 
     public Scale getBatteryScale() {
-        /*"CenterX": 160,
-      "CenterY": 160,
-      "RadiusX": 145,
-      "RadiusY": 145,
-      "StartAngle": 318,
-      "EndAngle": 402,
+        /*
+       "CenterX": 158,
+      "CenterY": 159,
+      "RadiusX": 141,
+      "RadiusY": 141,
+      "StartAngle": 221,
+      "EndAngle": 48,
       "Width": 20,
-      "Color": "0x000000000000FE00",
-      "Flatness": 0*/
+      "Color": "0x0000000000FF0000",
+      "Flatness": 0
+      */
         Scale res = new Scale();
-        res.setCenterX(160);
-        res.setCenterY(160);
-        res.setRadiusX(145);
-        res.setRadiusY(145);
-        res.setStartAngle(318);
-        res.setEndAngle(402);
+        res.setCenterX(158);
+        res.setCenterY(159);
+        res.setRadiusX(141);
+        res.setRadiusY(141);
+        res.setStartAngle(221);
+        res.setEndAngle(48);
         res.setWidth(20);
-        res.setColor("0x000000000000FE00");
+        res.setColor("0x0000000000FF0000");
         res.setFlatness(0);
         return res;
     }
@@ -94,29 +107,29 @@ public class GtrTheme implements ITheme {
         Time res = new Time();
         Hours hours = new Hours();
         Tens tens = new Tens();
-        tens.setX(109);
-        tens.setY(78);
-        tens.setImageIndex(8);
+        tens.setX(98);
+        tens.setY(126);
+        tens.setImageIndex(1);
         tens.setImagesCount(10);
 
         Ones ones = new Ones();
-        ones.setX(162);
-        ones.setY(78);
-        ones.setImageIndex(8);
+        ones.setX(131);
+        ones.setY(126);
+        ones.setImageIndex(1);
         ones.setImagesCount(10);
         hours.setTens(tens);
         hours.setOnes(ones);
 
         tens = new Tens();
-        tens.setX(109);
-        tens.setY(169);
-        tens.setImageIndex(18);
+        tens.setX(180);
+        tens.setY(126);
+        tens.setImageIndex(1);
         tens.setImagesCount(10);
 
         ones = new Ones();
-        ones.setX(162);
-        ones.setY(169);
-        ones.setImageIndex(18);
+        ones.setX(213);
+        ones.setY(126);
+        ones.setImageIndex(1);
         ones.setImagesCount(10);
         Minutes minutes = new Minutes();
         minutes.setTens(tens);
@@ -124,14 +137,14 @@ public class GtrTheme implements ITheme {
 
         res.setHours(hours);
         res.setMinutes(minutes);
-        AmPm amPm = new AmPm();
-        amPm.setX(124);
-        amPm.setY(300);
-        amPm.setImageIndexAMCN(43);
-        amPm.setImageIndexPMCN(44);
-        amPm.setImageIndexAMEN(43);
-        amPm.setImageIndexPMEN(44);
-        res.setAmPm(amPm);
+//        AmPm amPm = new AmPm();
+//        amPm.setX(124);
+//        amPm.setY(300);
+//        amPm.setImageIndexAMCN(43);
+//        amPm.setImageIndexPMCN(44);
+//        amPm.setImageIndexAMEN(43);
+//        amPm.setImageIndexPMEN(44);
+//        res.setAmPm(amPm);
         return res;
     }
 
@@ -140,8 +153,9 @@ public class GtrTheme implements ITheme {
     }
 
     public String getImagePath(int idx) {
-        return String.format("gtr/%04d.png", idx);
+        return String.format("tecno_sport/%04d.png", idx);
     }
+
     public String getAmPm(int amPm) {
         if (amPm == 0) {
             return getImagePath(getTime().getAmPm().getImageIndexAMEN());
@@ -152,6 +166,17 @@ public class GtrTheme implements ITheme {
 
     public Calories getCalories() {
         Calories res = new Calories();
+        /**
+         * "CenterX": 85,
+         *       "CenterY": 95,
+         *       "RadiusX": 39,
+         *       "RadiusY": 39,
+         *       "StartAngle": 277,
+         *       "EndAngle": 444,
+         *       "Width": 12,
+         *       "Color": "0x000000000000E3FE",
+         *       "Flatness": 0
+         */
         res.setTopLeftX(223);
         res.setTopLeftY(148);
         res.setBottomRightX(286);
@@ -167,22 +192,22 @@ public class GtrTheme implements ITheme {
     public Pulse getPulse() {
         /**
          *
-         * "TopLeftX": 223,
-         *       "TopLeftY": 171,
-         *       "BottomRightX": 286,
-         *       "BottomRightY": 191,
-         *       "Alignment": "Center",
-         *       "Spacing": 0,
-         *       "ImageIndex": 28,
-         *       "ImagesCount": 10
+         "TopLeftX": 134,
+         "TopLeftY": 53,
+         "BottomRightX": 185,
+         "BottomRightY": 74,
+         "Alignment": "Center",
+         "Spacing": -7,
+         "ImageIndex": 28,
+         "ImagesCount": 10
          */
         Pulse res = new Pulse();
-        res.setTopLeftX(223);
-        res.setTopLeftY(171);
-        res.setBottomRightX(286);
-        res.setBottomRightY(191);
+        res.setTopLeftX(132);
+        res.setTopLeftY(53);
+        res.setBottomRightX(185);
+        res.setBottomRightY(74);
         res.setAlignment("Center");
-        res.setSpacing(0);
+        res.setSpacing(-7);
         res.setImageIndex(28);
         res.setImagesCount(10);
         return res;
@@ -223,26 +248,22 @@ public class GtrTheme implements ITheme {
     public Steps getStepWidget() {
         Steps res = new Steps();
         /**
-         * "Steps": {
-         *       "Step": {
-         *         "TopLeftX": 33,
-         *         "TopLeftY": 148,
-         *         "BottomRightX": 97,
-         *         "BottomRightY": 168,
-         *         "Alignment": "Center",
-         *         "Spacing": 0,
-         *         "ImageIndex": 28,
-         *         "ImagesCount": 10
-         *       }
-         *     },
+         "TopLeftX": 40,
+         "TopLeftY": 102,
+         "BottomRightX": 123,
+         "BottomRightY": 123,
+         "Alignment": "Center",
+         "Spacing": -7,
+         "ImageIndex": 28,
+         "ImagesCount": 10
          */
         Step step = new Step();
-        step.setTopLeftX(33);
-        step.setTopLeftY(148);
-        step.setBottomRightX(97);
-        step.setBottomRightY(168);
+        step.setTopLeftX(40);
+        step.setTopLeftY(102);
+        step.setBottomRightX(123);
+        step.setBottomRightY(123);
         step.setAlignment("Center");
-        step.setSpacing(0);
+        step.setSpacing(-7);
         step.setImageIndex(28);
         step.setImagesCount(10);
         res.setStep(step);
@@ -253,29 +274,25 @@ public class GtrTheme implements ITheme {
         StepsProgress res = new StepsProgress();
         Circle circle = new Circle();
         /***
-         * "StepsProgress": {
-         *     "Circle": {
-         *       "CenterX": 160,
-         *       "CenterY": 160,
-         *       "RadiusX": 145,
-         *       "RadiusY": 145,
-         *       "StartAngle": 219,
-         *       "EndAngle": 296,
-         *       "Width": 20,
-         *       "Color": "0x000000000001BDF1",
-         *       "Flatness": 180
-         *     }
-         *   },
+         "CenterX": 85,
+         "CenterY": 95,
+         "RadiusX": 39,
+         "RadiusY": 39,
+         "StartAngle": 277,
+         "EndAngle": 444,
+         "Width": 12,
+         "Color": "0x000000000000E3FE",
+         "Flatness": 0
          */
-        circle.setCenterX(160);
-        circle.setCenterY(160);
-        circle.setRadiusX(145);
-        circle.setRadiusX(145);
-        circle.setStartAngle(219);
-        circle.setEndAngle(296);
-        circle.setWidth(20);
-        circle.setColor("0x000000000001BDF1");
-        circle.setFlatness(180);
+        circle.setCenterX(85);
+        circle.setCenterY(95);
+        circle.setRadiusX(39);
+        circle.setRadiusX(39);
+        circle.setStartAngle(277);
+        circle.setEndAngle(444);
+        circle.setWidth(12);
+        circle.setColor("0x000000000000E3FE");
+        circle.setFlatness(0);
         res.setCircle(circle);
         return res;
     }

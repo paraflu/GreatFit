@@ -15,6 +15,7 @@ import com.dinodevs.greatfitwatchface.R;
 import com.dinodevs.greatfitwatchface.resource.ResourceManager;
 import com.dinodevs.greatfitwatchface.theme.GtrTheme;
 import com.dinodevs.greatfitwatchface.theme.ITheme;
+import com.dinodevs.greatfitwatchface.theme.TecnoSportTheme;
 import com.huami.watch.watchface.util.Util;
 
 import org.json.JSONException;
@@ -40,7 +41,8 @@ public class LoadSettings {
         // Default Parameters
         defaultParameters();
         try {
-            this.theme = GtrTheme.load(context, "gtr/DMG_v4_touch_gtr47_packed_zip.json");
+//            this.theme = GtrTheme.load(context, "gtr/DMG_v4_touch_gtr47_packed_zip.json");
+            this.theme = TecnoSportTheme.load(context, "tecno_sport/Sport_Shortcuts_47mm.json");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
