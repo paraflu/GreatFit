@@ -50,8 +50,8 @@ public class GtrTheme implements ITheme {
     }
 
     public String[] getBattery() {
-        return new String[]{"gtr/0028.png", "gtr/0029.png", "gtr/0030.png", "gtr/0031.png", "gtr/0032.png", "gtr/0033.png", "gtr/0034.png",
-                "gtr/0035.png", "gtr/0036.png", "gtr/0037.png", "gtr/0038.png",};
+        return new String[]{"tecno_sport/0028.png", "tecno_sport/0029.png", "tecno_sport/0030.png", "tecno_sport/0031.png", "tecno_sport/0032.png", "tecno_sport/0033.png", "tecno_sport/0034.png",
+                "tecno_sport/0035.png", "tecno_sport/0036.png", "tecno_sport/0037.png", "tecno_sport/0038.png",};
     }
 
     public Text getBatterySpec() {
@@ -140,7 +140,7 @@ public class GtrTheme implements ITheme {
     }
 
     public String getImagePath(int idx) {
-        return String.format("gtr/%04d.png", idx);
+        return String.format("tecno_sport/%04d.png", idx);
     }
     public String getAmPm(int amPm) {
         if (amPm == 0) {
