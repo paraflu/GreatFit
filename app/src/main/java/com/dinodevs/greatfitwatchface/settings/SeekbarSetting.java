@@ -1,15 +1,13 @@
 package com.dinodevs.greatfitwatchface.settings;
 
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.view.View;
 import android.widget.SeekBar;
 
 /**
  * Created by Kieron on 20/01/2018.
  */
 
-public class SeekbarSetting extends BaseSetting {
+public class SeekbarSetting extends IBaseSettings {
 
     //Setting
     SeekBar.OnSeekBarChangeListener onChangeListener;

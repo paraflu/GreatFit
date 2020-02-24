@@ -2,13 +2,12 @@ package com.dinodevs.greatfitwatchface.settings;
 
 import android.graphics.drawable.Drawable;
 import android.view.View;
-import android.widget.CompoundButton;
 
 /**
  * Created by GreatApo on 08/05/2018.
  */
 
-public class ButtonSetting extends BaseSetting {
+public class ButtonSetting extends IBaseSettings {
 
     View.OnClickListener onClickListener;
     String title;

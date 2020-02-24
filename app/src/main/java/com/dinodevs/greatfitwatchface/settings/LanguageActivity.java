@@ -2,7 +2,6 @@ package com.dinodevs.greatfitwatchface.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,7 +24,7 @@ public class LanguageActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         RecyclerView root = new RecyclerView(this);
         //Add header to a list of settings
-        List<BaseSetting> settings = new ArrayList<>();
+        List<IBaseSettings> settings = new ArrayList<>();
         settings.add(new HeaderSetting(getString(R.string.set_language)));
         //Setup items for each day
         String[] languages = getResources().getStringArray(R.array.language);

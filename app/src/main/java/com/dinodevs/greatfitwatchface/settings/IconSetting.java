@@ -8,7 +8,7 @@ import android.view.View;
  * Created by Kieron on 20/01/2018.
  */
 
-public class IconSetting extends BaseSetting {
+public class IconSetting extends IBaseSettings {
 
     //Setting with a click listener, two strings and an icon
 

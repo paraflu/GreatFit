@@ -25,7 +25,7 @@ public class ColorActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         RecyclerView root = new RecyclerView(this);
         //Add header to a list of settings
-        List<BaseSetting> settings = new ArrayList<>();
+        List<IBaseSettings> settings = new ArrayList<>();
         settings.add(new HeaderSetting(getString(R.string.set_color)));
         //Setup items for each day
         String[] colors = getResources().getStringArray(R.array.colors);

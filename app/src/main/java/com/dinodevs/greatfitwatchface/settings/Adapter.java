@@ -2,7 +2,6 @@ package com.dinodevs.greatfitwatchface.settings;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,12 +15,12 @@ import com.dinodevs.greatfitwatchface.R;
 
 import java.util.List;
 
-class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
+public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     private final Context context;
-    private final List<BaseSetting> settings;
+    private final List<IBaseSettings> settings;
 
-    public Adapter(Context context, List<BaseSetting> settings){
+    public Adapter(Context context, List<IBaseSettings> settings){
         this.context = context;
         this.settings = settings;
     }
@@ -55,7 +54,7 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     @Override
     public int getItemViewType(int position) {
         //Return the type of a given item
-        BaseSetting setting = settings.get(position);
+        IBaseSettings setting = settings.get(position);
         if (setting instanceof HeaderSetting) return 0;
         if (setting instanceof IconSetting) return 1;
         if (setting instanceof SwitchSetting) return 2;
@@ -68,7 +67,7 @@ class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     @Override
     public void onBindViewHolder(final Adapter.ViewHolder holder, int position) {
         //Get base setting for position
-        BaseSetting setting = settings.get(position);
+        IBaseSettings setting = settings.get(position);
         if (setting instanceof HeaderSetting) {
             //Header, just set text
             holder.title.setText(((HeaderSetting) setting).title);

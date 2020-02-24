@@ -1,7 +1,7 @@
 package com.dinodevs.greatfitwatchface.settings;
 
-class BaseSetting {
+public class IBaseSettings {
     //Empty base class
-    public BaseSetting() {
+    public IBaseSettings() {
     }
 }

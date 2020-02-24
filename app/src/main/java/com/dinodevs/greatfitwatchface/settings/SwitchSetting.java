@@ -7,7 +7,7 @@ import android.widget.CompoundButton;
  * Created by Kieron on 20/01/2018.
  */
 
-public class SwitchSetting extends BaseSetting {
+public class SwitchSetting extends IBaseSettings {
 
     //Setting with a change listener, two strings, a state and an icon
 

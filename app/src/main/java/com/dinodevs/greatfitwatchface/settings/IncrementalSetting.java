@@ -2,13 +2,12 @@ package com.dinodevs.greatfitwatchface.settings;
 
 import android.graphics.drawable.Drawable;
 import android.view.View;
-import android.widget.SeekBar;
 
 /**
  * Created by Kieron on 20/01/2018.
  */
 
-public class IncrementalSetting extends BaseSetting {
+public class IncrementalSetting extends IBaseSettings {
 
     //Setting
     View.OnClickListener onClickLessListener;

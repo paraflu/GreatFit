@@ -6,9 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
-import android.widget.CompoundButton;
 
 import com.dinodevs.greatfitwatchface.R;
 
@@ -27,7 +25,7 @@ public class WidgetsActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         RecyclerView root = new RecyclerView(this);
         //Add header to a list of settings
-        List<BaseSetting> settings = new ArrayList<>();
+        List<IBaseSettings> settings = new ArrayList<>();
         settings.add(new HeaderSetting(getString(R.string.set_elements)));
         //Setup items for each day
         String[] elements = getResources().getStringArray(R.array.supported_widgets);

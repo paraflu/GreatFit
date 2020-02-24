@@ -9,9 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.dinodevs.greatfitwatchface.R;
 
@@ -31,7 +29,7 @@ public class OthersActivity extends FragmentActivity {
         RecyclerView root = new RecyclerView(this);
 
         //Add header to a list of settings
-        List<BaseSetting> settings = new ArrayList<>();
+        List<IBaseSettings> settings = new ArrayList<>();
         settings.add(new HeaderSetting(getString(R.string.other_features)));
 
         //Setup items

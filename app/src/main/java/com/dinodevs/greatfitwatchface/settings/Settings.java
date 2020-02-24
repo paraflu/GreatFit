@@ -44,7 +44,7 @@ public class Settings extends FragmentActivity {
         }
 
         //Add header to a list of settings
-        List<BaseSetting> settings = new ArrayList<>();
+        List<IBaseSettings> settings = new ArrayList<>();
 
         // Add IconSettings for each sub-setting. They contain an icon, title and subtitle, as well as a click action to launch the sub-setting's activity
         settings.add(new HeaderSetting(getString(R.string.settings)));
