@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.provider.Settings;
 import android.text.TextPaint;
 import android.util.Log;
+import android.util.Size;
 import android.widget.Toast;
 
 import com.dinodevs.greatfitwatchface.AbstractWatchFace;
@@ -17,6 +18,9 @@ import com.dinodevs.greatfitwatchface.resource.SlptAnalogHourView;
 import com.dinodevs.greatfitwatchface.resource.SlptSecondHView;
 import com.dinodevs.greatfitwatchface.resource.SlptSecondLView;
 import com.dinodevs.greatfitwatchface.settings.LoadSettings;
+import com.dinodevs.greatfitwatchface.theme.bin.IFont;
+import com.dinodevs.greatfitwatchface.theme.bin.Text;
+import com.dinodevs.greatfitwatchface.theme.bin.Time;
 import com.huami.watch.watchface.util.Util;
 import com.ingenic.iwds.slpt.view.analog.SlptAnalogMinuteView;
 import com.ingenic.iwds.slpt.view.analog.SlptAnalogSecondView;
@@ -50,7 +54,7 @@ import com.ingenic.iwds.slpt.view.utils.SimpleFile;
 
 
 public class MainClock extends DigitalClockWidget {
-
+    private final static String TAG = "DinoDevs-GreatFit";
     private TextPaint hourFont, minutesFont, secondsFont, indicatorFont, dateFont, dayFont, weekdayFont, monthFont, yearFont, ampmFont;
     private Bitmap dateIcon, hourHand, minuteHand, secondsHand, background;
 
@@ -183,50 +187,49 @@ public class MainClock extends DigitalClockWidget {
 
     @Override
     public void init(Service service) {
-        //this.background = service.getResources().getDrawable(R.drawable.background); //todo
-        //this.background.setBounds(0, 0, 320, 300);
-        this.background = /*Util.decodeImage(service.getResources(),settings.is_white_bg+"background.png")*/
-                Util.decodeImage(service.getResources(), settings.theme.getBackground());
+        mService = service;
+        String image = settings.theme.getImagePath(settings.theme.getBackground().getImage().getImageIndex());
+        this.background = Util.decodeImage(service.getResources(), image);
         if (settings.isVerge())
             this.background = Bitmap.createScaledBitmap(this.background, 360, 360, true);
 
         if (settings.digital_clock) {
-            this.hourFont = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-            this.hourFont.setTypeface(ResourceManager.getTypeFace(service.getResources(), settings.font));
-            this.hourFont.setTextSize(settings.hoursFontSize);
-            this.hourFont.setColor(settings.hoursColor);
-            this.hourFont.setTextAlign((settings.hoursAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER);
-
-            this.minutesFont = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-            this.minutesFont.setTypeface(ResourceManager.getTypeFace(service.getResources(), settings.font));
-            this.minutesFont.setTextSize(settings.minutesFontSize);
-            this.minutesFont.setColor(settings.minutesColor);
-            this.minutesFont.setTextAlign((settings.minutesAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER);
-
-            this.secondsFont = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-            this.secondsFont.setTypeface(ResourceManager.getTypeFace(service.getResources(), settings.font));
-            this.secondsFont.setTextSize(settings.secondsFontSize);
-            this.secondsFont.setColor(settings.secondsColor);
-            this.secondsFont.setTextAlign((settings.secondsAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER);
-
-            this.indicatorFont = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-            this.indicatorFont.setTypeface(ResourceManager.getTypeFace(service.getResources(), settings.font));
-            this.indicatorFont.setTextSize(settings.indicatorFontSize);
-            this.indicatorFont.setColor(settings.indicatorColor);
-            this.indicatorFont.setTextAlign((settings.indicatorAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER);
-
-            this.ampmFont = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-            this.ampmFont.setColor(settings.am_pmColor);
-            this.ampmFont.setTypeface(ResourceManager.getTypeFace(service.getResources(), settings.font));
-            this.ampmFont.setTextSize(settings.am_pmFontSize);
-            this.ampmFont.setTextAlign((settings.am_pmAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER);
+//            this.hourFont = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
+//            this.hourFont.setTypeface(ResourceManager.getTypeFace(service.getResources(), settings.font));
+//            this.hourFont.setTextSize(settings.hoursFontSize);
+//            this.hourFont.setColor(settings.hoursColor);
+//            this.hourFont.setTextAlign((settings.hoursAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER);
+//
+//            this.minutesFont = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
+//            this.minutesFont.setTypeface(ResourceManager.getTypeFace(service.getResources(), settings.font));
+//            this.minutesFont.setTextSize(settings.minutesFontSize);
+//            this.minutesFont.setColor(settings.minutesColor);
+//            this.minutesFont.setTextAlign((settings.minutesAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER);
+//
+//            this.secondsFont = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
+//            this.secondsFont.setTypeface(ResourceManager.getTypeFace(service.getResources(), settings.font));
+//            this.secondsFont.setTextSize(settings.secondsFontSize);
+//            this.secondsFont.setColor(settings.secondsColor);
+//            this.secondsFont.setTextAlign((settings.secondsAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER);
+//
+//            this.indicatorFont = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
+//            this.indicatorFont.setTypeface(ResourceManager.getTypeFace(service.getResources(), settings.font));
+//            this.indicatorFont.setTextSize(settings.indicatorFontSize);
+//            this.indicatorFont.setColor(settings.indicatorColor);
+//            this.indicatorFont.setTextAlign((settings.indicatorAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER);
+//
+//            this.ampmFont = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
+//            this.ampmFont.setColor(settings.am_pmColor);
+//            this.ampmFont.setTypeface(ResourceManager.getTypeFace(service.getResources(), settings.font));
+//            this.ampmFont.setTextSize(settings.am_pmFontSize);
+//            this.ampmFont.setTextAlign((settings.am_pmAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER);
         }
 
-        if (settings.analog_clock) {
-            this.hourHand = Util.decodeImage(service.getResources(), "timehand/hour" + ((settings.isVerge()) ? "_verge" : "") + ".png");
-            this.minuteHand = Util.decodeImage(service.getResources(), "timehand/minute" + ((settings.isVerge()) ? "_verge" : "") + ".png");
-            this.secondsHand = Util.decodeImage(service.getResources(), "timehand/seconds" + ((settings.isVerge()) ? "_verge" : "") + ".png");
-        }
+//        if (settings.analog_clock) {
+//            this.hourHand = Util.decodeImage(service.getResources(), settings.theme.getTimeHand());
+//            this.minuteHand = Util.decodeImage(service.getResources(), "timehand/minute" + ((settings.isVerge()) ? "_verge" : "") + ".png");
+//            this.secondsHand = Util.decodeImage(service.getResources(), "timehand/seconds" + ((settings.isVerge()) ? "_verge" : "") + ".png");
+//        }
 
         if (settings.date > 0) {
             this.dateFont = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
@@ -264,6 +267,20 @@ public class MainClock extends DigitalClockWidget {
         this.yearFont.setTextAlign((settings.yearAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER);
     }
 
+    void drawTime(Canvas canvas, int value, IFont font) {
+        String text = String.format("%d", value);
+        int x = font.getX();
+        int y = font.getY();
+        for (int i = 0; i < text.toCharArray().length; i++) {
+            char charToPrint = text.toCharArray()[i];
+            int va = charToPrint - '0';
+            Bitmap charBmp = Util.decodeImage(mService.getResources(), settings.theme.getImagePath(font.getImageIndex()));
+            canvas.drawBitmap(charBmp, x, y, settings.mGPaint);
+            x += charBmp.getWidth();
+        }
+        Log.d(TAG, "complete");
+    }
+
     // Screen open watch mode
     @Override
     public void onDrawDigital(Canvas canvas, float width, float height, float centerX, float centerY, int seconds, int minutes, int hours, int year, int month, int day, int week, int ampm) {
@@ -272,36 +289,54 @@ public class MainClock extends DigitalClockWidget {
         canvas.drawBitmap(this.background, 0f, 0f, settings.mGPaint);
 
         if (settings.digital_clock) {
-            // Draw hours
-            canvas.drawText((settings.no_0_on_hour_first_digit) ? hours + "" : Util.formatTime(hours), settings.hoursLeft, settings.hoursTop, this.hourFont);
 
-            // Draw minutes
-            canvas.drawText(Util.formatTime(minutes), settings.minutesLeft, settings.minutesTop, this.minutesFont);
+            Time time = settings.theme.getTime();
+            drawTime(canvas, hours / 10, time.getHours().getTens());
+            drawTime(canvas, hours % 10, time.getHours().getOnes());
+            drawTime(canvas, minutes / 10, time.getMinutes().getTens());
+            drawTime(canvas, minutes % 10, time.getMinutes().getOnes());
 
-            // Draw Seconds
-            if (settings.secondsBool) {
-                canvas.drawText(Util.formatTime(seconds), settings.secondsLeft, settings.secondsTop, this.secondsFont);
-            }
-
-            // : indicator Draw + Flashing
-            if (settings.indicatorBool) {
-                String indicator = ":";
-                if (seconds % 2 == 0 || !settings.flashing_indicator) { // Draw only on even seconds (flashing : symbol)
-                    canvas.drawText(indicator, settings.indicatorLeft, settings.indicatorTop, this.indicatorFont);
-                }
-            }
-
-            // AM-PM (ONLY FOR 12h format)
+            //            // AM-PM (ONLY FOR 12h format)
             switch (ampm) {
                 case 0:
-                    canvas.drawText("AM", this.settings.am_pmLeft, this.settings.am_pmTop, this.ampmFont);
-                    break;
                 case 1:
-                    canvas.drawText("PM", this.settings.am_pmLeft, this.settings.am_pmTop, this.ampmFont);
+                    canvas.drawBitmap(Util.decodeImage(mService.getResources(), settings.theme.getAmPm(ampm)),
+                            settings.theme.getTime().getAmPm().getX(),
+                            settings.theme.getTime().getAmPm().getY(), settings.mGPaint);
                     break;
                 default:
                     //Log.d("DinoDevs-GreatFit", "AM-PM: 24h time format is on");
             }
+//            // Draw hours
+//            canvas.drawText((settings.no_0_on_hour_first_digit) ? hours + "" : Util.formatTime(hours), settings.hoursLeft, settings.hoursTop, this.hourFont);
+//
+//            // Draw minutes
+//            canvas.drawText(Util.formatTime(minutes), settings.minutesLeft, settings.minutesTop, this.minutesFont);
+//
+//            // Draw Seconds
+//            if (settings.secondsBool) {
+//                canvas.drawText(Util.formatTime(seconds), settings.secondsLeft, settings.secondsTop, this.secondsFont);
+//            }
+//
+//            // : indicator Draw + Flashing
+//            if (settings.indicatorBool) {
+//                String indicator = ":";
+//                if (seconds % 2 == 0 || !settings.flashing_indicator) { // Draw only on even seconds (flashing : symbol)
+//                    canvas.drawText(indicator, settings.indicatorLeft, settings.indicatorTop, this.indicatorFont);
+//                }
+//            }
+//
+//            // AM-PM (ONLY FOR 12h format)
+//            switch (ampm) {
+//                case 0:
+//                    canvas.drawText("AM", this.settings.am_pmLeft, this.settings.am_pmTop, this.ampmFont);
+//                    break;
+//                case 1:
+//                    canvas.drawText("PM", this.settings.am_pmLeft, this.settings.am_pmTop, this.ampmFont);
+//                    break;
+//                default:
+//                    //Log.d("DinoDevs-GreatFit", "AM-PM: 24h time format is on");
+//            }
         }
 
         if (settings.analog_clock) {

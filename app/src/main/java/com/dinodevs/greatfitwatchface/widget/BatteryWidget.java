@@ -7,8 +7,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.Log;
+import android.util.Size;
 
 import com.dinodevs.greatfitwatchface.settings.LoadSettings;
+import com.dinodevs.greatfitwatchface.theme.bin.Scale;
+import com.dinodevs.greatfitwatchface.theme.bin.Text;
 import com.huami.watch.watchface.util.Util;
 import com.ingenic.iwds.slpt.view.arc.SlptPowerArcAnglePicView;
 import com.ingenic.iwds.slpt.view.core.SlptBatteryView;
@@ -26,19 +29,19 @@ import com.dinodevs.greatfitwatchface.data.Battery;
 import com.dinodevs.greatfitwatchface.data.DataType;
 import com.dinodevs.greatfitwatchface.resource.ResourceManager;
 
-
 public class BatteryWidget extends AbstractWidget {
     private Battery batteryData;
-//    private Paint batteryPaint;
-//    private Paint ring;
-//
-//    private Float batterySweepAngle = 0f;
-//    private Integer angleLength;
-//
+    private final static String TAG = "DinoDevs-GreatFit";
+    //    private Paint batteryPaint;
+    private Paint ring;
+    //
+    private Float batterySweepAngle = 0f;
+    private Integer angleLength;
+    //
     private Bitmap batteryIcon;
-//    private Bitmap icon;
+    //    private Bitmap icon;
 //
-    private Integer tempBattery=0;
+    private Integer tempBattery = 0;
 
     private LoadSettings settings;
     private Service mService;
@@ -47,19 +50,27 @@ public class BatteryWidget extends AbstractWidget {
     public BatteryWidget(LoadSettings settings) {
         this.settings = settings;
 
-//        if(!(settings.batteryProg>0 && settings.batteryProgType==0)){return;}
-//        if(settings.batteryProgClockwise==1) {
-//            this.angleLength = (settings.batteryProgEndAngle < settings.batteryProgStartAngle) ? 360 - (settings.batteryProgStartAngle - settings.batteryProgEndAngle) : settings.batteryProgEndAngle - settings.batteryProgStartAngle;
-//        }else{
-//            this.angleLength = (settings.batteryProgEndAngle > settings.batteryProgStartAngle) ? 360 - (settings.batteryProgStartAngle - settings.batteryProgEndAngle) : settings.batteryProgEndAngle - settings.batteryProgStartAngle;
+        if (!(settings.batteryProg > 0 && settings.batteryProgType == 0)) {
+            return;
+        }
+//        if (settings.batteryProgClockwise == 1) {
+//            this.angleLength = (settings.batteryProgEndAngle < settings.batteryProgStartAngle) ?
+//                    360 - (settings.theme.getBatteryScale().getStartAngle() - settings.theme.getBatteryScale().getEndAngle()) :
+//                    settings.theme.getBatteryScale().getEndAngle() - settings.theme.getBatteryScale().getStartAngle();
+//        } else {
+//            this.angleLength = (settings.theme.getBatteryScale().getEndAngle() > settings.theme.getBatteryScale().getStartAngle()) ?
+//                    360 - (settings.theme.getBatteryScale().getStartAngle() - settings.theme.getBatteryScale().getEndAngle()) :
+//                    settings.theme.getBatteryScale().getEndAngle() - settings.theme.getBatteryScale().getStartAngle();
 //        }
+
+        this.angleLength = settings.theme.getBatteryScale().getEndAngle() - settings.theme.getBatteryScale().getStartAngle();
     }
 
     // Screen-on init (runs once)
     public void init(Service service) {
         this.mService = service;
 
-        this.batteryIcon = Util.decodeImage(mService.getResources(),this.settings.theme.getBattery()[0]);
+        this.batteryIcon = Util.decodeImage(mService.getResources(), this.settings.theme.getBattery()[0]);
 
         // Battery percent element
 //        if(settings.battery_percent>0){
@@ -79,13 +90,13 @@ public class BatteryWidget extends AbstractWidget {
 //            this.batteryIcon = Util.decodeImage(mService.getResources(),"battery/battery0.png");
 //        }
 //
-//        // Progress Bar Circle
-//        if(settings.batteryProg>0 && settings.batteryProgType==0){
-//            this.ring = new Paint(Paint.ANTI_ALIAS_FLAG);
-//            this.ring.setStrokeCap(Paint.Cap.ROUND);
-//            this.ring.setStyle(Paint.Style.STROKE);
-//            this.ring.setStrokeWidth(settings.batteryProgThickness);
-//        }
+        // Progress Bar Circle
+        if (settings.batteryProg > 0 && settings.batteryProgType == 0) {
+            this.ring = new Paint(Paint.ANTI_ALIAS_FLAG);
+            this.ring.setStrokeCap(Paint.Cap.ROUND);
+            this.ring.setStyle(Paint.Style.STROKE);
+            this.ring.setStrokeWidth(settings.theme.getBatteryScale().getWidth());
+        }
     }
 
     // Value updater
@@ -93,23 +104,25 @@ public class BatteryWidget extends AbstractWidget {
         // Battery class
         this.batteryData = (Battery) value;
 
-        if(this.batteryData == null){
+        if (this.batteryData == null) {
             return;
         }
 
-//        // Bar angle
-//        if(settings.batteryProg>0 && settings.batteryProgType==0) {
-//            this.batterySweepAngle = this.angleLength * (this.batteryData.getLevel() / (float) this.batteryData.getScale());
-//        }
+        // Bar angle
+        Log.d(TAG, String.format("settings.batteryProg > %d && settings.batteryProgType == %d", settings.batteryProg, settings.batteryProgType));
+        if (settings.batteryProg > 0 && settings.batteryProgType == 0) {
+            Log.d(TAG, String.format("angle %d", this.angleLength));
+            this.batterySweepAngle = this.angleLength * (this.batteryData.getLevel() / (float) this.batteryData.getScale());
+        }
 //
 //        // Battery Image
 //        if( this.tempBattery == this.batteryData.getLevel()/10 || !(settings.batteryProg>0 && settings.batteryProgType==1)){
 //            return;
 //        }
         int batterySteps = this.settings.theme.getBattery().length;
-        this.tempBattery = this.batteryData.getLevel()/batterySteps;
+        this.tempBattery = this.batteryData.getLevel() / batterySteps;
 
-        this.batteryIcon = Util.decodeImage(mService.getResources(), this.settings.theme.getBattery()[this.tempBattery]);
+//        this.batteryIcon = Util.decodeImage(mService.getResources(), this.settings.theme.getBattery()[this.tempBattery]);
     }
 
     // Register update listeners
@@ -117,9 +130,44 @@ public class BatteryWidget extends AbstractWidget {
         return Collections.singletonList(DataType.BATTERY);
     }
 
+    private void drawText(Canvas canvas, int value, String[] digits, Text spec) {
+        int width = spec.getBottomRightX() - spec.getTopLeftX();
+        int height = spec.getBottomRightY() - spec.getTopLeftY();
+        int spacing = Math.round(width / digits.length) + spec.getSpacing();
+
+        int x = spec.getTopLeftX();
+        int y = spec.getTopLeftY();
+
+        Bitmap bmp = Util.decodeImage(mService.getResources(), this.settings.theme.getBattery()[0]);
+        Size imageSize = new Size(bmp.getWidth(), bmp.getHeight());
+
+        if (spec.getAlignment().equals("Center")) {
+            x += imageSize.getWidth() / 2 + width / 2 - (value / 10 * spacing);
+        }
+
+        String text = String.format("%d", value);
+        Log.d(TAG, String.format("draw value %s", text));
+        for (int i = 0; i < text.toCharArray().length; i++) {
+            char charToPrint = text.toCharArray()[i];
+            int va = charToPrint - '0';
+            Log.d(TAG, String.format("draw char (x: %d, y: %d) %d - %c > bmp %s", x, y, i, charToPrint, this.settings.theme.getBattery()[va]));
+            Bitmap charBmp = Util.decodeImage(mService.getResources(), this.settings.theme.getBattery()[va]);
+            canvas.drawBitmap(charBmp, x, y, settings.mGPaint);
+            x += charBmp.getWidth() + spacing;
+        }
+        Log.d(TAG, "complete");
+    }
+
     // Draw screen-on
     public void draw(Canvas canvas, float width, float height, float centerX, float centerY) {
-        if (this.batteryData == null) {return;}
+        if (this.batteryData == null) {
+            return;
+        }
+        try {
+            this.drawText(canvas, this.batteryData.getLevel(), this.settings.theme.getBattery(), this.settings.theme.getBatterySpec());
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
 
         // Battery % widget
 //        if(settings.battery_percent>0){
@@ -132,32 +180,40 @@ public class BatteryWidget extends AbstractWidget {
 //        }
 
         // Battery Progress Image
-        if(settings.batteryProg>0 && settings.batteryProgType==1) {
-            canvas.drawBitmap(this.batteryIcon, settings.batteryProgLeft, settings.batteryProgTop, settings.mGPaint);
+        if (settings.batteryProg > 0 && settings.batteryProgType == 1) {
+            canvas.drawBitmap(this.batteryIcon,
+                    settings.theme.getBatterySpec().getTopLeftX(),
+                    settings.theme.getBatterySpec().getTopLeftX(),
+                    settings.mGPaint);
         }
 
         // Battery bar
-//        if(settings.batteryProg>0 && settings.batteryProgType==0) {
-//            int count = canvas.save();
-//
-//            // Rotate canvas to 0 degrees = 12 o'clock
-//            canvas.rotate(-90, centerX, centerY);
-//
-//            // Define circle
-//            float radius = settings.batteryProgRadius - settings.batteryProgThickness;
-//            RectF oval = new RectF(settings.batteryProgLeft - radius, settings.batteryProgTop - radius, settings.batteryProgLeft + radius, settings.batteryProgTop + radius);
-//
-//            // Background
-//            if(settings.batteryProgBgBool) {
-//                this.ring.setColor(Color.parseColor("#999999"));
-//                canvas.drawArc(oval, settings.batteryProgStartAngle, this.angleLength, false, ring);
-//            }
-//
-//            this.ring.setColor(settings.colorCodes[settings.batteryProgColorIndex]);
-//            canvas.drawArc(oval, settings.batteryProgStartAngle, this.batterySweepAngle, false, ring);
-//
-//            canvas.restoreToCount(count);
-//        }
+        if (settings.batteryProg > 0 && settings.batteryProgType == 0) {
+            int count = canvas.save();
+
+            // Rotate canvas to 0 degrees = 12 o'clock
+            canvas.rotate(-90, centerX, centerY);
+
+            // Define circle
+            Scale scale = settings.theme.getBatteryScale();
+            float radius = scale.getRadiusX() /*- scale.getWidth()*/;
+            RectF oval = new RectF(settings.batteryProgLeft - radius, settings.batteryProgTop - radius,
+                    settings.batteryProgLeft + radius,
+                    settings.batteryProgTop + radius);
+
+            // Background
+            Log.d(TAG, String.format("batteryProgBgBool %d", settings.batteryProgBgBool ? 1 : 0));
+            if (settings.batteryProgBgBool) {
+                Log.d(TAG, String.format("getStartAngle: %d angleLength: %d", scale.getStartAngle(), this.angleLength));
+                this.ring.setColor(Color.parseColor(String.format("#%s", scale.getColor().substring(12))));
+                canvas.drawArc(oval, scale.getStartAngle(), this.angleLength, false, ring);
+            }
+
+            // this.ring.setColor(settings.colorCodes[settings.batteryProgColorIndex]); progressione colore
+            canvas.drawArc(oval, scale.getStartAngle(), this.batterySweepAngle, false, ring);
+
+            canvas.restoreToCount(count);
+        }
     }
 
     // Screen-off (SLPT)
@@ -220,7 +276,7 @@ public class BatteryWidget extends AbstractWidget {
 //        }
 
         // Battery as images
-        if(settings.batteryProg>0 && settings.batteryProgType==1) {
+        if (settings.batteryProg > 0 && settings.batteryProgType == 1) {
             int battery_steps = 11;
             byte[][] arrayOfByte = new byte[battery_steps][];
             for (int i = 0; i < arrayOfByte.length; i++) {
