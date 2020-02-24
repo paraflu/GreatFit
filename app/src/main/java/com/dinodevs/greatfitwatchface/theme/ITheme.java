@@ -3,9 +3,12 @@ package com.dinodevs.greatfitwatchface.theme;
 import com.dinodevs.greatfitwatchface.theme.bin.Background;
 import com.dinodevs.greatfitwatchface.theme.bin.Calories;
 import com.dinodevs.greatfitwatchface.theme.bin.CaloriesGraph;
+import com.dinodevs.greatfitwatchface.theme.bin.Circle;
 import com.dinodevs.greatfitwatchface.theme.bin.IText;
 import com.dinodevs.greatfitwatchface.theme.bin.Pulse;
 import com.dinodevs.greatfitwatchface.theme.bin.Scale;
+import com.dinodevs.greatfitwatchface.theme.bin.Steps;
+import com.dinodevs.greatfitwatchface.theme.bin.StepsProgress;
 import com.dinodevs.greatfitwatchface.theme.bin.Text;
 import com.dinodevs.greatfitwatchface.theme.bin.Time;
 
@@ -31,6 +34,10 @@ public interface ITheme {
     Pulse getPulse();
 
     CaloriesGraph getCaloriesGraph();
+
+    Steps getStepWidget();
+
+    StepsProgress getStepProgress();
 
 
 //    static ITheme Load(String path) {

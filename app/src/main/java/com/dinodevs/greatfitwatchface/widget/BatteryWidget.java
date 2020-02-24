@@ -63,7 +63,10 @@ public class BatteryWidget extends AbstractWidget {
 //                    settings.theme.getBatteryScale().getEndAngle() - settings.theme.getBatteryScale().getStartAngle();
 //        }
 
-        this.angleLength = settings.theme.getBatteryScale().getEndAngle() - settings.theme.getBatteryScale().getStartAngle();
+        Scale batteryScale = settings.theme.getBatteryScale();
+
+        this.angleLength = batteryScale.getStartAngle() > batteryScale.getEndAngle() ? batteryScale.getStartAngle() - batteryScale.getEndAngle()
+                : batteryScale.getEndAngle() - batteryScale.getStartAngle();
     }
 
     // Screen-on init (runs once)

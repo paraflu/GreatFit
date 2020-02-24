@@ -13,6 +13,9 @@ import com.dinodevs.greatfitwatchface.theme.bin.Minutes;
 import com.dinodevs.greatfitwatchface.theme.bin.Ones;
 import com.dinodevs.greatfitwatchface.theme.bin.Pulse;
 import com.dinodevs.greatfitwatchface.theme.bin.Scale;
+import com.dinodevs.greatfitwatchface.theme.bin.Step;
+import com.dinodevs.greatfitwatchface.theme.bin.Steps;
+import com.dinodevs.greatfitwatchface.theme.bin.StepsProgress;
 import com.dinodevs.greatfitwatchface.theme.bin.Tens;
 import com.dinodevs.greatfitwatchface.theme.bin.Text;
 import com.dinodevs.greatfitwatchface.theme.bin.Time;
@@ -214,6 +217,66 @@ public class GtrTheme implements ITheme {
 
         res.setCircle(circle);
 
+        return res;
+    }
+
+    public Steps getStepWidget() {
+        Steps res = new Steps();
+        /**
+         * "Steps": {
+         *       "Step": {
+         *         "TopLeftX": 33,
+         *         "TopLeftY": 148,
+         *         "BottomRightX": 97,
+         *         "BottomRightY": 168,
+         *         "Alignment": "Center",
+         *         "Spacing": 0,
+         *         "ImageIndex": 28,
+         *         "ImagesCount": 10
+         *       }
+         *     },
+         */
+        Step step = new Step();
+        step.setTopLeftX(33);
+        step.setTopLeftY(148);
+        step.setBottomRightX(97);
+        step.setBottomRightY(168);
+        step.setAlignment("Center");
+        step.setSpacing(0);
+        step.setImageIndex(28);
+        step.setImagesCount(10);
+        res.setStep(step);
+        return res;
+    }
+
+    public StepsProgress getStepProgress() {
+        StepsProgress res = new StepsProgress();
+        Circle circle = new Circle();
+        /***
+         * "StepsProgress": {
+         *     "Circle": {
+         *       "CenterX": 160,
+         *       "CenterY": 160,
+         *       "RadiusX": 145,
+         *       "RadiusY": 145,
+         *       "StartAngle": 219,
+         *       "EndAngle": 296,
+         *       "Width": 20,
+         *       "Color": "0x000000000001BDF1",
+         *       "Flatness": 180
+         *     }
+         *   },
+         */
+        circle.setCenterX(160);
+        circle.setCenterY(160);
+        circle.setRadiusX(145);
+        circle.setRadiusX(145);
+        circle.setStartAngle(219);
+        circle.setEndAngle(296);
+        circle.setWidth(20);
+        circle.setColor("0x000000000001BDF1");
+        circle.setFlatness(180);
+        res.setCircle(circle);
         return res;
     }
 }
