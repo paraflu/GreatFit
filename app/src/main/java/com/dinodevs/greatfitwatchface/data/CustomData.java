@@ -48,7 +48,7 @@ public class CustomData {
                             this.altitude = String.format("%.2f", d); //Float.toString(d);
                         }
                     } catch (Exception e) {
-                        Log.d("DinoDevs-GreatFit", "Error converting pressure float to int ("+this.airPressure+")");
+                        Log.d("VergeIT-LOG", "Error converting pressure float to int ("+this.airPressure+")");
                     }
                 }
                 if(json_data.has("phoneBattery")) {

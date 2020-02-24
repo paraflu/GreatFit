@@ -14,9 +14,11 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.text.TextPaint;
 import android.util.Log;
+import android.util.Size;
 
 import com.dinodevs.greatfitwatchface.AbstractWatchFace;
 import com.dinodevs.greatfitwatchface.settings.LoadSettings;
+import com.dinodevs.greatfitwatchface.theme.bin.IText;
 import com.huami.watch.watchface.util.Util;
 import com.ingenic.iwds.slpt.view.arc.SlptArcAnglePicView;
 import com.ingenic.iwds.slpt.view.arc.SlptTodayDistanceArcAnglePicView;
@@ -38,6 +40,7 @@ import com.ingenic.iwds.slpt.view.utils.SimpleFile;
 
 public class HeartRateWidget extends AbstractWidget {
 
+    private final static String TAG = "VergeIT-LOG";
     private TextPaint textPaint;
     private HeartRate heartRate;
     private Float heart_rateSweepAngle=0f;
@@ -53,13 +56,13 @@ public class HeartRateWidget extends AbstractWidget {
     // Constructor
     public HeartRateWidget(LoadSettings settings) {
         this.settings = settings;
-        
-        if(!(settings.heart_rateProg>0 && settings.heart_rateProgType==0)){return;}
-        if(settings.heart_rateProgClockwise==1) {
-            this.angleLength = (settings.heart_rateProgEndAngle < settings.heart_rateProgStartAngle) ? 360 - (settings.heart_rateProgStartAngle - settings.heart_rateProgEndAngle) : settings.heart_rateProgEndAngle - settings.heart_rateProgStartAngle;
-        }else{
-            this.angleLength = (settings.heart_rateProgEndAngle > settings.heart_rateProgStartAngle) ? 360 - (settings.heart_rateProgStartAngle - settings.heart_rateProgEndAngle) : settings.heart_rateProgEndAngle - settings.heart_rateProgStartAngle;
-        }
+//
+//        if(!(settings.heart_rateProg>0 && settings.heart_rateProgType==0)){return;}
+//        if(settings.heart_rateProgClockwise==1) {
+//            this.angleLength = (settings.heart_rateProgEndAngle < settings.heart_rateProgStartAngle) ? 360 - (settings.heart_rateProgStartAngle - settings.heart_rateProgEndAngle) : settings.heart_rateProgEndAngle - settings.heart_rateProgStartAngle;
+//        }else{
+//            this.angleLength = (settings.heart_rateProgEndAngle > settings.heart_rateProgStartAngle) ? 360 - (settings.heart_rateProgStartAngle - settings.heart_rateProgEndAngle) : settings.heart_rateProgEndAngle - settings.heart_rateProgStartAngle;
+//        }
     }
 
     // Screen-on init (runs once)
@@ -67,24 +70,24 @@ public class HeartRateWidget extends AbstractWidget {
     public void init(Service service) {
         this.mService = service;
 
-        this.textPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-        this.textPaint.setColor(settings.heart_rateColor);
-        this.textPaint.setTypeface(ResourceManager.getTypeFace(service.getResources(), settings.font));
-        this.textPaint.setTextSize(settings.heart_rateFontSize);
-        this.textPaint.setTextAlign( (settings.heart_rateAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER );
-
-        if(settings.heart_rateIcon){
-            this.heart_rateIcon = Util.decodeImage(service.getResources(),"icons/"+settings.is_white_bg+"heart_rate.png");
-            this.heart_rate_flashingIcon = Util.decodeImage(service.getResources(),"icons/"+settings.is_white_bg+"heart_rate_flashing.png");
-        }
-        
-        // Progress Bar Circle
-        if(settings.heart_rateProg>0 && settings.heart_rateProgType==0){
-            this.ring = new Paint(Paint.ANTI_ALIAS_FLAG);
-            this.ring.setStrokeCap(Paint.Cap.ROUND);
-            this.ring.setStyle(Paint.Style.STROKE);
-            this.ring.setStrokeWidth(settings.heart_rateProgThickness);
-        }
+//        this.textPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
+//        this.textPaint.setColor(settings.heart_rateColor);
+//        this.textPaint.setTypeface(ResourceManager.getTypeFace(service.getResources(), settings.font));
+//        this.textPaint.setTextSize(settings.heart_rateFontSize);
+//        this.textPaint.setTextAlign( (settings.heart_rateAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER );
+//
+//        if(settings.heart_rateIcon){
+//            this.heart_rateIcon = Util.decodeImage(service.getResources(),"icons/"+settings.is_white_bg+"heart_rate.png");
+//            this.heart_rate_flashingIcon = Util.decodeImage(service.getResources(),"icons/"+settings.is_white_bg+"heart_rate_flashing.png");
+//        }
+//
+//        // Progress Bar Circle
+//        if(settings.heart_rateProg>0 && settings.heart_rateProgType==0){
+//            this.ring = new Paint(Paint.ANTI_ALIAS_FLAG);
+//            this.ring.setStrokeCap(Paint.Cap.ROUND);
+//            this.ring.setStyle(Paint.Style.STROKE);
+//            this.ring.setStrokeWidth(settings.heart_rateProgThickness);
+//        }
     }
 
     // Register update listeners
@@ -93,29 +96,57 @@ public class HeartRateWidget extends AbstractWidget {
         return Collections.singletonList(DataType.HEART_RATE);
     }
 
+    private void drawText(Canvas canvas, int value, IText spec) {
+        int width = spec.getBottomRightX() - spec.getTopLeftX();
+        int height = spec.getBottomRightY() - spec.getTopLeftY();
+        int spacing = Math.round(width / spec.getImagesCount()) + spec.getSpacing();
+
+        int x = spec.getTopLeftX();
+        int y = spec.getTopLeftY();
+
+        Bitmap bmp = Util.decodeImage(mService.getResources(), this.settings.theme.getImagePath(spec.getImageIndex()));
+        Size imageSize = new Size(bmp.getWidth(), bmp.getHeight());
+
+        if (spec.getAlignment().equals("Center")) {
+            x += imageSize.getWidth() / 2 + width / 2 - (value / 10 * spacing);
+        }
+
+        String text = String.format("%d", value);
+        Log.d(TAG, String.format("draw value %s", text));
+        for (int i = 0; i < text.toCharArray().length; i++) {
+            char charToPrint = text.toCharArray()[i];
+            int va = charToPrint - '0';
+            Bitmap charBmp = Util.decodeImage(mService.getResources(), this.settings.theme.getImagePath(spec.getImageIndex()+i));
+            canvas.drawBitmap(charBmp, x, y, settings.mGPaint);
+            x += charBmp.getWidth() + spacing;
+        }
+        Log.d(TAG, "complete");
+    }
+
     // Value updater
     @Override
     public void onDataUpdate(DataType type, Object value) {
         // Heart rate class
         this.heartRate = (HeartRate) value;
 
-        // Bar angle
-        //this.heartRateSweepAngle = (this.heartRate == null)? 0f : Math.min( this.angleLength, this.angleLength*(heartRate.getHeartRate()/this.maxHeartRate) ) ;
-        // Bar angle
-        if(settings.heart_rateProg>0 && settings.heart_rateProgType==0 && heartRate!=null && heartRate.getHeartRate()>25 ) {
-            this.heart_rateSweepAngle = this.angleLength * Math.min(heartRate.getHeartRate()/this.maxHeartRate,1f);
 
-            //Log.w("DinoDevs-GreatFit", "Heart rate update: "+heartRate.getHeartRate()+", Sweep angle:"+ heart_rateSweepAngle+", %"+(Math.abs(heartRate.getHeartRate()-this.lastSlptUpdateHeart_rate)/this.maxHeartRate));
-
-            if(Math.abs(heartRate.getHeartRate()-this.lastSlptUpdateHeart_rate)/this.maxHeartRate>0.05){
-                this.lastSlptUpdateHeart_rate = heartRate.getHeartRate();
-                // Save the value to get it on the new slpt service
-                SharedPreferences sharedPreferences = mService.getSharedPreferences(mService.getPackageName()+"_settings", Context.MODE_PRIVATE);
-                sharedPreferences.edit().putInt( "temp_heart_rate", this.lastSlptUpdateHeart_rate).apply();
-                // Restart slpt
-                ((AbstractWatchFace) this.mService).restartSlpt();
-            }
-        }
+//        // Bar angle
+//        //this.heartRateSweepAngle = (this.heartRate == null)? 0f : Math.min( this.angleLength, this.angleLength*(heartRate.getHeartRate()/this.maxHeartRate) ) ;
+//        // Bar angle
+//        if(settings.heart_rateProg>0 && settings.heart_rateProgType==0 && heartRate!=null && heartRate.getHeartRate()>25 ) {
+//            this.heart_rateSweepAngle = this.angleLength * Math.min(heartRate.getHeartRate()/this.maxHeartRate,1f);
+//
+//            //Log.w("VergeIT-LOG", "Heart rate update: "+heartRate.getHeartRate()+", Sweep angle:"+ heart_rateSweepAngle+", %"+(Math.abs(heartRate.getHeartRate()-this.lastSlptUpdateHeart_rate)/this.maxHeartRate));
+//
+//            if(Math.abs(heartRate.getHeartRate()-this.lastSlptUpdateHeart_rate)/this.maxHeartRate>0.05){
+//                this.lastSlptUpdateHeart_rate = heartRate.getHeartRate();
+//                // Save the value to get it on the new slpt service
+//                SharedPreferences sharedPreferences = mService.getSharedPreferences(mService.getPackageName()+"_settings", Context.MODE_PRIVATE);
+//                sharedPreferences.edit().putInt( "temp_heart_rate", this.lastSlptUpdateHeart_rate).apply();
+//                // Restart slpt
+//                ((AbstractWatchFace) this.mService).restartSlpt();
+//            }
+//        }
     }
 
     // Draw screen-on
@@ -124,25 +155,26 @@ public class HeartRateWidget extends AbstractWidget {
         // Draw heart rate element
         if(settings.heart_rate>0) {
             // Draw icon
-            if(settings.heart_rateIcon){
-                // Draw flashing heart icon
-                if(settings.flashing_heart_rate_icon) {
-                    Calendar calendar = Calendar.getInstance();
-                    if (calendar.get(Calendar.SECOND) % 2 == 1) {
-                        canvas.drawBitmap(this.heart_rate_flashingIcon, settings.heart_rateIconLeft, settings.heart_rateIconTop, settings.mGPaint);
-                    }else{
-                        canvas.drawBitmap(this.heart_rateIcon, settings.heart_rateIconLeft, settings.heart_rateIconTop, settings.mGPaint);
-                    }
-                }else{
-                    canvas.drawBitmap(this.heart_rateIcon, settings.heart_rateIconLeft, settings.heart_rateIconTop, settings.mGPaint);
-                }
-            }
-
-            // if units are enabled
-            String units = (settings.heart_rateUnits) ? " bpm" : "";
-            // Draw Heart rate
-            String text = (heartRate == null || heartRate.getHeartRate() < 25) ? "--" : heartRate.getHeartRate() + units;
-            canvas.drawText(text, settings.heart_rateLeft, settings.heart_rateTop, textPaint);
+//            if(settings.heart_rateIcon){
+//                // Draw flashing heart icon
+//                if(settings.flashing_heart_rate_icon) {
+//                    Calendar calendar = Calendar.getInstance();
+//                    if (calendar.get(Calendar.SECOND) % 2 == 1) {
+//                        canvas.drawBitmap(this.heart_rate_flashingIcon, settings.heart_rateIconLeft, settings.heart_rateIconTop, settings.mGPaint);
+//                    }else{
+//                        canvas.drawBitmap(this.heart_rateIcon, settings.heart_rateIconLeft, settings.heart_rateIconTop, settings.mGPaint);
+//                    }
+//                }else{
+//                    canvas.drawBitmap(this.heart_rateIcon, settings.heart_rateIconLeft, settings.heart_rateIconTop, settings.mGPaint);
+//                }
+//            }
+//
+//            // if units are enabled
+//            String units = (settings.heart_rateUnits) ? " bpm" : "";
+//            // Draw Heart rate
+//            String text = (heartRate == null || heartRate.getHeartRate() < 25) ? "--" : heartRate.getHeartRate() + units;
+//            canvas.drawText(text, settings.heart_rateLeft, settings.heart_rateTop, textPaint);
+            drawText(canvas, heartRate.getHeartRate(), settings.theme.getPulse());
         }
 
         // heart_rate bar
@@ -179,10 +211,10 @@ public class HeartRateWidget extends AbstractWidget {
                 Cursor cursor = mService.getContentResolver().query(CONTENT_HEART_URI, null, null, null, "utc_time DESC LIMIT 1");
                 //int index = cursor.getColumnIndex( "heart_rate" );
                 system_heart_rate = cursor.getInt( 0 );
-                Log.w("DinoDevs-GreatFit", "Heart rate: slpt getHertRate() = "+system_heart_rate);
+                Log.w("VergeIT-LOG", "Heart rate: slpt getHertRate() = "+system_heart_rate);
             }catch(Exception e){
                 // sth here
-                Log.w("DinoDevs-GreatFit", "Heart rate error: "+e.toString());
+                Log.w("VergeIT-LOG", "Heart rate error: "+e.toString());
             }
         }
         return system_heart_rate;
@@ -269,7 +301,7 @@ public class HeartRateWidget extends AbstractWidget {
             localSlptArcAnglePicView.setStart((int) (settings.heart_rateProgLeft-settings.heart_rateProgRadius), (int) (settings.heart_rateProgTop-settings.heart_rateProgRadius));
             localSlptArcAnglePicView.start_angle = (settings.heart_rateProgClockwise==1)? settings.heart_rateProgStartAngle : settings.heart_rateProgEndAngle;
             localSlptArcAnglePicView.len_angle = (int) (this.angleLength * Math.min(settings.temp_heart_rate/this.maxHeartRate,1));
-            //Log.w("DinoDevs-GreatFit", "Heart rate: slpt "+settings.temp_heart_rate+", Sweep angle:"+ heart_rateSweepAngle+", %"+(this.angleLength * Math.min(settings.temp_heart_rate/this.maxHeartRate,1)));
+            //Log.w("VergeIT-LOG", "Heart rate: slpt "+settings.temp_heart_rate+", Sweep angle:"+ heart_rateSweepAngle+", %"+(this.angleLength * Math.min(settings.temp_heart_rate/this.maxHeartRate,1)));
             localSlptArcAnglePicView.full_angle = (settings.heart_rateProgClockwise==1)? this.angleLength : -this.angleLength;
             localSlptArcAnglePicView.draw_clockwise = settings.heart_rateProgClockwise;
             slpt_objects.add(localSlptArcAnglePicView);

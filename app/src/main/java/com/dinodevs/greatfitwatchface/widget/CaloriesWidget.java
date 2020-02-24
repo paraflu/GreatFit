@@ -14,6 +14,8 @@ import android.util.Size;
 
 import com.dinodevs.greatfitwatchface.AbstractWatchFace;
 import com.dinodevs.greatfitwatchface.settings.LoadSettings;
+import com.dinodevs.greatfitwatchface.theme.bin.CaloriesGraph;
+import com.dinodevs.greatfitwatchface.theme.bin.IText;
 import com.huami.watch.watchface.util.Util;
 import com.ingenic.iwds.slpt.view.arc.SlptArcAnglePicView;
 import com.ingenic.iwds.slpt.view.core.SlptLinearLayout;
@@ -32,7 +34,7 @@ import com.ingenic.iwds.slpt.view.utils.SimpleFile;
 
 
 public class CaloriesWidget extends AbstractWidget {
-    private final static String TAG = "DinoDevs-GreatFit";
+    private final static String TAG = "VergeIT-LOG";
     private TextPaint textPaint;
     private Calories calories;
     private Bitmap icon;
@@ -48,14 +50,16 @@ public class CaloriesWidget extends AbstractWidget {
     public CaloriesWidget(LoadSettings settings) {
         this.settings = settings;
 
-        if (!(settings.caloriesProg > 0 && settings.caloriesProgType == 0)) {
+//        if (!(settings.caloriesProg > 0 && settings.caloriesProgType == 0)) {
+        if (settings.theme.getCaloriesGraph() == null) {
             return;
         }
-        if (settings.caloriesProgClockwise == 1) {
-            this.angleLength = (settings.caloriesProgEndAngle < settings.caloriesProgStartAngle) ? 360 - (settings.caloriesProgStartAngle - settings.caloriesProgEndAngle) : settings.caloriesProgEndAngle - settings.caloriesProgStartAngle;
-        } else {
-            this.angleLength = (settings.caloriesProgEndAngle > settings.caloriesProgStartAngle) ? 360 - (settings.caloriesProgStartAngle - settings.caloriesProgEndAngle) : settings.caloriesProgEndAngle - settings.caloriesProgStartAngle;
-        }
+//        if (settings.caloriesProgClockwise == 1) {
+//            this.angleLength = (settings.caloriesProgEndAngle < settings.caloriesProgStartAngle) ? 360 - (settings.caloriesProgStartAngle - settings.caloriesProgEndAngle) : settings.caloriesProgEndAngle - settings.caloriesProgStartAngle;
+//        } else {
+//            this.angleLength = (settings.caloriesProgEndAngle > settings.caloriesProgStartAngle) ? 360 - (settings.caloriesProgStartAngle - settings.caloriesProgEndAngle) : settings.caloriesProgEndAngle - settings.caloriesProgStartAngle;
+//        }
+        this.angleLength = settings.theme.getCaloriesGraph().getCircle().getStartAngle() - settings.theme.getCaloriesGraph().getCircle().getEndAngle();
     }
 
     // Screen-on init (runs once)
@@ -78,11 +82,12 @@ public class CaloriesWidget extends AbstractWidget {
 //
 //        // Progress Bar Circle
 //        if(settings.caloriesProg>0 && settings.caloriesProgType==0){
-//            this.ring = new Paint(Paint.ANTI_ALIAS_FLAG);
-//            this.ring.setStrokeCap(Paint.Cap.ROUND);
-//            this.ring.setStyle(Paint.Style.STROKE);
-//            this.ring.setStrokeWidth(settings.caloriesProgThickness);
-//        }
+        if (settings.theme.getCaloriesGraph() != null) {
+            this.ring = new Paint(Paint.ANTI_ALIAS_FLAG);
+            this.ring.setStrokeCap(Paint.Cap.ROUND);
+            this.ring.setStyle(Paint.Style.STROKE);
+            this.ring.setStrokeWidth(settings.theme.getCaloriesGraph().getCircle().getWidth());
+        }
     }
 
     // Register calories counter
@@ -97,21 +102,21 @@ public class CaloriesWidget extends AbstractWidget {
         this.calories = (Calories) value;
 
         // Bar angle
-//        if(settings.caloriesProg>0 && settings.caloriesProgType==0) {
-//            this.caloriesSweepAngle = this.angleLength * Math.min(calories.getCalories()/settings.target_calories,1f);
-//
-//            if(Math.abs(calories.getCalories()-this.lastSlptUpdateCalories)/settings.target_calories>0.05){
-//                this.lastSlptUpdateCalories = calories.getCalories();
-//                // Save the value to get it on the new slpt service
-//                SharedPreferences sharedPreferences = mService.getSharedPreferences(mService.getPackageName()+"_settings", Context.MODE_PRIVATE);
-//                sharedPreferences.edit().putInt( "temp_calories", this.lastSlptUpdateCalories).apply();
-//                // Restart slpt
-//                ((AbstractWatchFace) this.mService).restartSlpt();
-//            }
-//        }
+        if (settings.theme.getCaloriesGraph() != null) {
+            this.caloriesSweepAngle = this.angleLength * Math.min(calories.getCalories() / settings.target_calories, 1f);
+            Log.d(TAG, String.format("caloriesSweepAngle %f %d %f", this.caloriesSweepAngle, calories.getCalories(), settings.target_calories));
+            if (Math.abs(calories.getCalories() - this.lastSlptUpdateCalories) / settings.target_calories > 0.05) {
+                this.lastSlptUpdateCalories = calories.getCalories();
+                // Save the value to get it on the new slpt service
+                SharedPreferences sharedPreferences = mService.getSharedPreferences(mService.getPackageName() + "_settings", Context.MODE_PRIVATE);
+                sharedPreferences.edit().putInt("temp_calories", this.lastSlptUpdateCalories).apply();
+                // Restart slpt
+                ((AbstractWatchFace) this.mService).restartSlpt();
+            }
+        }
     }
 
-    private void drawText(Canvas canvas, int value, com.dinodevs.greatfitwatchface.theme.bin.Calories spec) {
+    private void drawText(Canvas canvas, int value, IText spec) {
         int width = spec.getBottomRightX() - spec.getTopLeftX();
         int height = spec.getBottomRightY() - spec.getTopLeftY();
         int spacing = Math.round(width / spec.getImagesCount()) + spec.getSpacing();
@@ -131,7 +136,7 @@ public class CaloriesWidget extends AbstractWidget {
         for (int i = 0; i < text.toCharArray().length; i++) {
             char charToPrint = text.toCharArray()[i];
             int va = charToPrint - '0';
-            Bitmap charBmp = Util.decodeImage(mService.getResources(), this.settings.theme.getImagePath(spec.getImageIndex()+i));
+            Bitmap charBmp = Util.decodeImage(mService.getResources(), this.settings.theme.getImagePath(spec.getImageIndex() + va));
             canvas.drawBitmap(charBmp, x, y, settings.mGPaint);
             x += charBmp.getWidth() + spacing;
         }
@@ -141,34 +146,49 @@ public class CaloriesWidget extends AbstractWidget {
     // Screen on
     @Override
     public void draw(Canvas canvas, float width, float height, float centerX, float centerY) {
-        if (settings.calories > 0) {
+        if (settings.theme.getCalories() != null) {
 //            if(settings.caloriesIcon){
 //                canvas.drawBitmap(this.icon, settings.caloriesIconLeft, settings.caloriesIconTop, settings.mGPaint);
 //            }
 
-            String units = (settings.caloriesUnits) ? " kcal" : "";
             drawText(canvas, calories.getCalories(), this.settings.theme.getCalories());
         }
 
         // Calories bar
-        if (settings.caloriesProg > 0 && settings.caloriesProgType == 0) {
+//        if (settings.caloriesProg > 0 && settings.caloriesProgType == 0) {
+        if (settings.theme.getCaloriesGraph() != null) {
             int count = canvas.save();
+
+            CaloriesGraph cal = settings.theme.getCaloriesGraph();
 
             // Rotate canvas to 0 degrees = 12 o'clock
             canvas.rotate(-90, centerX, centerY);
 
-            // Define circle
-            float radius = settings.caloriesProgRadius - settings.caloriesProgThickness;
-            RectF oval = new RectF(settings.caloriesProgLeft - radius, settings.caloriesProgTop - radius, settings.caloriesProgLeft + radius, settings.caloriesProgTop + radius);
+//            // Define circle
+//            float radius = settings.caloriesProgRadius - settings.caloriesProgThickness;
+//            RectF oval = new RectF(settings.caloriesProgLeft - radius, settings.caloriesProgTop - radius, settings.caloriesProgLeft + radius, settings.caloriesProgTop + radius);
+//
+//            // Background
+//            if (settings.caloriesProgBgBool) {
+//                this.ring.setColor(Color.parseColor("#999999"));
+//                canvas.drawArc(oval, settings.caloriesProgStartAngle, this.angleLength, false, ring);
+//            }
+//
+//            this.ring.setColor(settings.colorCodes[settings.caloriesProgColorIndex]);
+//            canvas.drawArc(oval, settings.caloriesProgStartAngle, this.caloriesSweepAngle, false, ring);
+
+            float radius = cal.getCircle().getRadiusX() /*- scale.getWidth()*/;
+            RectF oval = new RectF(cal.getCircle().getCenterX() - radius, cal.getCircle().getCenterY() - radius,
+                    cal.getCircle().getCenterX() + radius,
+                    cal.getCircle().getCenterY() + radius);
 
             // Background
-            if (settings.caloriesProgBgBool) {
-                this.ring.setColor(Color.parseColor("#999999"));
-                canvas.drawArc(oval, settings.caloriesProgStartAngle, this.angleLength, false, ring);
-            }
+            Log.d(TAG, String.format("getStartAngle: %d angleLength: %d", cal.getCircle().getStartAngle(), this.angleLength));
+            this.ring.setColor(Color.parseColor(String.format("#%s", cal.getCircle().getColor().substring(12))));
+//            canvas.drawArc(oval, cal.getCircle().getStartAngle(), this.angleLength, false, ring);
 
-            this.ring.setColor(settings.colorCodes[settings.caloriesProgColorIndex]);
-            canvas.drawArc(oval, settings.caloriesProgStartAngle, this.caloriesSweepAngle, false, ring);
+            // this.ring.setColor(settings.colorCodes[settings.batteryProgColorIndex]); progressione colore
+            canvas.drawArc(oval, cal.getCircle().getStartAngle(), this.caloriesSweepAngle, false, ring);
 
             canvas.restoreToCount(count);
         }

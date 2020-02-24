@@ -4,7 +4,7 @@ package com.dinodevs.greatfitwatchface.theme.bin;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Text {
+public class Text implements IText {
 
     private Integer topLeftX;
     private Integer topLeftY;

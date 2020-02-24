@@ -108,7 +108,7 @@ public abstract class AbstractWatchFace extends com.huami.watch.watchface.Abstra
         restartSlpt(false);
     }
 
-    private final static  String TAG = "DinoDevs-GreatFit";
+    private final static  String TAG = "VergeIT-LOG";
     public void restartSlpt(boolean redraw){
         // Sent some stuff
         //Bundle b = new Bundle();

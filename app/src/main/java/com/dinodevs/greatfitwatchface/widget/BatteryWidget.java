@@ -31,7 +31,7 @@ import com.dinodevs.greatfitwatchface.resource.ResourceManager;
 
 public class BatteryWidget extends AbstractWidget {
     private Battery batteryData;
-    private final static String TAG = "DinoDevs-GreatFit";
+    private final static String TAG = "VergeIT-LOG";
     //    private Paint batteryPaint;
     private Paint ring;
     //
@@ -50,7 +50,7 @@ public class BatteryWidget extends AbstractWidget {
     public BatteryWidget(LoadSettings settings) {
         this.settings = settings;
 
-        if (!(settings.batteryProg > 0 && settings.batteryProgType == 0)) {
+        if (settings.theme.getBatteryScale() == null) {
             return;
         }
 //        if (settings.batteryProgClockwise == 1) {
@@ -91,7 +91,7 @@ public class BatteryWidget extends AbstractWidget {
 //        }
 //
         // Progress Bar Circle
-        if (settings.batteryProg > 0 && settings.batteryProgType == 0) {
+        if (settings.theme.getBatteryScale() != null) {
             this.ring = new Paint(Paint.ANTI_ALIAS_FLAG);
             this.ring.setStrokeCap(Paint.Cap.ROUND);
             this.ring.setStyle(Paint.Style.STROKE);
@@ -188,7 +188,8 @@ public class BatteryWidget extends AbstractWidget {
         }
 
         // Battery bar
-        if (settings.batteryProg > 0 && settings.batteryProgType == 0) {
+//        if (settings.batteryProg > 0 && settings.batteryProgType == 0) {
+        if (settings.theme.getBatteryScale() != null) {
             int count = canvas.save();
 
             // Rotate canvas to 0 degrees = 12 o'clock
@@ -197,17 +198,15 @@ public class BatteryWidget extends AbstractWidget {
             // Define circle
             Scale scale = settings.theme.getBatteryScale();
             float radius = scale.getRadiusX() /*- scale.getWidth()*/;
-            RectF oval = new RectF(settings.batteryProgLeft - radius, settings.batteryProgTop - radius,
-                    settings.batteryProgLeft + radius,
-                    settings.batteryProgTop + radius);
+            RectF oval = new RectF(scale.getCenterX() - radius, scale.getCenterY() - radius,
+                    scale.getCenterX() + radius,
+                    scale.getCenterY() + radius);
 
             // Background
             Log.d(TAG, String.format("batteryProgBgBool %d", settings.batteryProgBgBool ? 1 : 0));
-            if (settings.batteryProgBgBool) {
-                Log.d(TAG, String.format("getStartAngle: %d angleLength: %d", scale.getStartAngle(), this.angleLength));
-                this.ring.setColor(Color.parseColor(String.format("#%s", scale.getColor().substring(12))));
-                canvas.drawArc(oval, scale.getStartAngle(), this.angleLength, false, ring);
-            }
+            Log.d(TAG, String.format("getStartAngle: %d angleLength: %d", scale.getStartAngle(), this.angleLength));
+            this.ring.setColor(Color.parseColor(String.format("#%s", scale.getColor().substring(12))));
+//            canvas.drawArc(oval, scale.getStartAngle(), this.angleLength, false, ring);
 
             // this.ring.setColor(settings.colorCodes[settings.batteryProgColorIndex]); progressione colore
             canvas.drawArc(oval, scale.getStartAngle(), this.batterySweepAngle, false, ring);

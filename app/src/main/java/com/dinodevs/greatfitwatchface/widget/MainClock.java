@@ -54,7 +54,7 @@ import com.ingenic.iwds.slpt.view.utils.SimpleFile;
 
 
 public class MainClock extends DigitalClockWidget {
-    private final static String TAG = "DinoDevs-GreatFit";
+    private final static String TAG = "VergeIT-LOG";
     private TextPaint hourFont, minutesFont, secondsFont, indicatorFont, dateFont, dayFont, weekdayFont, monthFont, yearFont, ampmFont;
     private Bitmap dateIcon, hourHand, minuteHand, secondsHand, background;
 
@@ -271,14 +271,14 @@ public class MainClock extends DigitalClockWidget {
         String text = String.format("%d", value);
         int x = font.getX();
         int y = font.getY();
+        Log.d(TAG, text);
         for (int i = 0; i < text.toCharArray().length; i++) {
             char charToPrint = text.toCharArray()[i];
             int va = charToPrint - '0';
-            Bitmap charBmp = Util.decodeImage(mService.getResources(), settings.theme.getImagePath(font.getImageIndex()));
+            Bitmap charBmp = Util.decodeImage(mService.getResources(), settings.theme.getImagePath(font.getImageIndex()+va));
             canvas.drawBitmap(charBmp, x, y, settings.mGPaint);
             x += charBmp.getWidth();
         }
-        Log.d(TAG, "complete");
     }
 
     // Screen open watch mode
@@ -289,6 +289,8 @@ public class MainClock extends DigitalClockWidget {
         canvas.drawBitmap(this.background, 0f, 0f, settings.mGPaint);
 
         if (settings.digital_clock) {
+
+            Log.d(TAG, String.format("%d%d:%d%d", hours / 10, hours % 10, minutes / 10, minutes %10));
 
             Time time = settings.theme.getTime();
             drawTime(canvas, hours / 10, time.getHours().getTens());
@@ -305,7 +307,7 @@ public class MainClock extends DigitalClockWidget {
                             settings.theme.getTime().getAmPm().getY(), settings.mGPaint);
                     break;
                 default:
-                    //Log.d("DinoDevs-GreatFit", "AM-PM: 24h time format is on");
+                    //Log.d("VergeIT-LOG", "AM-PM: 24h time format is on");
             }
 //            // Draw hours
 //            canvas.drawText((settings.no_0_on_hour_first_digit) ? hours + "" : Util.formatTime(hours), settings.hoursLeft, settings.hoursTop, this.hourFont);
@@ -335,7 +337,7 @@ public class MainClock extends DigitalClockWidget {
 //                    canvas.drawText("PM", this.settings.am_pmLeft, this.settings.am_pmTop, this.ampmFont);
 //                    break;
 //                default:
-//                    //Log.d("DinoDevs-GreatFit", "AM-PM: 24h time format is on");
+//                    //Log.d("VergeIT-LOG", "AM-PM: 24h time format is on");
 //            }
         }
 

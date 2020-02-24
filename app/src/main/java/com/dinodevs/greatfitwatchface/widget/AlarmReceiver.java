@@ -15,7 +15,7 @@ import java.util.Calendar;
 public class AlarmReceiver extends BroadcastReceiver {
     public static final int GREATWIDGET_CODE = 1234;
     public static final String REQUEST_CODE = "code";
-    private static final String TAG = "DinoDevs-GreatFit";
+    private static final String TAG = "VergeIT-LOG";
     GreatWidget greatWidget;
 
     public void onReceive(Context context, Intent intent) {

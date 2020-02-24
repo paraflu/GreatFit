@@ -5,10 +5,13 @@ import android.content.Context;
 import com.dinodevs.greatfitwatchface.theme.bin.AmPm;
 import com.dinodevs.greatfitwatchface.theme.bin.Background;
 import com.dinodevs.greatfitwatchface.theme.bin.Calories;
+import com.dinodevs.greatfitwatchface.theme.bin.CaloriesGraph;
+import com.dinodevs.greatfitwatchface.theme.bin.Circle;
 import com.dinodevs.greatfitwatchface.theme.bin.Hours;
 import com.dinodevs.greatfitwatchface.theme.bin.Image;
 import com.dinodevs.greatfitwatchface.theme.bin.Minutes;
 import com.dinodevs.greatfitwatchface.theme.bin.Ones;
+import com.dinodevs.greatfitwatchface.theme.bin.Pulse;
 import com.dinodevs.greatfitwatchface.theme.bin.Scale;
 import com.dinodevs.greatfitwatchface.theme.bin.Tens;
 import com.dinodevs.greatfitwatchface.theme.bin.Text;
@@ -154,6 +157,62 @@ public class GtrTheme implements ITheme {
         res.setSpacing(0);
         res.setImageIndex(28);
         res.setImagesCount(10);
+
+        return res;
+    }
+
+    public Pulse getPulse() {
+        /**
+         *
+         * "TopLeftX": 223,
+         *       "TopLeftY": 171,
+         *       "BottomRightX": 286,
+         *       "BottomRightY": 191,
+         *       "Alignment": "Center",
+         *       "Spacing": 0,
+         *       "ImageIndex": 28,
+         *       "ImagesCount": 10
+         */
+        Pulse res = new Pulse();
+        res.setTopLeftX(223);
+        res.setTopLeftY(171);
+        res.setBottomRightX(286);
+        res.setBottomRightY(191);
+        res.setAlignment("Center");
+        res.setSpacing(0);
+        res.setImageIndex(28);
+        res.setImagesCount(10);
+        return res;
+    }
+
+    public CaloriesGraph getCaloriesGraph() {
+        CaloriesGraph res = new CaloriesGraph();
+        Circle circle = new Circle();
+        /**
+         * CaloriesGraph
+         * "Circle": {
+         *         "CenterX": 160,
+         *         "CenterY": 162,
+         *         "RadiusX": 144,
+         *         "RadiusY": 148,
+         *         "StartAngle": 142,
+         *         "EndAngle": 64,
+         *         "Width": 23,
+         *         "Color": "0x0000000000FE3E02",
+         *         "Flatness": 180
+         *       }
+         */
+        circle.setCenterX(160);
+        circle.setCenterY(162);
+        circle.setRadiusX(144);
+        circle.setRadiusY(148);
+        circle.setStartAngle(142);
+        circle.setEndAngle(64);
+        circle.setWidth(23);
+        circle.setColor("0x0000000000FE3E02");
+        circle.setFlatness(180);
+
+        res.setCircle(circle);
 
         return res;
     }

@@ -110,7 +110,7 @@ public class GreatFitSlpt extends AbstractWatchFaceSlpt {
     }
 
     protected void initWatchFaceConfig() {
-        //Log.w("DinoDevs-GreatFit", "Initiating watchface");
+        //Log.w("VergeIT-LOG", "Initiating watchface");
     }
 
     @Override

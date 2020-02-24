@@ -87,7 +87,7 @@ public class GreatWidget extends AbstractWidget {
     private Sensor mStepsSensor;
     private SensorEventListener mStepsListener;
 
-    private final static  String TAG = "DinoDevs-GreatFit";
+    private final static  String TAG = "VergeIT-LOG";
 
     // Constructor
     public GreatWidget(LoadSettings settings) {

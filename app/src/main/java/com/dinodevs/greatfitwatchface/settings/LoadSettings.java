@@ -30,7 +30,7 @@ public class LoadSettings {
     public SharedPreferences sharedPreferences;
     private int versionCode;
     private Resources res;
-    private final static  String TAG = "DinoDevs-GreatFit";
+    private final static  String TAG = "VergeIT-LOG";
 
     public LoadSettings(Context context){
         this.context = context;
@@ -731,7 +731,7 @@ public class LoadSettings {
             }else {
                 this.am_pmBool = sharedPreferences.getBoolean("am_pmBool", res.getIdentifier("am_pm", "array", context.getPackageName()) != 0);
             }
-            //Log.d("DinoDevs-GreatFit", "AM-PM: "+am_pmBool+", share-pref:"+this.am_pm_always+", xml:"+context.getResources().getBoolean(R.bool.am_pm_always)+", time-format:"+time_format);
+            //Log.d("VergeIT-LOG", "AM-PM: "+am_pmBool+", share-pref:"+this.am_pm_always+", xml:"+context.getResources().getBoolean(R.bool.am_pm_always)+", time-format:"+time_format);
             */
             //if(this.am_pmBool) {
                 TypedArray am_pm = res.obtainTypedArray(res.getIdentifier("am_pm", "array", context.getPackageName()));

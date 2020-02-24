@@ -66,7 +66,7 @@ public class WeatherWidget extends AbstractWidget {
     private String sunrise_time = "n/a";
 
     private LoadSettings settings;
-    private final static  String TAG = "DinoDevs-GreatFit";
+    private final static  String TAG = "VergeIT-LOG";
 
     // Constructor
     public WeatherWidget(LoadSettings settings) {
@@ -262,7 +262,7 @@ public class WeatherWidget extends AbstractWidget {
     public void onDataUpdate(DataType type, Object value) {
         //this.weather = (WeatherData) value;
         // Value = weather info [tempFlag:1, tempString:29, weatherType:0
-        //Log.w("DinoDevs-GreatFit", "Data Update: "+type.toString()+" => "+value.toString() );
+        //Log.w("VergeIT-LOG", "Data Update: "+type.toString()+" => "+value.toString() );
 
         // Get ALL weather data
         this.weather = getSlptWeather();
