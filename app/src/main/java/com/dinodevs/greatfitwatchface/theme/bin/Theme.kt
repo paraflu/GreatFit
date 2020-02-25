@@ -12,7 +12,16 @@ package com.dinodevs.greatfitwatchface.theme.bin
 
 import com.google.gson.annotations.SerializedName
 
-data class Background (
+data class Theme (
 
-	@SerializedName("Image") val image : Image
+	@SerializedName("Info") val info : Info,
+	@SerializedName("Background") val background : Background,
+	@SerializedName("Time") val time : Time,
+	@SerializedName("Activity") val activity : Activity,
+	@SerializedName("Date") val date : Date,
+	@SerializedName("Weather") val weather : Weather,
+	@SerializedName("StepsProgress") val stepsProgress : StepsProgress,
+	@SerializedName("Status") val status : Status,
+	@SerializedName("Battery") val battery : Battery,
+	@SerializedName("Shortcuts") val shortcuts : Shortcuts
 )

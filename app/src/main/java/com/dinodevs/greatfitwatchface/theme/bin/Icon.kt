@@ -12,7 +12,8 @@ package com.dinodevs.greatfitwatchface.theme.bin
 
 import com.google.gson.annotations.SerializedName
 
-data class Background (
+data class Icon (
 
-	@SerializedName("Image") val image : Image
+	@SerializedName("Images") val images : Images,
+	@SerializedName("NoWeatherImageIndex") val noWeatherImageIndex : Int
 )

@@ -1,20 +1,21 @@
+/* 
+Copyright (c) 2020 Kotlin Data Classes Generated from JSON powered by http://www.json2kotlin.com
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+For support, please feel free to contact me at https://www.linkedin.com/in/syedabsar */
+
 package com.dinodevs.greatfitwatchface.theme.bin
 
-import java.util.*
+import com.google.gson.annotations.SerializedName
+data class Ones (
 
-class Ones : IFont {
-    override var x: Int? = null;
-    override var y: Int? = null;
-    override var imageIndex: Int? = null
-    override var imagesCount: Int? = null
-
-    private val additionalProperties: MutableMap<String, Any> = HashMap()
-
-    fun getAdditionalProperties(): Map<String, Any> {
-        return additionalProperties
-    }
-
-    fun setAdditionalProperty(name: String, value: Any) {
-        additionalProperties[name] = value
-    }
-}
+	@SerializedName("X") val x : Int,
+	@SerializedName("Y") val y : Int,
+	@SerializedName("ImageIndex") val imageIndex : Int,
+	@SerializedName("ImagesCount") val imagesCount : Int
+)

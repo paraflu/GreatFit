@@ -159,12 +159,12 @@ class BatteryWidget(private val settings: LoadSettings) : AbstractWidget() {
     }
 
     // Screen-off (SLPT)
-    override fun buildSlptViewComponent(service: Service): List<SlptViewComponent> {
+    override fun buildSlptViewComponent(service: Service?): List<SlptViewComponent> {
         return buildSlptViewComponent(service, false)
     }
 
     // Screen-off (SLPT) - Better screen quality
-    override fun buildSlptViewComponent(service: Service, better_resolution: Boolean): List<SlptViewComponent> {
+    override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent> {
         var better_resolution = better_resolution
         better_resolution = better_resolution && settings.better_resolution_when_raising_hand
         val slpt_objects: MutableList<SlptViewComponent> = ArrayList()

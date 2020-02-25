@@ -12,7 +12,10 @@ package com.dinodevs.greatfitwatchface.theme.bin
 
 import com.google.gson.annotations.SerializedName
 
-data class Background (
+data class Symbols (
 
-	@SerializedName("Image") val image : Image
+	@SerializedName("Unknown0800") val unknown0800 : Int,
+	@SerializedName("MinusImageIndex") val minusImageIndex : Int,
+	@SerializedName("DegreesImageIndex") val degreesImageIndex : Int,
+	@SerializedName("NoDataImageIndex") val noDataImageIndex : Int
 )

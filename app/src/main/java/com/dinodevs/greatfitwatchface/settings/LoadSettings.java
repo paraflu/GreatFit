@@ -16,17 +16,20 @@ import com.dinodevs.greatfitwatchface.resource.ResourceManager;
 import com.dinodevs.greatfitwatchface.theme.GtrTheme;
 import com.dinodevs.greatfitwatchface.theme.ITheme;
 import com.dinodevs.greatfitwatchface.theme.TecnoSportTheme;
+import com.dinodevs.greatfitwatchface.theme.bin.Theme;
+import com.google.gson.Gson;
 import com.huami.watch.watchface.util.Util;
 
 import org.json.JSONException;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 public class LoadSettings {
 
-    public ITheme theme;
+    public Theme theme;
     private Context context;
     public SharedPreferences sharedPreferences;
     private int versionCode;
@@ -41,8 +44,7 @@ public class LoadSettings {
         // Default Parameters
         defaultParameters();
         try {
-//            this.theme = GtrTheme.load(context, "gtr/DMG_v4_touch_gtr47_packed_zip.json");
-            this.theme = TecnoSportTheme.load(context, "tecno_sport/Sport_Shortcuts_47mm.json");
+            this.theme = new Gson().fromJson(FileReader("tecno_sport/Sport_Shortcuts_47mm.json"));
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {

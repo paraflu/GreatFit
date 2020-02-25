@@ -49,11 +49,11 @@ class CaloriesWidget(private val settings: LoadSettings) : AbstractWidget() {
 //
 //        // Progress Bar Circle
 //        if(settings.caloriesProg>0 && settings.caloriesProgType==0){
-        if (settings.theme.caloriesGraph != null) {
+        if (settings.theme.activity.calories != null) {
             ring = Paint(Paint.ANTI_ALIAS_FLAG)
             ring!!.strokeCap = Paint.Cap.ROUND
             ring!!.style = Paint.Style.STROKE
-            ring!!.strokeWidth = settings.theme.caloriesGraph!!.circle!!.width!!.toFloat()
+            ring!!.strokeWidth = settings.theme.activity.calories!!.circle!!.width!!.toFloat()
         }
     }
 
@@ -66,7 +66,7 @@ class CaloriesWidget(private val settings: LoadSettings) : AbstractWidget() {
     override fun onDataUpdate(type: DataType, value: Any) {
         calories = value as Calories
         // Bar angle
-        if (settings.theme.caloriesGraph != null) {
+        if (settings.theme.activity.calories != null) {
             caloriesSweepAngle = angleLength * Math.min(calories!!.calories / settings.target_calories, 1f)
             Log.d(TAG, String.format("caloriesSweepAngle %f %d %f", caloriesSweepAngle, calories!!.calories, settings.target_calories))
             if (Math.abs(calories!!.calories - lastSlptUpdateCalories) / settings.target_calories > 0.05) {
@@ -112,9 +112,9 @@ class CaloriesWidget(private val settings: LoadSettings) : AbstractWidget() {
         }
         // Calories bar
 //        if (settings.caloriesProg > 0 && settings.caloriesProgType == 0) {
-        if (settings.theme.caloriesGraph != null) {
+        if (settings.theme.calories != null) {
             val count = canvas.save()
-            val cal = settings.theme.caloriesGraph
+            val cal = settings.theme.calories
             // Rotate canvas to 0 degrees = 12 o'clock
             canvas.rotate(-90f, centerX, centerY)
             //            // Define circle
@@ -144,12 +144,12 @@ class CaloriesWidget(private val settings: LoadSettings) : AbstractWidget() {
     }
 
     // Screen-off (SLPT)
-    override fun buildSlptViewComponent(service: Service): List<SlptViewComponent> {
+    override fun buildSlptViewComponent(service: Service?): List<SlptViewComponent> {
         return buildSlptViewComponent(service, false)
     }
 
     // Screen-off (SLPT) - Better screen quality
-    override fun buildSlptViewComponent(service: Service, better_resolution: Boolean): List<SlptViewComponent> {
+    override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent> {
         var better_resolution = better_resolution
         better_resolution = better_resolution && settings.better_resolution_when_raising_hand
         val slpt_objects: MutableList<SlptViewComponent> = ArrayList()
@@ -178,7 +178,7 @@ class CaloriesWidget(private val settings: LoadSettings) : AbstractWidget() {
             caloriesLayout.setTextAttrForAll(
                     settings.caloriesFontSize,
                     settings.caloriesColor,
-                    getTypeFace(service.resources, settings.font)
+                    getTypeFace(service!!.resources, settings.font)
             )
             // Position based on screen on
             caloriesLayout.alignX = 2
@@ -225,13 +225,13 @@ class CaloriesWidget(private val settings: LoadSettings) : AbstractWidget() {
     // Constructor
     init {
         //        if (!(settings.caloriesProg > 0 && settings.caloriesProgType == 0)) {
-        if (settings.theme.caloriesGraph != null) {
+        if (settings.theme.calories != null) {
             //        if (settings.caloriesProgClockwise == 1) {
 //            this.angleLength = (settings.caloriesProgEndAngle < settings.caloriesProgStartAngle) ? 360 - (settings.caloriesProgStartAngle - settings.caloriesProgEndAngle) : settings.caloriesProgEndAngle - settings.caloriesProgStartAngle;
 //        } else {
 //            this.angleLength = (settings.caloriesProgEndAngle > settings.caloriesProgStartAngle) ? 360 - (settings.caloriesProgStartAngle - settings.caloriesProgEndAngle) : settings.caloriesProgEndAngle - settings.caloriesProgStartAngle;
 //        }
-            angleLength = settings.theme.caloriesGraph!!.circle!!.startAngle!! - settings.theme.caloriesGraph!!.circle!!.endAngle!!
+            angleLength = settings.theme.calories!!.circle!!.startAngle!! - settings.theme.calories!!.circle!!.endAngle!!
         }
     }
 }
