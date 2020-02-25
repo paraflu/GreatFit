@@ -14,6 +14,6 @@ import com.google.gson.annotations.SerializedName
 
 data class Date (
 
-	@SerializedName("MonthAndDay") val monthAndDay : MonthAndDay,
-	@SerializedName("WeekDay") val weekDay : WeekDay
+	@SerializedName("MonthAndDay") val monthAndDay : MonthAndDay?,
+	@SerializedName("WeekDay") val weekDay : WeekDay?
 )

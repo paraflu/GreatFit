@@ -12,7 +12,6 @@ import com.dinodevs.greatfitwatchface.resource.SlptAnalogHourView
 import com.dinodevs.greatfitwatchface.resource.SlptSecondHView
 import com.dinodevs.greatfitwatchface.resource.SlptSecondLView
 import com.dinodevs.greatfitwatchface.settings.LoadSettings
-import com.dinodevs.greatfitwatchface.theme.bin.IFont
 import com.dinodevs.greatfitwatchface.theme.bin.Ones
 import com.dinodevs.greatfitwatchface.theme.bin.Tens
 import com.huami.watch.watchface.util.Util
@@ -51,7 +50,6 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
         val image = settings.getImagePath(settings.theme.background.image.imageIndex)
         Log.d(TAG, "$image")
         background = Util.decodeImage(service!!.resources, image)
-//        }
         if (settings.date > 0) {
             dateFont = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
             dateFont!!.typeface = getTypeFace(service.resources, settings.font)
@@ -86,8 +84,8 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
 
     fun drawTime(canvas: Canvas?, value: Int, font: Ones) {
         val text = String.format("%d", value)
-        var x = font!!.x!!
-        val y = font.y!!
+        var x = font.x
+        val y = font.y
         Log.d(TAG, text)
         for (i in text.toCharArray().indices) {
             val charToPrint = text.toCharArray()[i]
@@ -167,53 +165,53 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
 //                    //Log.d("VergeIT-LOG", "AM-PM: 24h time format is on");
 //            }
         }
-        if (settings.analog_clock) {
-            canvas.save()
-            canvas.rotate((hours * 30).toFloat() + minutes.toFloat() / 60.0f * 30.0f, 160.0f + if (settings.isVerge) 20f else 0f, 159.0f + if (settings.isVerge) 20f else 0f)
-            canvas.drawBitmap(hourHand, centerX - hourHand!!.width / 2f, centerY - hourHand.height / 2f, null)
-            canvas.restore()
-            canvas.save()
-            canvas.rotate((minutes * 6) as Float, 160.0f + if (settings.isVerge) 20f else 0f, 159.0f + if (settings.isVerge) 20f else 0f)
-            canvas.drawBitmap(minuteHand, centerX - minuteHand!!.width / 2f, centerY - minuteHand.height / 2f, null)
-            canvas.restore()
-            if (settings.secondsBool) {
-                canvas.save()
-                canvas.rotate((seconds * 6).toFloat(), 160.0f + if (settings.isVerge) 20f else 0f, 159.0f + if (settings.isVerge) 20f else 0f)
-                canvas.drawBitmap(secondsHand, centerX - secondsHand!!.width / 2f, centerY - secondsHand.height / 2f, null)
-                canvas.restore()
-            }
-        }
-        // JAVA calendar get/show time library
-        val calendar = Calendar.getInstance()
-        calendar[Calendar.DAY_OF_WEEK] = week
-        // Draw Date
-        if (settings.date > 0) {
-            if (settings.dateIcon) {
-                canvas.drawBitmap(dateIcon, settings.dateIconLeft, settings.dateIconTop, settings.mGPaint)
-            }
-            val date = Util.formatTime(day) + "." + Util.formatTime(month) + "." + Integer.toString(year)
-            canvas.drawText(date, settings.dateLeft, settings.dateTop, dateFont)
-        }
-        // Draw Day
-        if (settings.dayBool) {
-            val dayText = Util.formatTime(day)
-            canvas.drawText(dayText, settings.dayLeft, settings.dayTop, dayFont)
-        }
-        // Get + Draw WeekDay (using JAVA)
-        if (settings.weekdayBool) { //String weekday = String.format("%S", new SimpleDateFormat("EE").format(calendar.getTime()));
-            val weekdaynum = calendar[Calendar.DAY_OF_WEEK] - 1
-            val weekday = if (settings.three_letters_day_if_text) days_3let[settings.language][weekdaynum] else days[settings.language][weekdaynum]
-            canvas.drawText(weekday, settings.weekdayLeft, settings.weekdayTop, weekdayFont)
-        }
-        // Draw Month
-        if (settings.monthBool) {
-            val monthText = if (settings.month_as_text) if (settings.three_letters_month_if_text) months_3let[settings.language][month] else months[settings.language][month] else if (settings.no_0_on_hour_first_digit) Integer.toString(month) else String.format("%02d", month)
-            canvas.drawText(monthText, settings.monthLeft, settings.monthTop, monthFont)
-        }
-        // Draw Year
-        if (settings.yearBool) {
-            canvas.drawText(Integer.toString(year), settings.yearLeft, settings.yearTop, yearFont)
-        }
+//        if (settings.analog_clock) {
+//            canvas.save()
+//            canvas.rotate((hours * 30).toFloat() + minutes.toFloat() / 60.0f * 30.0f, 160.0f + if (settings.isVerge) 20f else 0f, 159.0f + if (settings.isVerge) 20f else 0f)
+//            canvas.drawBitmap(hourHand, centerX - hourHand!!.width / 2f, centerY - hourHand.height / 2f, null)
+//            canvas.restore()
+//            canvas.save()
+//            canvas.rotate((minutes * 6) as Float, 160.0f + if (settings.isVerge) 20f else 0f, 159.0f + if (settings.isVerge) 20f else 0f)
+//            canvas.drawBitmap(minuteHand, centerX - minuteHand!!.width / 2f, centerY - minuteHand.height / 2f, null)
+//            canvas.restore()
+//            if (settings.secondsBool) {
+//                canvas.save()
+//                canvas.rotate((seconds * 6).toFloat(), 160.0f + if (settings.isVerge) 20f else 0f, 159.0f + if (settings.isVerge) 20f else 0f)
+//                canvas.drawBitmap(secondsHand, centerX - secondsHand!!.width / 2f, centerY - secondsHand.height / 2f, null)
+//                canvas.restore()
+//            }
+//        }
+//        // JAVA calendar get/show time library
+//        val calendar = Calendar.getInstance()
+//        calendar[Calendar.DAY_OF_WEEK] = week
+//        // Draw Date
+//        if (settings.date > 0) {
+//            if (settings.dateIcon) {
+//                canvas.drawBitmap(dateIcon, settings.dateIconLeft, settings.dateIconTop, settings.mGPaint)
+//            }
+//            val date = Util.formatTime(day) + "." + Util.formatTime(month) + "." + Integer.toString(year)
+//            canvas.drawText(date, settings.dateLeft, settings.dateTop, dateFont)
+//        }
+//        // Draw Day
+//        if (settings.dayBool) {
+//            val dayText = Util.formatTime(day)
+//            canvas.drawText(dayText, settings.dayLeft, settings.dayTop, dayFont)
+//        }
+//        // Get + Draw WeekDay (using JAVA)
+//        if (settings.weekdayBool) { //String weekday = String.format("%S", new SimpleDateFormat("EE").format(calendar.getTime()));
+//            val weekdaynum = calendar[Calendar.DAY_OF_WEEK] - 1
+//            val weekday = if (settings.three_letters_day_if_text) days_3let[settings.language][weekdaynum] else days[settings.language][weekdaynum]
+//            canvas.drawText(weekday, settings.weekdayLeft, settings.weekdayTop, weekdayFont)
+//        }
+//        // Draw Month
+//        if (settings.monthBool) {
+//            val monthText = if (settings.month_as_text) if (settings.three_letters_month_if_text) months_3let[settings.language][month] else months[settings.language][month] else if (settings.no_0_on_hour_first_digit) Integer.toString(month) else String.format("%02d", month)
+//            canvas.drawText(monthText, settings.monthLeft, settings.monthTop, monthFont)
+//        }
+//        // Draw Year
+//        if (settings.yearBool) {
+//            canvas.drawText(Integer.toString(year), settings.yearLeft, settings.yearTop, yearFont)
+//        }
     }
 
     // Screen locked/closed watch mode (Slpt mode)
@@ -222,10 +220,10 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
     }
 
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent?>? {
-        var better_resolution = better_resolution
-        better_resolution = better_resolution && settings.better_resolution_when_raising_hand
+        var betterResolution = better_resolution
+        betterResolution = betterResolution && settings.better_resolution_when_raising_hand
         // SLPT only clock
-        val show_all = !settings.clock_only_slpt || better_resolution
+        val show_all = !settings.clock_only_slpt || betterResolution
         // SLPT only clock white bg -> to black
         if (!show_all && settings.isVerge && settings.white_bg) {
             settings.is_white_bg = ""
@@ -238,7 +236,7 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
         val slpt_objects: MutableList<SlptViewComponent?> = ArrayList()
         // Draw background image
         val background = SlptPictureView()
-        background.setImagePicture(SimpleFile.readFileFromAssets(service, settings.is_white_bg + "background" + (if (better_resolution) "_better" else "") + (if (settings.isVerge) "_verge" else "") + "_slpt.png"))
+        background.setImagePicture(SimpleFile.readFileFromAssets(service, settings.is_white_bg + "background" + (if (betterResolution) "_better" else "") + (if (settings.isVerge) "_verge" else "") + "_slpt.png"))
         //Alternative way
 //background.setImagePicture(ResourceManager.getVergeImageFromAssets(settings.isVerge(), service, "background"+ ((better_resolution)?"_better":"") +"_slpt.png"));
         slpt_objects.add(background)
@@ -385,7 +383,7 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
             ampm.setStart(tmp_left, (settings.am_pmTop - settings.font_ratio / 100.0f * settings.am_pmFontSize).toInt())
             slpt_objects.add(ampm)
         }
-        if (settings.analog_clock) {
+   /*     if (settings.analog_clock) {
             val slptAnalogHourView = SlptAnalogHourView()
             slptAnalogHourView.setImagePicture(SimpleFile.readFileFromAssets(service, "timehand/8c/hour" + (if (settings.isVerge) "_verge" else "") + ".png"))
             slptAnalogHourView.alignX = 2.toByte()
@@ -413,7 +411,7 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
         if (settings.date > 0) { // Show or Not icon
             if (settings.dateIcon) {
                 val dateIcon = SlptPictureView()
-                dateIcon.setImagePicture(SimpleFile.readFileFromAssets(service, (if (better_resolution) "26wc_" else "slpt_") + "icons/" + settings.is_white_bg + "date.png"))
+                dateIcon.setImagePicture(SimpleFile.readFileFromAssets(service, (if (betterResolution) "26wc_" else "slpt_") + "icons/" + settings.is_white_bg + "date.png"))
                 dateIcon.setStart(
                         settings.dateIconLeft.toInt(),
                         settings.dateIconTop.toInt()
@@ -599,7 +597,7 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
             )
             //Add it to the list
             slpt_objects.add(WeekdayLayout)
-        }
+        }*/
         return slpt_objects
     }
 

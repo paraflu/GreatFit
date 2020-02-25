@@ -287,7 +287,7 @@ class BatteryWidget(private val settings: LoadSettings) : AbstractWidget() {
 //                    settings.theme.getbattery.scale().getEndAngle() - settings.theme.getbattery.scale().getStartAngle();
 //        }
             val scale = settings.theme.battery.scale!!
-            angleLength = 360 - (if (scale.startAngle > scale.endAngle) scale.endAngle - scale.startAngle else scale.startAngle - scale.endAngle)
+            angleLength = /*if (scale.startAngle > scale.endAngle) scale.endAngle - scale.startAngle else (360 - (*/scale.endAngle - scale.startAngle //))
         }
     }
 }
