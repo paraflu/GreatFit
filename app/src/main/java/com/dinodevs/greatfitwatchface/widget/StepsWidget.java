@@ -71,11 +71,11 @@ public class StepsWidget extends AbstractWidget {
 //        }
 
 //        if (settings.stepsProg > 0 && settings.stepsProgType == 0) {
-        if (settings.getTheme().component7() != null) {
+        if (settings.getTheme().getStepsProgress() != null) {
             this.ring = new Paint(Paint.ANTI_ALIAS_FLAG);
             this.ring.setStrokeCap(Paint.Cap.ROUND);
             this.ring.setStyle(Paint.Style.STROKE);
-            this.ring.setStrokeWidth(settings.getTheme().component7().getCircle().getWidth());
+            this.ring.setStrokeWidth(settings.getTheme().getStepsProgress().getCircle().getWidth());
         }
     }
 
@@ -84,7 +84,7 @@ public class StepsWidget extends AbstractWidget {
         // Steps class
         this.stepsData = (Steps) value;
         // Bar angle
-        this.stepsSweepAngle = (this.stepsData == null) ? 0f : this.angleLength * ((float) (this.stepsData.getSteps() > this.stepsData.getTarget() ? this.stepsData.getTarget() : this.stepsData.getSteps()) / this.stepsData.getTarget());
+        this.stepsSweepAngle = (this.stepsData == null) ? 0f : this.angleLength * ((float) (Math.min(this.stepsData.getSteps(), this.stepsData.getTarget())) / this.stepsData.getTarget());
     }
 
     private void drawText(Canvas canvas, int value, Step spec) {
@@ -127,7 +127,7 @@ public class StepsWidget extends AbstractWidget {
 
         // Steps widget
 //        if (settings.steps > 0) {
-        if (settings.getTheme().component7() != null) {
+        if (settings.getTheme().getActivity().getSteps() != null) {
             // Draw icon
 //            if (settings.stepsIcon) {
 //                canvas.drawBitmap(this.icon, settings.stepsIconLeft, settings.stepsIconTop, settings.mGPaint);
@@ -135,18 +135,18 @@ public class StepsWidget extends AbstractWidget {
 
 //            String text = String.format("%s", this.stepsData.getSteps());
 //            canvas.drawText(text, settings.stepsLeft, settings.stepsTop, stepsPaint);
-            drawText(canvas, this.stepsData.getSteps(), settings.getTheme().component4().component3().component1());
+            drawText(canvas, this.stepsData.getSteps(), settings.getTheme().getActivity().getSteps().getStep());
         }
 
         // Steps circle progress bar
 //        if (settings.stepsProg > 0 && settings.stepsProgType == 0) {
-        if (settings.getTheme().component7() != null) {
+        if (settings.getTheme().getStepsProgress() != null) {
             int count = canvas.save();
 
             // Rotate canvas to 0 degrees = 12 o'clock
             canvas.rotate(-90, centerX, centerY);
 
-            StepsProgress cal = settings.getTheme().component7();
+            StepsProgress cal = settings.getTheme().getStepsProgress();
 
             float radius = cal.getCircle().getRadiusX() /*- scale.getWidth()*/;
             RectF oval = new RectF(cal.getCircle().getCenterX() - radius, cal.getCircle().getCenterY() - radius,

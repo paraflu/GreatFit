@@ -7,12 +7,12 @@ import android.util.Size
 import com.dinodevs.greatfitwatchface.data.Battery
 import com.dinodevs.greatfitwatchface.data.DataType
 import com.dinodevs.greatfitwatchface.settings.LoadSettings
-import com.dinodevs.greatfitwatchface.theme.bin.Text
 import com.huami.watch.watchface.util.Util
 import com.ingenic.iwds.slpt.view.core.SlptBatteryView
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
 import com.ingenic.iwds.slpt.view.utils.SimpleFile
 import java.util.*
+import kotlin.math.roundToInt
 
 open class TextWidget(private val settings: LoadSettings): AbstractWidget() {
     private lateinit var mService: Service
@@ -110,20 +110,21 @@ class BatteryWidget(private val settings: LoadSettings) : AbstractWidget() {
     }
 
     private fun drawText(canvas: Canvas, value: Int, text: com.dinodevs.greatfitwatchface.theme.bin.Text) {
-        val width = text.bottomRightX!! - text.topLeftX!!
-        val height = text.bottomRightY!! - text.topLeftY!!
-        val spacing = Math.round(width / text.imagesCount.toFloat()) + text.spacing!!
-        var x = text.topLeftX!!
-        val y = text.topLeftY!!
+        val width = text.bottomRightX - text.topLeftX
+        val height = text.bottomRightY - text.topLeftY
+        val spacing = (width / text.imagesCount.toFloat()).roundToInt() + text.spacing
+        var x = text.topLeftX
+        val y = text.topLeftY
         val bmp = Util.decodeImage(mService!!.resources, settings.getImagePath(settings.theme.battery.text!!.imageIndex))
         val imageSize = Size(bmp.width, bmp.height)
+
+        val textString = String.format("%d", value)
         if (text.alignment == "Center") {
-            x += imageSize.width / 2 + width / 2 - value / 10 * spacing
+            x += (width /2f - textString.length * imageSize.width / 2f).roundToInt()
         }
-        val text = String.format("%d", value)
-        Log.d(TAG, String.format("draw value %s", text))
-        for (i in text.toCharArray().indices) {
-            val charToPrint = text.toCharArray()[i]
+        Log.d(TAG, String.format("draw value %s", textString))
+        for (i in textString.toCharArray().indices) {
+            val charToPrint = textString.toCharArray()[i]
             val va = charToPrint - '0'
             Log.d(TAG, String.format("draw char (x: %d, y: %d) %d - %c > bmp %s", x, y, i, charToPrint, settings.getImagePath(settings.theme.battery.text!!.imageIndex + va)))
             val charBmp = Util.decodeImage(mService!!.resources, settings.getImagePath(settings.theme.battery.text!!.imageIndex + va))
@@ -172,12 +173,10 @@ class BatteryWidget(private val settings: LoadSettings) : AbstractWidget() {
                     scale.centerX + radius,
                     scale.centerY + radius)
             // Background
-            Log.d(TAG, String.format("batteryProgBgBool %d", if (settings.batteryProgBgBool) 1 else 0))
-            Log.d(TAG, String.format("getStartAngle: %d angleLength: %d", scale.startAngle, angleLength))
             ring!!.color = Color.parseColor(String.format("#%s", scale.color.substring(12)))
             //            canvas.drawArc(oval, scale.getStartAngle(), this.angleLength, false, ring);
 // this.ring.setColor(settings.colorCodes[settings.batteryProgColorIndex]); progressione colore
-            canvas.drawArc(oval, scale.startAngle!!.toFloat(), batterySweepAngle, false, ring)
+            canvas.drawArc(oval, scale.startAngle.toFloat(), batterySweepAngle, false, ring)
             canvas.restoreToCount(count)
         }
     }
@@ -288,7 +287,7 @@ class BatteryWidget(private val settings: LoadSettings) : AbstractWidget() {
 //                    settings.theme.getbattery.scale().getEndAngle() - settings.theme.getbattery.scale().getStartAngle();
 //        }
             val scale = settings.theme.battery.scale!!
-            angleLength = if (scale.startAngle > scale.endAngle) scale.startAngle - scale.endAngle else scale.endAngle - scale.startAngle
+            angleLength = 360 - (if (scale.startAngle > scale.endAngle) scale.endAngle - scale.startAngle else scale.startAngle - scale.endAngle)
         }
     }
 }

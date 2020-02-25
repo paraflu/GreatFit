@@ -50,7 +50,9 @@ public class LoadSettings {
 
         // Default Parameters
         defaultParameters();
-        this.themeAssets = new ThemeAssets(context, "tecno_sport/Sport_Shortcuts_47mm.json");
+//        this.themeAssets = new ThemeAssets(context, "tecno_sport/Sport_Shortcuts_47mm.json");
+        this.themeAssets = new ThemeAssets(context, "gtr/DMG_v4_touch_gtr47_packed_zip.json");
+
     }
 
     // GENERAL

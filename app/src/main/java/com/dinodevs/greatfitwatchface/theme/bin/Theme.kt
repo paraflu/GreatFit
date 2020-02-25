@@ -20,7 +20,7 @@ data class Theme(
         @SerializedName("Activity") val activity: Activity,
         @SerializedName("Date") val date: Date,
         @SerializedName("Weather") val weather: Weather,
-        @SerializedName("StepsProgress") val stepsProgress: StepsProgress,
+        @SerializedName("StepsProgress") val stepsProgress: StepsProgress?,
         @SerializedName("Status") val status: Status,
         @SerializedName("Battery") val battery: Battery,
         @SerializedName("Shortcuts") val shortcuts: Shortcuts

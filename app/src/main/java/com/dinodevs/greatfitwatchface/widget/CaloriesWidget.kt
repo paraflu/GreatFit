@@ -232,7 +232,8 @@ class CaloriesWidget(private val settings: LoadSettings) : AbstractWidget() {
 //        } else {
 //            this.angleLength = (settings.caloriesProgEndAngle > settings.caloriesProgStartAngle) ? 360 - (settings.caloriesProgStartAngle - settings.caloriesProgEndAngle) : settings.caloriesProgEndAngle - settings.caloriesProgStartAngle;
 //        }
-            angleLength = settings.theme.activity.calories!!.circle!!.startAngle - settings.theme.activity.calories!!.circle!!.endAngle!!
+            val scale = settings.theme.activity.calories!!.circle!!
+            angleLength = if (scale.startAngle > scale.endAngle) scale.endAngle - scale.startAngle else scale.startAngle - scale.endAngle
         }
     }
 }
