@@ -9,6 +9,7 @@ import com.dinodevs.greatfitwatchface.data.DataType
 import com.dinodevs.greatfitwatchface.data.HeartRate
 import com.dinodevs.greatfitwatchface.resource.ResourceManager.getTypeFace
 import com.dinodevs.greatfitwatchface.settings.LoadSettings
+import com.dinodevs.greatfitwatchface.theme.bin.Element
 import com.dinodevs.greatfitwatchface.theme.bin.IText
 import com.huami.watch.watchface.util.Util
 import com.ingenic.iwds.slpt.view.arc.SlptArcAnglePicView
@@ -66,27 +67,8 @@ class HeartRateWidget//
         return listOf(DataType.HEART_RATE)
     }
 
-    private fun drawText(canvas: Canvas, value: Int, spec: IText?) {
-        val width = spec!!.bottomRightX!! - spec.topLeftX!!
-        val height = spec.bottomRightY!! - spec.topLeftY!!
-        val spacing = Math.round(width / spec.imagesCount!!.toFloat()) + spec.spacing!!
-        var x = spec.topLeftX!!
-        val y = spec.topLeftY!!
-        val bmp = Util.decodeImage(mService!!.resources, settings.theme.getImagePath(spec.imageIndex!!))
-        val imageSize = Size(bmp.width, bmp.height)
-        if (spec.alignment == "Center") {
-            x += imageSize.width / 2 + width / 2 - value / 10 * spacing
-        }
-        val text = String.format("%d", value)
-        Log.d(TAG, String.format("draw value %s", text))
-        for (i in text.toCharArray().indices) {
-            val charToPrint = text.toCharArray()[i]
-            val va = charToPrint - '0'
-            val charBmp = Util.decodeImage(mService!!.resources, settings.theme.getImagePath(spec.imageIndex!! + i))
-            canvas.drawBitmap(charBmp, x.toFloat(), y.toFloat(), settings.mGPaint)
-            x += charBmp.width + spacing
-        }
-        Log.d(TAG, "complete")
+    private fun drawText(canvas: Canvas, value: Int, spec: Element) {
+        throw NotImplementedError("pulse DrawText")
     }
 
     // Value updater
@@ -133,7 +115,7 @@ class HeartRateWidget//
 //            // Draw Heart rate
 //            String text = (heartRate == null || heartRate.getHeartRate() < 25) ? "--" : heartRate.getHeartRate() + units;
 //            canvas.drawText(text, settings.heart_rateLeft, settings.heart_rateTop, textPaint);
-            drawText(canvas, heartRate!!.heartRate, settings.theme.pulse)
+            drawText(canvas, heartRate!!.heartRate, settings.theme.activity.pulse!!.element)
         }
         // heart_rate bar
         if (settings.heart_rateProg > 0 && settings.heart_rateProgType == 0) {

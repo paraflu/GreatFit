@@ -13,6 +13,8 @@ import com.dinodevs.greatfitwatchface.resource.SlptSecondHView
 import com.dinodevs.greatfitwatchface.resource.SlptSecondLView
 import com.dinodevs.greatfitwatchface.settings.LoadSettings
 import com.dinodevs.greatfitwatchface.theme.bin.IFont
+import com.dinodevs.greatfitwatchface.theme.bin.Ones
+import com.dinodevs.greatfitwatchface.theme.bin.Tens
 import com.huami.watch.watchface.util.Util
 import com.ingenic.iwds.slpt.view.analog.SlptAnalogMinuteView
 import com.ingenic.iwds.slpt.view.analog.SlptAnalogSecondView
@@ -46,43 +48,9 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
     private var mService: Service? = null
     override fun init(service: Service?) {
         mService = service
-        val image = settings.theme.getImagePath(settings.theme.background.image!!.imageIndex!!)
+        val image = settings.getImagePath(settings.theme.background.image.imageIndex)
+        Log.d(TAG, "$image")
         background = Util.decodeImage(service!!.resources, image)
-        if (settings.isVerge) background = Bitmap.createScaledBitmap(background, 360, 360, true)
-        if (settings.digital_clock) { //            this.hourFont = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-//            this.hourFont.setTypeface(ResourceManager.getTypeFace(service.getResources(), settings.font));
-//            this.hourFont.setTextSize(settings.hoursFontSize);
-//            this.hourFont.setColor(settings.hoursColor);
-//            this.hourFont.setTextAlign((settings.hoursAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER);
-//
-//            this.minutesFont = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-//            this.minutesFont.setTypeface(ResourceManager.getTypeFace(service.getResources(), settings.font));
-//            this.minutesFont.setTextSize(settings.minutesFontSize);
-//            this.minutesFont.setColor(settings.minutesColor);
-//            this.minutesFont.setTextAlign((settings.minutesAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER);
-//
-//            this.secondsFont = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-//            this.secondsFont.setTypeface(ResourceManager.getTypeFace(service.getResources(), settings.font));
-//            this.secondsFont.setTextSize(settings.secondsFontSize);
-//            this.secondsFont.setColor(settings.secondsColor);
-//            this.secondsFont.setTextAlign((settings.secondsAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER);
-//
-//            this.indicatorFont = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-//            this.indicatorFont.setTypeface(ResourceManager.getTypeFace(service.getResources(), settings.font));
-//            this.indicatorFont.setTextSize(settings.indicatorFontSize);
-//            this.indicatorFont.setColor(settings.indicatorColor);
-//            this.indicatorFont.setTextAlign((settings.indicatorAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER);
-//
-//            this.ampmFont = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-//            this.ampmFont.setColor(settings.am_pmColor);
-//            this.ampmFont.setTypeface(ResourceManager.getTypeFace(service.getResources(), settings.font));
-//            this.ampmFont.setTextSize(settings.am_pmFontSize);
-//            this.ampmFont.setTextAlign((settings.am_pmAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER);
-        }
-        //        if (settings.analog_clock) {
-//            this.hourHand = Util.decodeImage(service.getResources(), settings.theme.getTimeHand());
-//            this.minuteHand = Util.decodeImage(service.getResources(), "timehand/minute" + ((settings.isVerge()) ? "_verge" : "") + ".png");
-//            this.secondsHand = Util.decodeImage(service.getResources(), "timehand/seconds" + ((settings.isVerge()) ? "_verge" : "") + ".png");
 //        }
         if (settings.date > 0) {
             dateFont = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
@@ -116,7 +84,7 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
         yearFont!!.textAlign = if (settings.yearAlignLeft) Paint.Align.LEFT else Paint.Align.CENTER
     }
 
-    fun drawTime(canvas: Canvas?, value: Int, font: IFont?) {
+    fun drawTime(canvas: Canvas?, value: Int, font: Ones) {
         val text = String.format("%d", value)
         var x = font!!.x!!
         val y = font.y!!
@@ -124,7 +92,22 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
         for (i in text.toCharArray().indices) {
             val charToPrint = text.toCharArray()[i]
             val va = charToPrint - '0'
-            val charBmp = Util.decodeImage(mService!!.resources, settings.theme.getImagePath(font.imageIndex!! + va))
+            val charBmp = Util.decodeImage(mService!!.resources, settings.getImagePath(font.imageIndex!! + va))
+            canvas!!.drawBitmap(charBmp, x.toFloat(), y.toFloat(), settings.mGPaint)
+            x += charBmp.width
+        }
+    }
+
+
+    fun drawTime(canvas: Canvas?, value: Int, font: Tens) {
+        val text = String.format("%d", value)
+        var x = font!!.x!!
+        val y = font.y!!
+        Log.d(TAG, text)
+        for (i in text.toCharArray().indices) {
+            val charToPrint = text.toCharArray()[i]
+            val va = charToPrint - '0'
+            val charBmp = Util.decodeImage(mService!!.resources, settings.getImagePath(font.imageIndex!! + va))
             canvas!!.drawBitmap(charBmp, x.toFloat(), y.toFloat(), settings.mGPaint)
             x += charBmp.width
         }
@@ -134,18 +117,23 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
     override fun onDrawDigital(canvas: Canvas?, width: Float, height: Float, centerX: Float, centerY: Float, seconds: Int, minutes: Int, hours: Int, year: Int, month: Int, day: Int, week: Int, ampm: Int) { // Draw background image
 //this.background.draw(canvas);
         canvas!!.drawBitmap(background, 0f, 0f, settings.mGPaint)
-        if (settings.digital_clock) {
+        if (settings.theme.time != null) {
             Log.d(TAG, String.format("%d%d:%d%d", hours / 10, hours % 10, minutes / 10, minutes % 10))
-            val time = settings.theme.time
-            drawTime(canvas, hours / 10, time!!.hours!!.tens)
-            drawTime(canvas, hours % 10, time.hours!!.ones)
-            drawTime(canvas, minutes / 10, time.minutes!!.tens)
-            drawTime(canvas, minutes % 10, time.minutes!!.ones)
+            val time = settings.theme.time!!
+            drawTime(canvas, hours / 10, time.hours.tens)
+            drawTime(canvas, hours % 10, time.hours.ones)
+            drawTime(canvas, minutes / 10, time.minutes.tens)
+            drawTime(canvas, minutes % 10, time.minutes.ones)
             when (ampm) {
-                0, 1 -> canvas.drawBitmap(Util.decodeImage(mService!!.resources, settings.theme.getAmPm(ampm)),
-                        settings.theme.time!!.amPm!!.x!!.toFloat(),
-                        settings.theme.time!!.amPm!!.y!!.toFloat(), settings.mGPaint)
-                else -> {
+                0, 1 -> canvas.drawBitmap(
+                        Util.decodeImage(mService!!.resources,
+                                settings.getImagePath(
+                                        if (ampm == 0) settings.theme.time!!.amPm.imageIndexAMEN else
+                                            settings.theme.time!!.amPm.imageIndexPMEN)),
+                                settings.theme.time!!.amPm.x.toFloat(),
+                                settings.theme.time!!.amPm.y.toFloat(), settings.mGPaint)
+                        else
+                -> {
                 }
             }
             //            // Draw hours

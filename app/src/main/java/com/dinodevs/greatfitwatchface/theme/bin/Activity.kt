@@ -15,8 +15,8 @@ import com.google.gson.annotations.SerializedName
 
 data class Activity (
 
-		@SerializedName("Calories") val calories : Calories,
-		@SerializedName("Pulse") val pulse : Pulse,
-		@SerializedName("Steps") val steps : Steps,
-		@SerializedName("StarImage") val starImage : StarImage
+		@SerializedName("Calories") val calories : Calories?,
+		@SerializedName("Pulse") val pulse : Pulse?,
+		@SerializedName("Steps") val steps : Steps?,
+		@SerializedName("StarImage") val starImage : StarImage?
 )

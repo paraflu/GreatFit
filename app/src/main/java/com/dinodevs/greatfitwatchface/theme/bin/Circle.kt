@@ -21,6 +21,6 @@ data class Circle (
 	@SerializedName("StartAngle") val startAngle : Int,
 	@SerializedName("EndAngle") val endAngle : Int,
 	@SerializedName("Width") val width : Int,
-	@SerializedName("Color") val color : Int,
+	@SerializedName("Color") val color : String,
 	@SerializedName("Flatness") val flatness : Int
 )

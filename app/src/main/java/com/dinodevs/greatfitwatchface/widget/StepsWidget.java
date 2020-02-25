@@ -13,8 +13,8 @@ import com.dinodevs.greatfitwatchface.data.Steps;
 import com.dinodevs.greatfitwatchface.data.DataType;
 import com.dinodevs.greatfitwatchface.resource.ResourceManager;
 import com.dinodevs.greatfitwatchface.settings.LoadSettings;
-import com.dinodevs.greatfitwatchface.theme.bin.CaloriesGraph;
 import com.dinodevs.greatfitwatchface.theme.bin.IText;
+import com.dinodevs.greatfitwatchface.theme.bin.Step;
 import com.dinodevs.greatfitwatchface.theme.bin.StepsProgress;
 import com.huami.watch.watchface.util.Util;
 import com.ingenic.iwds.slpt.view.arc.SlptTodayStepArcAnglePicView;
@@ -46,7 +46,7 @@ public class StepsWidget extends AbstractWidget {
     // Constructor
     public StepsWidget(LoadSettings settings) {
         this.settings = settings;
-        this.angleLength = settings.theme.getStepProgress().getCircle().getStartAngle() - settings.theme.getStepProgress().getCircle().getEndAngle();
+        this.angleLength = settings.getTheme().component7().getCircle().getStartAngle() - settings.getTheme().component7().getCircle().getEndAngle();
 //        if(settings.stepsProgClockwise==1) {
 //            this.angleLength = (settings.stepsProgEndAngle<settings.stepsProgStartAngle)? 360-(settings.stepsProgStartAngle-settings.stepsProgEndAngle) : settings.stepsProgEndAngle - settings.stepsProgStartAngle;
 //        }else{
@@ -71,11 +71,11 @@ public class StepsWidget extends AbstractWidget {
 //        }
 
 //        if (settings.stepsProg > 0 && settings.stepsProgType == 0) {
-        if (settings.theme.getStepProgress() != null) {
+        if (settings.getTheme().component7() != null) {
             this.ring = new Paint(Paint.ANTI_ALIAS_FLAG);
             this.ring.setStrokeCap(Paint.Cap.ROUND);
             this.ring.setStyle(Paint.Style.STROKE);
-            this.ring.setStrokeWidth(settings.theme.getStepProgress().getCircle().getWidth());
+            this.ring.setStrokeWidth(settings.getTheme().component7().getCircle().getWidth());
         }
     }
 
@@ -87,7 +87,7 @@ public class StepsWidget extends AbstractWidget {
         this.stepsSweepAngle = (this.stepsData == null) ? 0f : this.angleLength * ((float) (this.stepsData.getSteps() > this.stepsData.getTarget() ? this.stepsData.getTarget() : this.stepsData.getSteps()) / this.stepsData.getTarget());
     }
 
-    private void drawText(Canvas canvas, int value, IText spec) {
+    private void drawText(Canvas canvas, int value, Step spec) {
         int width = spec.getBottomRightX() - spec.getTopLeftX();
         int height = spec.getBottomRightY() - spec.getTopLeftY();
         int spacing = Math.round(width / spec.getImagesCount()) + spec.getSpacing();
@@ -95,7 +95,7 @@ public class StepsWidget extends AbstractWidget {
         int x = spec.getTopLeftX();
         int y = spec.getTopLeftY();
 
-        Bitmap bmp = Util.decodeImage(mService.getResources(), this.settings.theme.getImagePath(spec.getImageIndex()));
+        Bitmap bmp = Util.decodeImage(mService.getResources(), this.settings.getImagePath(spec.getImageIndex()));
         Size imageSize = new Size(bmp.getWidth(), bmp.getHeight());
 
         if (spec.getAlignment().equals("Center")) {
@@ -107,7 +107,7 @@ public class StepsWidget extends AbstractWidget {
         for (int i = 0; i < text.toCharArray().length; i++) {
             char charToPrint = text.toCharArray()[i];
             int va = charToPrint - '0';
-            Bitmap charBmp = Util.decodeImage(mService.getResources(), this.settings.theme.getImagePath(spec.getImageIndex() + va));
+            Bitmap charBmp = Util.decodeImage(mService.getResources(), this.settings.getImagePath(spec.getImageIndex() + va));
             canvas.drawBitmap(charBmp, x, y, settings.mGPaint);
             x += charBmp.getWidth() + spacing;
         }
@@ -127,7 +127,7 @@ public class StepsWidget extends AbstractWidget {
 
         // Steps widget
 //        if (settings.steps > 0) {
-        if (settings.theme.getStepWidget() != null) {
+        if (settings.getTheme().component7() != null) {
             // Draw icon
 //            if (settings.stepsIcon) {
 //                canvas.drawBitmap(this.icon, settings.stepsIconLeft, settings.stepsIconTop, settings.mGPaint);
@@ -135,18 +135,18 @@ public class StepsWidget extends AbstractWidget {
 
 //            String text = String.format("%s", this.stepsData.getSteps());
 //            canvas.drawText(text, settings.stepsLeft, settings.stepsTop, stepsPaint);
-            drawText(canvas, this.stepsData.getSteps(), this.settings.theme.getStepWidget().getStep());
+            drawText(canvas, this.stepsData.getSteps(), settings.getTheme().component4().component3().component1());
         }
 
         // Steps circle progress bar
 //        if (settings.stepsProg > 0 && settings.stepsProgType == 0) {
-        if (settings.theme.getStepProgress() != null) {
+        if (settings.getTheme().component7() != null) {
             int count = canvas.save();
 
             // Rotate canvas to 0 degrees = 12 o'clock
             canvas.rotate(-90, centerX, centerY);
 
-            StepsProgress cal = settings.theme.getStepProgress();
+            StepsProgress cal = settings.getTheme().component7();
 
             float radius = cal.getCircle().getRadiusX() /*- scale.getWidth()*/;
             RectF oval = new RectF(cal.getCircle().getCenterX() - radius, cal.getCircle().getCenterY() - radius,

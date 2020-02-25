@@ -20,6 +20,7 @@ import com.ingenic.iwds.slpt.view.core.SlptViewComponent
 import com.ingenic.iwds.slpt.view.sport.SlptTodayCaloriesView
 import com.ingenic.iwds.slpt.view.utils.SimpleFile
 import java.util.*
+import kotlin.math.roundToInt
 
 class CaloriesWidget(private val settings: LoadSettings) : AbstractWidget() {
     private val textPaint: TextPaint? = null
@@ -49,7 +50,7 @@ class CaloriesWidget(private val settings: LoadSettings) : AbstractWidget() {
 //
 //        // Progress Bar Circle
 //        if(settings.caloriesProg>0 && settings.caloriesProgType==0){
-        if (settings.theme.activity.calories != null) {
+        if (settings.theme.activity.calories != null && settings.theme.activity.calories!!.circle != null) {
             ring = Paint(Paint.ANTI_ALIAS_FLAG)
             ring!!.strokeCap = Paint.Cap.ROUND
             ring!!.style = Paint.Style.STROKE
@@ -80,13 +81,13 @@ class CaloriesWidget(private val settings: LoadSettings) : AbstractWidget() {
         }
     }
 
-    private fun drawText(canvas: Canvas, value: Int, spec: IText?) {
-        val width = spec!!.bottomRightX!! - spec.topLeftX!!
-        val height = spec.bottomRightY!! - spec.topLeftY!!
-        val spacing = Math.round(width / spec.imagesCount!!.toFloat()) + spec.spacing!!
-        var x = spec.topLeftX!!
-        val y = spec.topLeftY!!
-        val bmp = Util.decodeImage(mService!!.resources, settings.theme.getImagePath(spec.imageIndex!!))
+    private fun drawText(canvas: Canvas, value: Int, spec: com.dinodevs.greatfitwatchface.theme.bin.Calories?) {
+        val width = spec!!.bottomRightX - spec.topLeftX
+        val height = spec.bottomRightY - spec.topLeftY
+        val spacing = (width / spec.imagesCount.toFloat()).roundToInt() + spec.spacing
+        var x = spec.topLeftX
+        val y = spec.topLeftY
+        val bmp = Util.decodeImage(mService!!.resources, settings.getImagePath(spec.imageIndex))
         val imageSize = Size(bmp.width, bmp.height)
         if (spec.alignment == "Center") {
             x += imageSize.width / 2 + width / 2 - value / 10 * spacing
@@ -96,7 +97,7 @@ class CaloriesWidget(private val settings: LoadSettings) : AbstractWidget() {
         for (i in text.toCharArray().indices) {
             val charToPrint = text.toCharArray()[i]
             val va = charToPrint - '0'
-            val charBmp = Util.decodeImage(mService!!.resources, settings.theme.getImagePath(spec.imageIndex!! + va))
+            val charBmp = Util.decodeImage(mService!!.resources, settings.getImagePath(spec.imageIndex!! + va))
             canvas.drawBitmap(charBmp, x.toFloat(), y.toFloat(), settings.mGPaint)
             x += charBmp.width + spacing
         }
@@ -105,16 +106,16 @@ class CaloriesWidget(private val settings: LoadSettings) : AbstractWidget() {
 
     // Screen on
     override fun draw(canvas: Canvas, width: Float, height: Float, centerX: Float, centerY: Float) {
-        if (settings.theme.calories != null) { //            if(settings.caloriesIcon){
+        if (settings.theme.activity.calories != null) { //            if(settings.caloriesIcon){
 //                canvas.drawBitmap(this.icon, settings.caloriesIconLeft, settings.caloriesIconTop, settings.mGPaint);
 //            }
-            drawText(canvas, calories!!.calories, settings.theme.calories)
+            drawText(canvas, calories!!.calories, settings.theme.activity.calories!!)
         }
         // Calories bar
 //        if (settings.caloriesProg > 0 && settings.caloriesProgType == 0) {
-        if (settings.theme.calories != null) {
+        if (settings.theme.activity.calories != null && settings.theme.activity.calories!!.circle != null) {
             val count = canvas.save()
-            val cal = settings.theme.calories
+            val cal = settings.theme.activity.calories
             // Rotate canvas to 0 degrees = 12 o'clock
             canvas.rotate(-90f, centerX, centerY)
             //            // Define circle
@@ -129,13 +130,13 @@ class CaloriesWidget(private val settings: LoadSettings) : AbstractWidget() {
 //
 //            this.ring.setColor(settings.colorCodes[settings.caloriesProgColorIndex]);
 //            canvas.drawArc(oval, settings.caloriesProgStartAngle, this.caloriesSweepAngle, false, ring);
-            val radius = cal!!.circle!!.radiusX /*- scale.getWidth()*/ !!.toFloat()
+            val radius = cal!!.circle!!.radiusX /*- scale.getWidth()*/!!.toFloat()
             val oval = RectF(cal.circle!!.centerX!! - radius, cal.circle!!.centerY!! - radius,
                     cal.circle!!.centerX!! + radius,
                     cal.circle!!.centerY!! + radius)
             // Background
             Log.d(TAG, String.format("getStartAngle: %d angleLength: %d", cal.circle!!.startAngle, angleLength))
-            ring!!.color = Color.parseColor(String.format("#%s", cal.circle!!.color!!.substring(12)))
+            ring!!.color = Color.parseColor(String.format("#%s", cal.circle.color.substring(12)))
             //            canvas.drawArc(oval, cal.getCircle().getStartAngle(), this.angleLength, false, ring);
 // this.ring.setColor(settings.colorCodes[settings.batteryProgColorIndex]); progressione colore
             canvas.drawArc(oval, cal.circle!!.startAngle!!.toFloat(), caloriesSweepAngle, false, ring)
@@ -225,13 +226,13 @@ class CaloriesWidget(private val settings: LoadSettings) : AbstractWidget() {
     // Constructor
     init {
         //        if (!(settings.caloriesProg > 0 && settings.caloriesProgType == 0)) {
-        if (settings.theme.calories != null) {
+        if (settings.theme.activity.calories != null && settings.theme.activity.calories!!.circle != null) {
             //        if (settings.caloriesProgClockwise == 1) {
 //            this.angleLength = (settings.caloriesProgEndAngle < settings.caloriesProgStartAngle) ? 360 - (settings.caloriesProgStartAngle - settings.caloriesProgEndAngle) : settings.caloriesProgEndAngle - settings.caloriesProgStartAngle;
 //        } else {
 //            this.angleLength = (settings.caloriesProgEndAngle > settings.caloriesProgStartAngle) ? 360 - (settings.caloriesProgStartAngle - settings.caloriesProgEndAngle) : settings.caloriesProgEndAngle - settings.caloriesProgStartAngle;
 //        }
-            angleLength = settings.theme.calories!!.circle!!.startAngle!! - settings.theme.calories!!.circle!!.endAngle!!
+            angleLength = settings.theme.activity.calories!!.circle!!.startAngle - settings.theme.activity.calories!!.circle!!.endAngle!!
         }
     }
 }
