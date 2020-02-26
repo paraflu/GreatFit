@@ -4,9 +4,11 @@ import android.app.Service
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Point
+import android.util.Log
 import android.util.Size
 import com.dinodevs.greatfitwatchface.data.DataType
 import com.dinodevs.greatfitwatchface.settings.LoadSettings
+import com.dinodevs.greatfitwatchface.theme.bin.IImage
 import com.dinodevs.greatfitwatchface.theme.bin.IText
 import com.huami.watch.watchface.util.Util
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
@@ -16,9 +18,11 @@ import kotlin.math.roundToInt
 open class TextWidget() : AbstractWidget() {
 
     protected lateinit var settings: LoadSettings
+    private var imageCache = mutableMapOf<Int, Bitmap>()
 
     companion object {
         const val TAG = "VergeIT-LOG"
+
     }
 
     protected lateinit var mService: Service
@@ -92,14 +96,39 @@ open class TextWidget() : AbstractWidget() {
         }
     }
 
-    protected fun getBitmap(imageIdx: Int): Bitmap = Util.decodeImage(mService.resources, settings.getImagePath(imageIdx))
+    /**
+     * get an assets bitmap
+     *
+     * Implements cache
+     */
+    protected fun getBitmap(imageIdx: Int): Bitmap {
+        var bmp: Bitmap? = null
+        if (!imageCache.containsKey(imageIdx)) {
+            bmp = Util.decodeImage(mService.resources, settings.getImagePath(imageIdx))
+            Log.d(TAG, "cache image $imageIdx")
+            imageCache[imageIdx] = bmp
+        } else {
+            bmp = imageCache.get(imageIdx)
+        }
+        return bmp!!;
+    }
 
     protected fun drawBitmap(canvas: Canvas, imageIdx: Int, x: Int, y: Int) {
         drawBitmap(canvas, imageIdx, Point(x, y))
     }
 
-    private fun drawBitmap(canvas: Canvas, imageIdx: Int, point: Point) {
-        canvas.drawBitmap(getBitmap(imageIdx), point.x.toFloat(), point.y.toFloat(), settings.mGPaint)
+    protected fun drawBitmap(canvas: Canvas, imageIdx: Int, point: Point) {
+        drawBitmap(canvas, getBitmap(imageIdx), point)
     }
 
+    protected fun drawBitmap(canvas: Canvas, image: Bitmap, point: Point) {
+        canvas.drawBitmap(image, point.x.toFloat(), point.y.toFloat(), settings.mGPaint)
+    }
+
+    protected fun preloadCollection(images: IImage): List<Bitmap> {
+        var result: Array<Bitmap> = Array(images.imagesCount!!) {
+            getBitmap(it)
+        }
+        return result.asList()
+    }
 }

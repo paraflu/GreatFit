@@ -4,28 +4,26 @@ import android.app.Service
 import android.graphics.*
 import android.text.TextPaint
 import android.util.Log
-import android.util.Size
 import com.dinodevs.greatfitwatchface.resource.ResourceManager.getTypeFace
-import com.dinodevs.greatfitwatchface.resource.SlptAnalogHourView
 import com.dinodevs.greatfitwatchface.resource.SlptSecondHView
 import com.dinodevs.greatfitwatchface.resource.SlptSecondLView
 import com.dinodevs.greatfitwatchface.settings.LoadSettings
 import com.dinodevs.greatfitwatchface.theme.bin.AnalogDialFace
+import com.dinodevs.greatfitwatchface.theme.bin.Hours
 import com.dinodevs.greatfitwatchface.theme.bin.ITimeDigit
-import com.dinodevs.greatfitwatchface.theme.bin.Ones
-import com.dinodevs.greatfitwatchface.theme.bin.Tens
 import com.huami.watch.watchface.util.Util
-import com.ingenic.iwds.slpt.view.analog.SlptAnalogMinuteView
-import com.ingenic.iwds.slpt.view.analog.SlptAnalogSecondView
 import com.ingenic.iwds.slpt.view.core.SlptLinearLayout
 import com.ingenic.iwds.slpt.view.core.SlptNumView
 import com.ingenic.iwds.slpt.view.core.SlptPictureView
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
-import com.ingenic.iwds.slpt.view.digital.*
+import com.ingenic.iwds.slpt.view.digital.SlptHourHView
+import com.ingenic.iwds.slpt.view.digital.SlptHourLView
+import com.ingenic.iwds.slpt.view.digital.SlptMinuteHView
+import com.ingenic.iwds.slpt.view.digital.SlptMinuteLView
 import com.ingenic.iwds.slpt.view.sport.SlptSportUtil
 import com.ingenic.iwds.slpt.view.utils.SimpleFile
-import java.lang.Exception
-import java.util.*
+import java.io.ByteArrayOutputStream
+
 
 class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
     private var hourCenterBmp: Bitmap? = null
@@ -190,28 +188,34 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
         Log.d(TAG, "drawAnalogClock $hours:$minutes:$seconds")
         val centerScreen = if (settings.isVerge) Point(180, 179) else Point(160, 159)
         if (analogDialFace.hours != null) {
+            val centerPoint = Point(centerScreen.x + analogDialFace.hours.centerOffset.x,
+                    centerScreen.y + analogDialFace.hours.centerOffset.y)
             canvas.save()
-            canvas.rotate((hours * 30).toFloat() + minutes.toFloat() / 60.0f * 30.0f, centerScreen.x.toFloat(), centerScreen.y.toFloat())
+            canvas.rotate((hours * 30).toFloat() + minutes.toFloat() / 60.0f * 30.0f, centerPoint.x.toFloat(), centerPoint.y.toFloat())
             canvas.drawBitmap(hourHand!!,
-                    (centerScreen.x + analogDialFace.hours.centerOffset.x - analogDialFace.hours.image.x).toFloat(),
-                    (centerScreen.y + analogDialFace.hours.centerOffset.y - analogDialFace.hours.image.x).toFloat(), null)
+                    (centerPoint.x - analogDialFace.hours.image.x).toFloat(),
+                    (centerPoint.y - analogDialFace.hours.image.y).toFloat(), null)
             canvas.restore()
         }
 
         if (analogDialFace.minutes != null) {
+            val centerPoint = Point(centerScreen.x + analogDialFace.minutes.centerOffset.x,
+                    centerScreen.y + analogDialFace.minutes.centerOffset.y)
             canvas.save()
             canvas.rotate((minutes * 6).toFloat(), centerScreen.x.toFloat(), centerScreen.y.toFloat())
             canvas.drawBitmap(minuteHand!!,
-                    (centerScreen.x + analogDialFace.minutes.centerOffset.x - analogDialFace.minutes.image.x).toFloat(),
-                    (centerScreen.y + analogDialFace.minutes.centerOffset.y - analogDialFace.minutes.image.y).toFloat(), null)
+                    (centerPoint.x - analogDialFace.minutes.image.x).toFloat(),
+                    (centerPoint.y - analogDialFace.minutes.image.y).toFloat(), null)
             canvas.restore()
         }
         if (analogDialFace.seconds != null) {
+            val centerPoint = Point(centerScreen.x + analogDialFace.seconds.centerOffset.x,
+                    centerScreen.y + analogDialFace.seconds.centerOffset.y)
             canvas.save()
-            canvas.rotate((seconds * 6).toFloat(), centerScreen.x.toFloat(), centerScreen.y.toFloat())
+            canvas.rotate((seconds * 6).toFloat(), centerScreen.x.toFloat() + analogDialFace.seconds.centerOffset.x, centerScreen.y.toFloat() + analogDialFace.seconds.centerOffset.y)
             canvas.drawBitmap(secondsHand!!,
-                    (centerScreen.x + analogDialFace.seconds.centerOffset.x - analogDialFace.seconds.image.x).toFloat(),
-                    (centerScreen.y + analogDialFace.seconds.centerOffset.y - analogDialFace.seconds.image.y).toFloat(), null)
+                    (centerPoint.x - analogDialFace.seconds.image.x).toFloat(),
+                    (centerPoint.y - analogDialFace.seconds.image.y).toFloat(), null)
             canvas.restore()
         }
     }
@@ -221,7 +225,70 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
         return buildSlptViewComponent(service, false)
     }
 
+    fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        val image: ByteArray = stream.toByteArray()
+        return image
+    }
+
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent?>? {
+        val slpt_objects = mutableListOf<SlptViewComponent>()
+
+        val background = SlptPictureView()
+        background.setImagePicture(bitmapToByteArray(this.background))
+
+        if (settings.theme.time != null) {
+            val time = settings.theme.time!!
+            if (time.hours != null) {
+
+                val hours: Hours = time.hours
+                val digit = Util.decodeImage(mService!!.resources, settings.getImagePath(hours.tens.imageIndex))
+                val hourLayout = SlptLinearLayout()
+                hourLayout.add(SlptHourHView())
+                hourLayout.add(SlptHourLView())
+                val firstDigit = SlptNumView()
+                val secondDigit = SlptNumView()
+                var digits = mutableListOf<ByteArray>()
+                for (i in 0..time.hours.tens.imagesCount) {
+                    digits.add(i, bitmapToByteArray(getBitmap(i)))
+                }
+                firstDigit.setImagePictureArray(digits.toTypedArray())
+                secondDigit.setImagePictureArray(digits.toTypedArray())
+
+                hourLayout.add(firstDigit)
+                hourLayout.add(secondDigit)
+                hourLayout.alignX = 2
+                hourLayout.alignY = 0
+                hourLayout.setRect(
+                        (2 * hours.tens.x + digit.width).toInt(),
+                        digit.height
+                )
+                hourLayout.setStart(hours.tens.x, hours.tens.y)
+
+                slpt_objects.add(hourLayout)
+
+//                hourTen.setImagePicture(bitmapToByteArray(getBitmap(time.hours.tens.imageIndex + hours/ 10)))
+//                drawTimeSlpt(canvas, hours / 10, time.hours.tens)
+//                drawTime(canvas, hours % 10, time.hours.ones)
+            }
+            if (time.minutes != null) {
+//                drawTime(canvas, minutes / 10, time.minutes.tens)
+//                drawTime(canvas, minutes % 10, time.minutes.ones)
+            }
+        }
+
+        if (settings.low_power) { // Draw low power icon
+            val lowpower = SlptPictureView()
+            lowpower.setImagePicture(SimpleFile.readFileFromAssets(service, "slpt_battery/" + settings.is_white_bg + "low_battery.png"))
+            lowpower.setStart(
+                    settings.low_powerLeft.toInt(),
+                    settings.low_powerTop.toInt()
+            )
+            SlptSportUtil.setLowBatteryIconView(lowpower)
+            slpt_objects.add(lowpower)
+        }
+
         var betterResolution = better_resolution
         betterResolution = betterResolution && settings.better_resolution_when_raising_hand
         // SLPT only clock
@@ -235,13 +302,12 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
         }
         mService = service
         var tmp_left: Int
-        val slpt_objects: MutableList<SlptViewComponent?> = ArrayList()
         // Draw background image
-        val background = SlptPictureView()
-        background.setImagePicture(SimpleFile.readFileFromAssets(service, settings.is_white_bg + "background" + (if (betterResolution) "_better" else "") + (if (settings.isVerge) "_verge" else "") + "_slpt.png"))
-        //Alternative way
-//background.setImagePicture(ResourceManager.getVergeImageFromAssets(settings.isVerge(), service, "background"+ ((better_resolution)?"_better":"") +"_slpt.png"));
-        slpt_objects.add(background)
+//        val background = SlptPictureView()
+//        background.setImagePicture(SimpleFile.readFileFromAssets(service, settings.is_white_bg + "background" + (if (betterResolution) "_better" else "") + (if (settings.isVerge) "_verge" else "") + "_slpt.png"))
+//        //Alternative way
+////background.setImagePicture(ResourceManager.getVergeImageFromAssets(settings.isVerge(), service, "background"+ ((better_resolution)?"_better":"") +"_slpt.png"));
+//        slpt_objects.add(background)
         // Set low power icon
         if (settings.low_power) { // Draw low power icon
             val lowpower = SlptPictureView()

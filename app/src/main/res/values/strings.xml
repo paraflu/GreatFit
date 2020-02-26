@@ -104,4 +104,5 @@
     <string name="Thai">ไทย</string>
     <string name="Turkish">Türkçe</string>
     <string name="Vietnamese">Tiếng Việt</string>
+    <string name="theme">nwmodern/config.json</string>
 </resources>

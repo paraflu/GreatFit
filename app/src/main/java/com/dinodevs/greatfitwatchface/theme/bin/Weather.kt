@@ -12,7 +12,8 @@ package com.dinodevs.greatfitwatchface.theme.bin
 
 import com.google.gson.annotations.SerializedName
 
-data class Weather (
-
-	@SerializedName("Element") val element : Element
+data class Weather(
+        @SerializedName("Icon") val icon: Icon?,
+        @SerializedName("Temperature") val temperature: Temperature?,
+        @SerializedName("Element") val element: Element?
 )

@@ -1,6 +1,6 @@
 package com.dinodevs.greatfitwatchface.theme.bin
 
-interface IFont {
+interface IImage {
     val x: Int?
     val y: Int?
     val imageIndex: Int?

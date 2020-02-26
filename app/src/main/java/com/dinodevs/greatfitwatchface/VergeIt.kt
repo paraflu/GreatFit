@@ -8,10 +8,10 @@ import java.lang.ref.WeakReference
 /**
  * Amazfit watch faces
  */
-class GreatFit : AbstractWatchFace() {
+class VergeIt : AbstractWatchFace() {
     private val greatWidget: GreatWidget? = null
     override fun onCreate() {
-        instance = WeakReference<GreatFit?>(this)
+        instance = WeakReference<VergeIt?>(this)
         // Load settings
         val settings = LoadSettings(this.applicationContext)
         clock = MainClock(settings)
@@ -36,9 +36,12 @@ class GreatFit : AbstractWatchFace() {
 //        if(settings.isHeartRate()) {
 //            this.widgets.add(new HeartRateWidget(settings));
 //        }
-//        if(settings.isStepsRate()) {
-//            this.widgets.add(new StepsWidget(settings));
-//        }
+        if(settings.theme.activity?.steps != null || settings.theme.stepsProgress != null) {
+            this.widgets.add(StepsWidget(settings));
+        }
+        if (settings.theme.weather != null) {
+            this.widgets.add(WeatherWidget (settings));
+        }
 //        if(settings.isTodayDistanceRate()) {
 //            this.widgets.add(new SportTodayDistanceWidget(settings));
 //        }
@@ -50,9 +53,6 @@ class GreatFit : AbstractWatchFace() {
 //        }
 //        if(settings.isFloor()) {
 //            this.widgets.add(new FloorWidget(settings));
-//        }
-//        if(settings.isBattery()) {
-//            this.widgets.add(new BatteryWidget(settings));
 //        }
 //        if(settings.isWeather()) {
 //            this.widgets.add(new WeatherWidget(settings));
@@ -80,15 +80,15 @@ class GreatFit : AbstractWatchFace() {
     }
 
     override fun slptClockClass(): Class<out AbstractSlptClock?> {
-        return GreatFitSlpt::class.java
+        return VergeItSlpt::class.java
     }
 
     companion object {
-        private var instance: WeakReference<GreatFit?>? = null
+        private var instance: WeakReference<VergeIt?>? = null
         fun getGreatWidget(): GreatWidget? {
             val weakReference: WeakReference<*>? = instance
             return if (weakReference != null) {
-                (weakReference.get() as GreatFit?)!!.greatWidget
+                (weakReference.get() as VergeIt?)!!.greatWidget
             } else null
         }
     }

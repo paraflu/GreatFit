@@ -48,7 +48,7 @@ public class LoadSettings {
         this.res = context.getResources();
         this.sharedPreferences = context.getSharedPreferences(context.getPackageName() + "_settings", Context.MODE_PRIVATE);
         defaultParameters();
-        this.themeAssets = new ThemeAssets(context, "chrono/config.json");
+        this.themeAssets = new ThemeAssets(context, context.getString(R.string.theme));
     }
 
     // GENERAL

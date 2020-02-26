@@ -11,7 +11,7 @@ import com.ingenic.iwds.slpt.view.core.SlptLayout
 /**
  * Splt version of the watch.
  */
-class GreatFitSlpt : AbstractWatchFaceSlpt() {
+class VergeItSlpt : AbstractWatchFaceSlpt() {
     var context: Context? = null
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         context = this.applicationContext

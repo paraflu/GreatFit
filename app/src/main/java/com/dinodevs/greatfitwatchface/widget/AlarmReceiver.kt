@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.PowerManager
 import android.util.Log
-import com.dinodevs.greatfitwatchface.GreatFit
+import com.dinodevs.greatfitwatchface.VergeIt
 import java.util.*
 
 class AlarmReceiver : BroadcastReceiver() {
@@ -25,7 +25,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val seconds = now[Calendar.SECOND]
         aquireWakeLock(context)
         Log.i(TAG, String.format("AlarmReceiver onReceive %02d:%02d:%02d ", now[Calendar.HOUR_OF_DAY], now[Calendar.MINUTE], now[Calendar.SECOND]))
-        greatWidget = GreatFit.getGreatWidget()
+        greatWidget = VergeIt.getGreatWidget()
         val greatWidget = greatWidget
         //greatWidget.onDataUpdate(DataType.TIME, new Time(seconds, minutes, hours, -1));
         greatWidget?.scheduleUpdate() ?: Log.e(TAG, "AlarmReceiver error getting widget instance!")

@@ -10,7 +10,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.Toast
-import com.dinodevs.greatfitwatchface.GreatFit
+import com.dinodevs.greatfitwatchface.VergeIt
 import com.dinodevs.greatfitwatchface.R
 import java.util.*
 
@@ -112,7 +112,7 @@ class Settings : FragmentActivity() {
 
     companion object {
         private fun quit(settings: Settings) {
-            val greatWidget = GreatFit.getGreatWidget()
+            val greatWidget = VergeIt.getGreatWidget()
             greatWidget?.refreshSlpt("Apply settings", true)
             Handler().postDelayed({
                 settings.sendBroadcast(Intent("com.huami.intent.action.WATCHFACE_CONFIG_CHANGED"))

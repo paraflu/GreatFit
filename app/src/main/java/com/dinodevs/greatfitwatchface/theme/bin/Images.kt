@@ -12,10 +12,14 @@ package com.dinodevs.greatfitwatchface.theme.bin
 
 import com.google.gson.annotations.SerializedName
 
-data class Images (
+class Images : IImage {
 
-	@SerializedName("X") val x : Int,
-	@SerializedName("Y") val y : Int,
-	@SerializedName("ImageIndex") val imageIndex : Int,
-	@SerializedName("ImagesCount") val imagesCount : Int
-)
+    @SerializedName("X")
+    override val x: Int = 0
+    @SerializedName("Y")
+    override val y: Int = 0
+    @SerializedName("ImageIndex")
+    override val imageIndex: Int = 0
+    @SerializedName("ImagesCount")
+    override val imagesCount: Int = 0
+}
