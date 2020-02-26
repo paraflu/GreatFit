@@ -47,12 +47,8 @@ public class LoadSettings {
         this.context = context;
         this.res = context.getResources();
         this.sharedPreferences = context.getSharedPreferences(context.getPackageName() + "_settings", Context.MODE_PRIVATE);
-
-        // Default Parameters
         defaultParameters();
-//        this.themeAssets = new ThemeAssets(context, "tecno_sport/Sport_Shortcuts_47mm.json");
         this.themeAssets = new ThemeAssets(context, "gtr/config.json");
-
     }
 
     // GENERAL
