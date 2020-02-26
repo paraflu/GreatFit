@@ -237,447 +237,385 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
     }
 
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent?>? {
-        try {
-            val slpt_objects = mutableListOf<SlptViewComponent>()
-
-            Log.d(TAG, "start buildSlptViewComponent")
-
-            val backgroundPw = SlptPictureView()
-            backgroundPw.setImagePicture(bitmapToByteArray(background!!))
-
-            if (settings.theme.time != null) {
-                val time = settings.theme.time!!
-                if (time.hours != null) {
-
-                    val hours: Hours = time.hours
-                    val digit = Util.decodeImage(mService!!.resources, settings.getImagePath(hours.tens.imageIndex))
-                    val hourLayout = SlptLinearLayout()
+        var betterResolution = better_resolution
+        betterResolution = betterResolution && settings.better_resolution_when_raising_hand
+        // SLPT only clock
+        val show_all = !settings.clock_only_slpt || betterResolution
+        // SLPT only clock white bg -> to black
+        if (!show_all && settings.isVerge && settings.white_bg) {
+            settings.is_white_bg = ""
+            settings.hoursColor = Color.parseColor("#ffffff")
+            settings.minutesColor = Color.parseColor("#ffffff")
+            settings.am_pmColor = Color.parseColor("#ffffff")
+        }
+        mService = service
+        var tmp_left: Int
+        val slpt_objects: MutableList<SlptViewComponent?> = ArrayList()
+        // Draw background image
+        val background = SlptPictureView()
+        background.setImagePicture(SimpleFile.readFileFromAssets(service, settings.is_white_bg + "background" + (if (betterResolution) "_better" else "") + (if (settings.isVerge) "_verge" else "") + "_slpt.png"))
+        //Alternative way
+//background.setImagePicture(ResourceManager.getVergeImageFromAssets(settings.isVerge(), service, "background"+ ((better_resolution)?"_better":"") +"_slpt.png"));
+        slpt_objects.add(background)
+        // Set low power icon
+        if (settings.low_power) { // Draw low power icon
+            val lowpower = SlptPictureView()
+            lowpower.setImagePicture(SimpleFile.readFileFromAssets(service, "slpt_battery/" + settings.is_white_bg + "low_battery.png"))
+            //lowpower.picture.setBackgroundColor(backgroundColor);
+            lowpower.setStart(
+                    settings.low_powerLeft.toInt(),
+                    settings.low_powerTop.toInt()
+            )
+            SlptSportUtil.setLowBatteryIconView(lowpower)
+            slpt_objects.add(lowpower)
+        }
+        // Set font
+        val timeTypeFace = getTypeFace(service!!.resources, settings.font)
+        if (settings.digital_clock) { // Draw hours
+            if (settings.hoursBool) {
+                val hourLayout = SlptLinearLayout()
+                if (settings.no_0_on_hour_first_digit) { // No 0 on first digit
+                    val firstDigit: SlptViewComponent = SlptHourHView()
+                    (firstDigit as SlptNumView).setStringPictureArray(digitalNumsNo0)
+                    hourLayout.add(firstDigit)
+                    val secondDigit: SlptViewComponent = SlptHourLView()
+                    (secondDigit as SlptNumView).setStringPictureArray(digitalNums)
+                    hourLayout.add(secondDigit)
+                } else {
                     hourLayout.add(SlptHourHView())
                     hourLayout.add(SlptHourLView())
-                    val firstDigit = SlptNumView()
-                    val secondDigit = SlptNumView()
-                    var digits = mutableListOf<ByteArray>()
-                    for (i in 0..time.hours.tens.imagesCount) {
-                        digits.add(i, bitmapToByteArray(getBitmap(i)))
-                    }
-                    firstDigit.setImagePictureArray(digits.toTypedArray())
-                    secondDigit.setImagePictureArray(digits.toTypedArray())
-
-                    hourLayout.add(firstDigit)
-                    hourLayout.add(secondDigit)
-                    hourLayout.alignX = 2
-                    hourLayout.alignY = 0
-                    hourLayout.setRect(
-                            (2 * hours.tens.x + digit.width).toInt(),
-                            digit.height
-                    )
-                    hourLayout.setStart(hours.tens.x, hours.tens.y)
-
-                    slpt_objects.add(hourLayout)
-
-//                hourTen.setImagePicture(bitmapToByteArray(getBitmap(time.hours.tens.imageIndex + hours/ 10)))
-//                drawTimeSlpt(canvas, hours / 10, time.hours.tens)
-//                drawTime(canvas, hours % 10, time.hours.ones)
+                    hourLayout.setStringPictureArrayForAll(digitalNums)
                 }
-                if (time.minutes != null) {
-//                drawTime(canvas, minutes / 10, time.minutes.tens)
-//                drawTime(canvas, minutes % 10, time.minutes.ones)
-                }
-            }
-
-            if (settings.low_power) { // Draw low power icon
-                val lowpower = SlptPictureView()
-                lowpower.setImagePicture(SimpleFile.readFileFromAssets(service, "slpt_battery/" + settings.is_white_bg + "low_battery.png"))
-                lowpower.setStart(
-                        settings.low_powerLeft.toInt(),
-                        settings.low_powerTop.toInt()
+                hourLayout.setTextAttrForAll(
+                        settings.hoursFontSize,
+                        settings.hoursColor,
+                        timeTypeFace
                 )
-                SlptSportUtil.setLowBatteryIconView(lowpower)
-                slpt_objects.add(lowpower)
-            }
-
-            var betterResolution = better_resolution
-            betterResolution = betterResolution && settings.better_resolution_when_raising_hand
-            // SLPT only clock
-            val show_all = !settings.clock_only_slpt || betterResolution
-            // SLPT only clock white bg -> to black
-            if (!show_all && settings.isVerge && settings.white_bg) {
-                settings.is_white_bg = ""
-                settings.hoursColor = Color.parseColor("#ffffff")
-                settings.minutesColor = Color.parseColor("#ffffff")
-                settings.am_pmColor = Color.parseColor("#ffffff")
-            }
-            mService = service
-            var tmp_left: Int
-            // Draw background image
-//        val background = SlptPictureView()
-//        background.setImagePicture(SimpleFile.readFileFromAssets(service, settings.is_white_bg + "background" + (if (betterResolution) "_better" else "") + (if (settings.isVerge) "_verge" else "") + "_slpt.png"))
-//        //Alternative way
-////background.setImagePicture(ResourceManager.getVergeImageFromAssets(settings.isVerge(), service, "background"+ ((better_resolution)?"_better":"") +"_slpt.png"));
-//        slpt_objects.add(background)
-            // Set low power icon
-            if (settings.low_power) { // Draw low power icon
-                val lowpower = SlptPictureView()
-                lowpower.setImagePicture(SimpleFile.readFileFromAssets(service, "slpt_battery/" + settings.is_white_bg + "low_battery.png"))
-                //lowpower.picture.setBackgroundColor(backgroundColor);
-                lowpower.setStart(
-                        settings.low_powerLeft.toInt(),
-                        settings.low_powerTop.toInt()
+                // Position based on screen on
+                hourLayout.alignX = 2
+                hourLayout.alignY = 0
+                hourLayout.setRect(
+                        (2 * settings.hoursLeft + 640).toInt(),
+                        (settings.font_ratio.toFloat() / 100 * settings.hoursFontSize).toInt()
                 )
-                SlptSportUtil.setLowBatteryIconView(lowpower)
-                slpt_objects.add(lowpower)
+                hourLayout.setStart(
+                        -320,
+                        (settings.hoursTop - settings.font_ratio.toFloat() / 100 * settings.hoursFontSize).toInt()
+                )
+                //Add it to the list
+                slpt_objects.add(hourLayout)
             }
-            // Set font
-            val timeTypeFace = getTypeFace(service!!.resources, settings.font)
-            if (settings.digital_clock) { // Draw hours
-                if (settings.hoursBool) {
-                    val hourLayout = SlptLinearLayout()
-                    if (settings.no_0_on_hour_first_digit) { // No 0 on first digit
-                        val firstDigit: SlptViewComponent = SlptHourHView()
-                        (firstDigit as SlptNumView).setStringPictureArray(digitalNumsNo0)
-                        hourLayout.add(firstDigit)
-                        val secondDigit: SlptViewComponent = SlptHourLView()
-                        (secondDigit as SlptNumView).setStringPictureArray(digitalNums)
-                        hourLayout.add(secondDigit)
-                    } else {
-                        hourLayout.add(SlptHourHView())
-                        hourLayout.add(SlptHourLView())
-                        hourLayout.setStringPictureArrayForAll(digitalNums)
-                    }
-                    hourLayout.setTextAttrForAll(
-                            settings.hoursFontSize,
-                            settings.hoursColor,
-                            timeTypeFace
-                    )
-                    // Position based on screen on
-                    hourLayout.alignX = 2
-                    hourLayout.alignY = 0
-                    hourLayout.setRect(
-                            (2 * settings.hoursLeft + 640).toInt(),
-                            (settings.font_ratio.toFloat() / 100 * settings.hoursFontSize).toInt()
-                    )
-                    hourLayout.setStart(
-                            -320,
-                            (settings.hoursTop - settings.font_ratio.toFloat() / 100 * settings.hoursFontSize).toInt()
-                    )
-                    //Add it to the list
-                    slpt_objects.add(hourLayout)
-                }
-                // Draw minutes
-                if (settings.minutesBool) {
-                    val minuteLayout = SlptLinearLayout()
-                    minuteLayout.add(SlptMinuteHView())
-                    minuteLayout.add(SlptMinuteLView())
-                    minuteLayout.setStringPictureArrayForAll(digitalNums)
-                    minuteLayout.setTextAttrForAll(
-                            settings.minutesFontSize,
-                            settings.minutesColor,
-                            timeTypeFace
-                    )
-                    // Position based on screen on
-                    minuteLayout.alignX = 2
-                    minuteLayout.alignY = 0
-                    minuteLayout.setRect(
-                            (2 * settings.minutesLeft + 640).toInt(),
-                            (settings.font_ratio.toFloat() / 100 * settings.minutesFontSize).toInt()
-                    )
-                    minuteLayout.setStart(
-                            -320,
-                            (settings.minutesTop - settings.font_ratio.toFloat() / 100 * settings.minutesFontSize).toInt()
-                    )
-                    //Add it to the list
-                    slpt_objects.add(minuteLayout)
-                }
-                // Draw indicator
-                if (settings.indicatorBool) {
-                    val indicatorLayout = SlptLinearLayout()
-                    val colon = SlptPictureView()
-                    colon.setStringPicture(":")
-                    indicatorLayout.add(colon)
-                    indicatorLayout.setTextAttrForAll(
-                            settings.indicatorFontSize,
-                            settings.indicatorColor,
-                            timeTypeFace
-                    )
-                    // Position based on screen on
-                    indicatorLayout.alignX = 2
-                    indicatorLayout.alignY = 0
-                    indicatorLayout.setRect(
-                            (2 * settings.indicatorLeft + 640).toInt(),
-                            (settings.font_ratio.toFloat() / 100 * settings.indicatorFontSize).toInt()
-                    )
-                    indicatorLayout.setStart(
-                            -320,
-                            (settings.indicatorTop - settings.font_ratio.toFloat() / 100 * settings.indicatorFontSize).toInt()
-                    )
-                    //Add it to the list
-                    slpt_objects.add(indicatorLayout)
-                }
-                // Draw Seconds
-                if (settings.secondsBool) { //&& (!settings.isVerge() || better_resolution)
-                    val secondsLayout = SlptLinearLayout()
-                    secondsLayout.add(SlptSecondHView())
-                    secondsLayout.add(SlptSecondLView())
-                    secondsLayout.setTextAttrForAll(
-                            settings.secondsFontSize,
-                            settings.secondsColor,
-                            getTypeFace(service.resources, settings.font)
-                    )
-                    // Position based on screen on
-                    secondsLayout.alignX = 2
-                    secondsLayout.alignY = 0
-                    secondsLayout.setRect(
-                            (2 * settings.secondsLeft + 640).toInt(),
-                            (settings.font_ratio.toFloat() / 100 * settings.secondsFontSize).toInt()
-                    )
-                    secondsLayout.setStart(
-                            -320,
-                            (settings.secondsTop - settings.font_ratio.toFloat() / 100 * settings.secondsFontSize).toInt()
-                    )
-                    //Add it to the list
-                    slpt_objects.add(secondsLayout)
-                }
-                // AM-PM (ONLY FOR 12h format)
-                val ampm = SlptLinearLayout()
-                val am = SlptPictureView()
-                val pm = SlptPictureView()
-                am.setStringPicture("AM")
-                pm.setStringPicture("PM")
-                SlptSportUtil.setAmBgView(am)
-                SlptSportUtil.setPmBgView(pm)
-                ampm.add(am)
-                ampm.add(pm)
-                ampm.setTextAttrForAll(settings.am_pmFontSize, settings.am_pmColor, getTypeFace(service.resources, settings.font))
-                ampm.alignX = 2
-                ampm.alignY = 0
-                tmp_left = settings.am_pmLeft.toInt()
-                if (!settings.am_pmAlignLeft) {
-                    ampm.setRect(tmp_left * 2 + 640, settings.am_pmFontSize.toInt())
-                    tmp_left = -320
-                }
-                ampm.setStart(tmp_left, (settings.am_pmTop - settings.font_ratio / 100.0f * settings.am_pmFontSize).toInt())
-                slpt_objects.add(ampm)
+            // Draw minutes
+            if (settings.minutesBool) {
+                val minuteLayout = SlptLinearLayout()
+                minuteLayout.add(SlptMinuteHView())
+                minuteLayout.add(SlptMinuteLView())
+                minuteLayout.setStringPictureArrayForAll(digitalNums)
+                minuteLayout.setTextAttrForAll(
+                        settings.minutesFontSize,
+                        settings.minutesColor,
+                        timeTypeFace
+                )
+                // Position based on screen on
+                minuteLayout.alignX = 2
+                minuteLayout.alignY = 0
+                minuteLayout.setRect(
+                        (2 * settings.minutesLeft + 640).toInt(),
+                        (settings.font_ratio.toFloat() / 100 * settings.minutesFontSize).toInt()
+                )
+                minuteLayout.setStart(
+                        -320,
+                        (settings.minutesTop - settings.font_ratio.toFloat() / 100 * settings.minutesFontSize).toInt()
+                )
+                //Add it to the list
+                slpt_objects.add(minuteLayout)
             }
-            /*     if (settings.analog_clock) {
-                     val slptAnalogHourView = SlptAnalogHourView()
-                     slptAnalogHourView.setImagePicture(SimpleFile.readFileFromAssets(service, "timehand/8c/hour" + (if (settings.isVerge) "_verge" else "") + ".png"))
-                     slptAnalogHourView.alignX = 2.toByte()
-                     slptAnalogHourView.alignY = 2.toByte()
-                     slptAnalogHourView.setRect(320 + if (settings.isVerge) 40 else 0, 320 + if (settings.isVerge) 40 else 0)
-                     slpt_objects.add(slptAnalogHourView)
-                     val slptAnalogMinuteView = SlptAnalogMinuteView()
-                     slptAnalogMinuteView.setImagePicture(SimpleFile.readFileFromAssets(service, "timehand/8c/minute" + (if (settings.isVerge) "_verge" else "") + ".png"))
-                     slptAnalogMinuteView.alignX = 2.toByte()
-                     slptAnalogMinuteView.alignY = 2.toByte()
-                     slptAnalogMinuteView.setRect(320 + if (settings.isVerge) 40 else 0, 320 + if (settings.isVerge) 40 else 0)
-                     slpt_objects.add(slptAnalogMinuteView)
-                     if (settings.secondsBool) {
-                         val slptAnalogSecondView = SlptAnalogSecondView()
-                         slptAnalogSecondView.setImagePicture(SimpleFile.readFileFromAssets(service, "timehand/8c/seconds" + (if (settings.isVerge) "_verge" else "") + ".png"))
-                         slptAnalogSecondView.alignX = 2.toByte()
-                         slptAnalogSecondView.alignY = 2.toByte()
-                         slptAnalogSecondView.setRect(320 + if (settings.isVerge) 40 else 0, 320 + if (settings.isVerge) 40 else 0)
-                         slpt_objects.add(slptAnalogSecondView)
-                     }
-                 }
-                 // Only CLOCK?
-                 if (!show_all) return slpt_objects
-                 // Draw DATE (30.12.2018)
-                 if (settings.date > 0) { // Show or Not icon
-                     if (settings.dateIcon) {
-                         val dateIcon = SlptPictureView()
-                         dateIcon.setImagePicture(SimpleFile.readFileFromAssets(service, (if (betterResolution) "26wc_" else "slpt_") + "icons/" + settings.is_white_bg + "date.png"))
-                         dateIcon.setStart(
-                                 settings.dateIconLeft.toInt(),
-                                 settings.dateIconTop.toInt()
-                         )
-                         slpt_objects.add(dateIcon)
-                     }
-                     // Set . string
-                     val point = SlptPictureView()
-                     point.setStringPicture(".")
-                     val point2 = SlptPictureView()
-                     point2.setStringPicture(".")
-                     val dateLayout = SlptLinearLayout()
-                     dateLayout.add(SlptDayHView())
-                     dateLayout.add(SlptDayLView())
-                     dateLayout.add(point) //add .
-                     dateLayout.add(SlptMonthHView())
-                     dateLayout.add(SlptMonthLView())
-                     dateLayout.add(point2) //add .
-                     dateLayout.add(SlptYear3View())
-                     dateLayout.add(SlptYear2View())
-                     dateLayout.add(SlptYear1View())
-                     dateLayout.add(SlptYear0View())
-                     dateLayout.setTextAttrForAll(
-                             settings.dateFontSize,
-                             settings.dateColor,
-                             timeTypeFace)
-                     // Position based on screen on
-                     dateLayout.alignX = 2
-                     dateLayout.alignY = 0
-                     tmp_left = settings.dateLeft.toInt()
-                     if (!settings.dateAlignLeft) { // If text is centered, set rectangle
-                         dateLayout.setRect(
-                                 (2 * tmp_left + 640),
-                                 (settings.font_ratio.toFloat() / 100 * settings.dateFontSize).toInt()
-                         )
-                         tmp_left = -320
-                     }
-                     dateLayout.setStart(
-                             tmp_left,
-                             (settings.dateTop - settings.font_ratio.toFloat() / 100 * settings.dateFontSize).toInt()
-                     )
-                     //Add it to the list
-                     slpt_objects.add(dateLayout)
-                 }
-                 // Draw day of month
-                 if (settings.dayBool) {
-                     val dayLayout = SlptLinearLayout()
-                     dayLayout.add(SlptDayHView())
-                     dayLayout.add(SlptDayLView())
-                     dayLayout.setTextAttrForAll(
-                             settings.dayFontSize,
-                             settings.dayColor,
-                             timeTypeFace)
-                     // Position based on screen on
-                     dayLayout.alignX = 2
-                     dayLayout.alignY = 0
-                     tmp_left = settings.dayLeft.toInt()
-                     if (!settings.dayAlignLeft) { // If text is centered, set rectangle
-                         dayLayout.setRect(
-                                 (2 * tmp_left + 640),
-                                 (settings.font_ratio.toFloat() / 100 * settings.dayFontSize).toInt()
-                         )
-                         tmp_left = -320
-                     }
-                     dayLayout.setStart(
-                             tmp_left,
-                             (settings.dayTop - settings.font_ratio.toFloat() / 100 * settings.dayFontSize).toInt()
-                     )
-                     //Add it to the list
-                     slpt_objects.add(dayLayout)
-                 }
-                 // Draw month
-                 if (settings.monthBool) { // JAVA calendar get/show time library
-                     val calendar = Calendar.getInstance()
-                     val month = calendar[Calendar.MONTH]
-                     val monthLayout = SlptLinearLayout()
-                     // if as text
-                     if (settings.month_as_text) {
-                         monthLayout.add(SlptMonthLView())
-                         // Fix 00 type of month
-                         if (month >= 9) { // 9: October, 10: November, 11: December
-                             months_3let[settings.language][0] = months_3let[settings.language][10]
-                             months_3let[settings.language][1] = months_3let[settings.language][11]
-                             months_3let[settings.language][2] = months_3let[settings.language][12]
-                             months[settings.language][0] = months[settings.language][10]
-                             months[settings.language][1] = months[settings.language][11]
-                             months[settings.language][2] = months[settings.language][12]
-                         }
-                         if (settings.three_letters_month_if_text) {
-                             monthLayout.setStringPictureArrayForAll(months_3let[settings.language])
-                         } else {
-                             monthLayout.setStringPictureArrayForAll(months[settings.language])
-                         }
-                         // if as number
-                     } else { // show first digit
-                         if (month >= 9 || !settings.no_0_on_hour_first_digit) {
-                             monthLayout.add(SlptMonthHView())
-                         }
-                         monthLayout.add(SlptMonthLView())
-                     }
-                     monthLayout.setTextAttrForAll(
-                             settings.monthFontSize,
-                             settings.monthColor,
-                             timeTypeFace)
-                     // Position based on screen on
-                     monthLayout.alignX = 2
-                     monthLayout.alignY = 0
-                     tmp_left = settings.monthLeft.toInt()
-                     if (!settings.monthAlignLeft) { // If text is centered, set rectangle
-                         monthLayout.setRect(
-                                 (2 * tmp_left + 640),
-                                 (settings.font_ratio.toFloat() / 100 * settings.monthFontSize).toInt()
-                         )
-                         tmp_left = -320
-                     }
-                     monthLayout.setStart(
-                             tmp_left,
-                             (settings.monthTop - settings.font_ratio.toFloat() / 100 * settings.monthFontSize).toInt()
-                     )
-                     //Add it to the list
-                     slpt_objects.add(monthLayout)
-                 }
-                 // Draw year number
-                 if (settings.yearBool) {
-                     val yearLayout = SlptLinearLayout()
-                     yearLayout.add(SlptYear3View())
-                     yearLayout.add(SlptYear2View())
-                     yearLayout.add(SlptYear1View())
-                     yearLayout.add(SlptYear0View())
-                     yearLayout.setTextAttrForAll(
-                             settings.yearFontSize,
-                             settings.yearColor,
-                             timeTypeFace
-                     )
-                     // Position based on screen on
-                     yearLayout.alignX = 2
-                     yearLayout.alignY = 0
-                     tmp_left = settings.yearLeft.toInt()
-                     if (!settings.yearAlignLeft) { // If text is centered, set rectangle
-                         yearLayout.setRect(
-                                 (2 * tmp_left + 640),
-                                 (settings.font_ratio.toFloat() / 100 * settings.yearFontSize).toInt()
-                         )
-                         tmp_left = -320
-                     }
-                     yearLayout.setStart(
-                             tmp_left,
-                             (settings.yearTop - settings.font_ratio.toFloat() / 100 * settings.yearFontSize).toInt()
-                     )
-                     //Add it to the list
-                     slpt_objects.add(yearLayout)
-                 }
-                 // Set day name font
-                 val weekfont = getTypeFace(service.resources, settings.font)
-                 // Draw day name
-                 if (settings.weekdayBool) {
-                     val WeekdayLayout = SlptLinearLayout()
-                     WeekdayLayout.add(SlptWeekView())
-                     if (settings.three_letters_day_if_text) {
-                         WeekdayLayout.setStringPictureArrayForAll(days_3let[settings.language])
-                     } else {
-                         WeekdayLayout.setStringPictureArrayForAll(days[settings.language])
-                     }
-                     WeekdayLayout.setTextAttrForAll(
-                             settings.weekdayFontSize,
-                             settings.weekdayColor,
-                             weekfont
-                     )
-                     // Position based on screen on
-                     WeekdayLayout.alignX = 2
-                     WeekdayLayout.alignY = 0
-                     tmp_left = settings.weekdayLeft.toInt()
-                     if (!settings.weekdayAlignLeft) { // If text is centered, set rectangle
-                         WeekdayLayout.setRect(
-                                 (2 * tmp_left + 640),
-                                 (settings.font_ratio.toFloat() / 100 * settings.weekdayFontSize).toInt()
-                         )
-                         tmp_left = -320
-                     }
-                     WeekdayLayout.setStart(
-                             tmp_left,
-                             (settings.weekdayTop - settings.font_ratio.toFloat() / 100 * settings.weekdayFontSize).toInt()
-                     )
-                     //Add it to the list
-                     slpt_objects.add(WeekdayLayout)
-                 }*/
-            return slpt_objects
-        } catch (e: Exception) {
-            Log.e(TAG, e.message)
+            // Draw indicator
+            if (settings.indicatorBool) {
+                val indicatorLayout = SlptLinearLayout()
+                val colon = SlptPictureView()
+                colon.setStringPicture(":")
+                indicatorLayout.add(colon)
+                indicatorLayout.setTextAttrForAll(
+                        settings.indicatorFontSize,
+                        settings.indicatorColor,
+                        timeTypeFace
+                )
+                // Position based on screen on
+                indicatorLayout.alignX = 2
+                indicatorLayout.alignY = 0
+                indicatorLayout.setRect(
+                        (2 * settings.indicatorLeft + 640).toInt(),
+                        (settings.font_ratio.toFloat() / 100 * settings.indicatorFontSize).toInt()
+                )
+                indicatorLayout.setStart(
+                        -320,
+                        (settings.indicatorTop - settings.font_ratio.toFloat() / 100 * settings.indicatorFontSize).toInt()
+                )
+                //Add it to the list
+                slpt_objects.add(indicatorLayout)
+            }
+            // Draw Seconds
+            if (settings.secondsBool) { //&& (!settings.isVerge() || better_resolution)
+                val secondsLayout = SlptLinearLayout()
+                secondsLayout.add(SlptSecondHView())
+                secondsLayout.add(SlptSecondLView())
+                secondsLayout.setTextAttrForAll(
+                        settings.secondsFontSize,
+                        settings.secondsColor,
+                        getTypeFace(service.resources, settings.font)
+                )
+                // Position based on screen on
+                secondsLayout.alignX = 2
+                secondsLayout.alignY = 0
+                secondsLayout.setRect(
+                        (2 * settings.secondsLeft + 640).toInt(),
+                        (settings.font_ratio.toFloat() / 100 * settings.secondsFontSize).toInt()
+                )
+                secondsLayout.setStart(
+                        -320,
+                        (settings.secondsTop - settings.font_ratio.toFloat() / 100 * settings.secondsFontSize).toInt()
+                )
+                //Add it to the list
+                slpt_objects.add(secondsLayout)
+            }
+            // AM-PM (ONLY FOR 12h format)
+            val ampm = SlptLinearLayout()
+            val am = SlptPictureView()
+            val pm = SlptPictureView()
+            am.setStringPicture("AM")
+            pm.setStringPicture("PM")
+            SlptSportUtil.setAmBgView(am)
+            SlptSportUtil.setPmBgView(pm)
+            ampm.add(am)
+            ampm.add(pm)
+            ampm.setTextAttrForAll(settings.am_pmFontSize, settings.am_pmColor, getTypeFace(service.resources, settings.font))
+            ampm.alignX = 2
+            ampm.alignY = 0
+            tmp_left = settings.am_pmLeft.toInt()
+            if (!settings.am_pmAlignLeft) {
+                ampm.setRect(tmp_left * 2 + 640, settings.am_pmFontSize.toInt())
+                tmp_left = -320
+            }
+            ampm.setStart(tmp_left, (settings.am_pmTop - settings.font_ratio / 100.0f * settings.am_pmFontSize).toInt())
+            slpt_objects.add(ampm)
         }
-        return null;
+        /*     if (settings.analog_clock) {
+                 val slptAnalogHourView = SlptAnalogHourView()
+                 slptAnalogHourView.setImagePicture(SimpleFile.readFileFromAssets(service, "timehand/8c/hour" + (if (settings.isVerge) "_verge" else "") + ".png"))
+                 slptAnalogHourView.alignX = 2.toByte()
+                 slptAnalogHourView.alignY = 2.toByte()
+                 slptAnalogHourView.setRect(320 + if (settings.isVerge) 40 else 0, 320 + if (settings.isVerge) 40 else 0)
+                 slpt_objects.add(slptAnalogHourView)
+                 val slptAnalogMinuteView = SlptAnalogMinuteView()
+                 slptAnalogMinuteView.setImagePicture(SimpleFile.readFileFromAssets(service, "timehand/8c/minute" + (if (settings.isVerge) "_verge" else "") + ".png"))
+                 slptAnalogMinuteView.alignX = 2.toByte()
+                 slptAnalogMinuteView.alignY = 2.toByte()
+                 slptAnalogMinuteView.setRect(320 + if (settings.isVerge) 40 else 0, 320 + if (settings.isVerge) 40 else 0)
+                 slpt_objects.add(slptAnalogMinuteView)
+                 if (settings.secondsBool) {
+                     val slptAnalogSecondView = SlptAnalogSecondView()
+                     slptAnalogSecondView.setImagePicture(SimpleFile.readFileFromAssets(service, "timehand/8c/seconds" + (if (settings.isVerge) "_verge" else "") + ".png"))
+                     slptAnalogSecondView.alignX = 2.toByte()
+                     slptAnalogSecondView.alignY = 2.toByte()
+                     slptAnalogSecondView.setRect(320 + if (settings.isVerge) 40 else 0, 320 + if (settings.isVerge) 40 else 0)
+                     slpt_objects.add(slptAnalogSecondView)
+                 }
+             }
+             // Only CLOCK?
+             if (!show_all) return slpt_objects
+             // Draw DATE (30.12.2018)
+             if (settings.date > 0) { // Show or Not icon
+                 if (settings.dateIcon) {
+                     val dateIcon = SlptPictureView()
+                     dateIcon.setImagePicture(SimpleFile.readFileFromAssets(service, (if (betterResolution) "26wc_" else "slpt_") + "icons/" + settings.is_white_bg + "date.png"))
+                     dateIcon.setStart(
+                             settings.dateIconLeft.toInt(),
+                             settings.dateIconTop.toInt()
+                     )
+                     slpt_objects.add(dateIcon)
+                 }
+                 // Set . string
+                 val point = SlptPictureView()
+                 point.setStringPicture(".")
+                 val point2 = SlptPictureView()
+                 point2.setStringPicture(".")
+                 val dateLayout = SlptLinearLayout()
+                 dateLayout.add(SlptDayHView())
+                 dateLayout.add(SlptDayLView())
+                 dateLayout.add(point) //add .
+                 dateLayout.add(SlptMonthHView())
+                 dateLayout.add(SlptMonthLView())
+                 dateLayout.add(point2) //add .
+                 dateLayout.add(SlptYear3View())
+                 dateLayout.add(SlptYear2View())
+                 dateLayout.add(SlptYear1View())
+                 dateLayout.add(SlptYear0View())
+                 dateLayout.setTextAttrForAll(
+                         settings.dateFontSize,
+                         settings.dateColor,
+                         timeTypeFace)
+                 // Position based on screen on
+                 dateLayout.alignX = 2
+                 dateLayout.alignY = 0
+                 tmp_left = settings.dateLeft.toInt()
+                 if (!settings.dateAlignLeft) { // If text is centered, set rectangle
+                     dateLayout.setRect(
+                             (2 * tmp_left + 640),
+                             (settings.font_ratio.toFloat() / 100 * settings.dateFontSize).toInt()
+                     )
+                     tmp_left = -320
+                 }
+                 dateLayout.setStart(
+                         tmp_left,
+                         (settings.dateTop - settings.font_ratio.toFloat() / 100 * settings.dateFontSize).toInt()
+                 )
+                 //Add it to the list
+                 slpt_objects.add(dateLayout)
+             }
+             // Draw day of month
+             if (settings.dayBool) {
+                 val dayLayout = SlptLinearLayout()
+                 dayLayout.add(SlptDayHView())
+                 dayLayout.add(SlptDayLView())
+                 dayLayout.setTextAttrForAll(
+                         settings.dayFontSize,
+                         settings.dayColor,
+                         timeTypeFace)
+                 // Position based on screen on
+                 dayLayout.alignX = 2
+                 dayLayout.alignY = 0
+                 tmp_left = settings.dayLeft.toInt()
+                 if (!settings.dayAlignLeft) { // If text is centered, set rectangle
+                     dayLayout.setRect(
+                             (2 * tmp_left + 640),
+                             (settings.font_ratio.toFloat() / 100 * settings.dayFontSize).toInt()
+                     )
+                     tmp_left = -320
+                 }
+                 dayLayout.setStart(
+                         tmp_left,
+                         (settings.dayTop - settings.font_ratio.toFloat() / 100 * settings.dayFontSize).toInt()
+                 )
+                 //Add it to the list
+                 slpt_objects.add(dayLayout)
+             }
+             // Draw month
+             if (settings.monthBool) { // JAVA calendar get/show time library
+                 val calendar = Calendar.getInstance()
+                 val month = calendar[Calendar.MONTH]
+                 val monthLayout = SlptLinearLayout()
+                 // if as text
+                 if (settings.month_as_text) {
+                     monthLayout.add(SlptMonthLView())
+                     // Fix 00 type of month
+                     if (month >= 9) { // 9: October, 10: November, 11: December
+                         months_3let[settings.language][0] = months_3let[settings.language][10]
+                         months_3let[settings.language][1] = months_3let[settings.language][11]
+                         months_3let[settings.language][2] = months_3let[settings.language][12]
+                         months[settings.language][0] = months[settings.language][10]
+                         months[settings.language][1] = months[settings.language][11]
+                         months[settings.language][2] = months[settings.language][12]
+                     }
+                     if (settings.three_letters_month_if_text) {
+                         monthLayout.setStringPictureArrayForAll(months_3let[settings.language])
+                     } else {
+                         monthLayout.setStringPictureArrayForAll(months[settings.language])
+                     }
+                     // if as number
+                 } else { // show first digit
+                     if (month >= 9 || !settings.no_0_on_hour_first_digit) {
+                         monthLayout.add(SlptMonthHView())
+                     }
+                     monthLayout.add(SlptMonthLView())
+                 }
+                 monthLayout.setTextAttrForAll(
+                         settings.monthFontSize,
+                         settings.monthColor,
+                         timeTypeFace)
+                 // Position based on screen on
+                 monthLayout.alignX = 2
+                 monthLayout.alignY = 0
+                 tmp_left = settings.monthLeft.toInt()
+                 if (!settings.monthAlignLeft) { // If text is centered, set rectangle
+                     monthLayout.setRect(
+                             (2 * tmp_left + 640),
+                             (settings.font_ratio.toFloat() / 100 * settings.monthFontSize).toInt()
+                     )
+                     tmp_left = -320
+                 }
+                 monthLayout.setStart(
+                         tmp_left,
+                         (settings.monthTop - settings.font_ratio.toFloat() / 100 * settings.monthFontSize).toInt()
+                 )
+                 //Add it to the list
+                 slpt_objects.add(monthLayout)
+             }
+             // Draw year number
+             if (settings.yearBool) {
+                 val yearLayout = SlptLinearLayout()
+                 yearLayout.add(SlptYear3View())
+                 yearLayout.add(SlptYear2View())
+                 yearLayout.add(SlptYear1View())
+                 yearLayout.add(SlptYear0View())
+                 yearLayout.setTextAttrForAll(
+                         settings.yearFontSize,
+                         settings.yearColor,
+                         timeTypeFace
+                 )
+                 // Position based on screen on
+                 yearLayout.alignX = 2
+                 yearLayout.alignY = 0
+                 tmp_left = settings.yearLeft.toInt()
+                 if (!settings.yearAlignLeft) { // If text is centered, set rectangle
+                     yearLayout.setRect(
+                             (2 * tmp_left + 640),
+                             (settings.font_ratio.toFloat() / 100 * settings.yearFontSize).toInt()
+                     )
+                     tmp_left = -320
+                 }
+                 yearLayout.setStart(
+                         tmp_left,
+                         (settings.yearTop - settings.font_ratio.toFloat() / 100 * settings.yearFontSize).toInt()
+                 )
+                 //Add it to the list
+                 slpt_objects.add(yearLayout)
+             }
+             // Set day name font
+             val weekfont = getTypeFace(service.resources, settings.font)
+             // Draw day name
+             if (settings.weekdayBool) {
+                 val WeekdayLayout = SlptLinearLayout()
+                 WeekdayLayout.add(SlptWeekView())
+                 if (settings.three_letters_day_if_text) {
+                     WeekdayLayout.setStringPictureArrayForAll(days_3let[settings.language])
+                 } else {
+                     WeekdayLayout.setStringPictureArrayForAll(days[settings.language])
+                 }
+                 WeekdayLayout.setTextAttrForAll(
+                         settings.weekdayFontSize,
+                         settings.weekdayColor,
+                         weekfont
+                 )
+                 // Position based on screen on
+                 WeekdayLayout.alignX = 2
+                 WeekdayLayout.alignY = 0
+                 tmp_left = settings.weekdayLeft.toInt()
+                 if (!settings.weekdayAlignLeft) { // If text is centered, set rectangle
+                     WeekdayLayout.setRect(
+                             (2 * tmp_left + 640),
+                             (settings.font_ratio.toFloat() / 100 * settings.weekdayFontSize).toInt()
+                     )
+                     tmp_left = -320
+                 }
+                 WeekdayLayout.setStart(
+                         tmp_left,
+                         (settings.weekdayTop - settings.font_ratio.toFloat() / 100 * settings.weekdayFontSize).toInt()
+                 )
+                 //Add it to the list
+                 slpt_objects.add(WeekdayLayout)
+             }*/
+        return slpt_objects
     }
 
     companion object {

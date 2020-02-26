@@ -7,7 +7,6 @@ import com.dinodevs.greatfitwatchface.data.DataType
 import com.dinodevs.greatfitwatchface.data.Steps
 import com.dinodevs.greatfitwatchface.resource.ResourceManager.getTypeFace
 import com.dinodevs.greatfitwatchface.settings.LoadSettings
-import com.huami.watch.watchface.util.Util
 import com.ingenic.iwds.slpt.view.arc.SlptTodayStepArcAnglePicView
 import com.ingenic.iwds.slpt.view.core.SlptLinearLayout
 import com.ingenic.iwds.slpt.view.core.SlptPictureView
@@ -46,7 +45,12 @@ class StepsWidget() : CircleWidget() {
 
     override fun onDataUpdate(type: DataType, value: Any) { // Steps class
         stepsData = value as Steps
-        stepsSweepAngle = if (stepsData == null) 0f else angleLength * (Math.min(stepsData!!.steps, stepsData!!.target).toFloat() / stepsData!!.target)
+        stepsSweepAngle = 0f
+        if (stepsData != null) {
+            Log.d(TAG, "target ${stepsData!!.target} steps ${stepsData!!.steps}")
+            val steps = stepsData!!.steps
+            stepsSweepAngle = angleLength * (steps.coerceAtMost(stepsData!!.target).toFloat() / stepsData!!.target)
+        }
     }
 
     override fun getDataTypes(): List<DataType> {
@@ -60,23 +64,23 @@ class StepsWidget() : CircleWidget() {
         if (settings.theme.activity.steps != null) { // Draw icon
             drawText(canvas!!, stepsData!!.steps, settings.theme.activity.steps!!.step)
         }
-        if (settings.theme.stepsProgress != null) {
-            if (settings.theme.stepsProgress!!.circle.imageIndex == null) {
+        if (settings.theme.stepsProgress?.circle != null) {
+            val circle = settings.theme.stepsProgress?.circle!!
+            if (circle.imageIndex == null) {
                 val count = canvas!!.save()
                 // Rotate canvas to 0 degrees = 12 o'clock
-                canvas.rotate(-90f, centerX, centerY)
-                val cal = settings.theme.stepsProgress
-                val radius = cal!!.circle.radiusX /*- scale.getWidth()*/.toFloat()
-                val oval = RectF(cal.circle.centerX - radius, cal.circle.centerY - radius,
-                        cal.circle.centerX + radius,
-                        cal.circle.centerY + radius)
+                canvas.rotate(-90f, circle.centerX.toFloat(), circle.centerY.toFloat())
+                val radius = circle.radiusX /*- scale.getWidth()*/.toFloat()
+                val oval = RectF(circle.centerX - radius, circle.centerY - radius,
+                        circle.centerX + radius,
+                        circle.centerY + radius)
                 // Background
-                Log.d(TAG, String.format("getStartAngle: %d angleLength: %d", cal.circle.startAngle, angleLength))
-                ring!!.color = Color.parseColor(String.format("#%s", cal.circle.color.substring(12)))
-                canvas.drawArc(oval, cal.circle.startAngle.toFloat(), stepsSweepAngle, false, ring)
+                Log.d(TAG, String.format("getStartAngle: %d angleLength: %d", circle.startAngle, angleLength))
+                ring!!.color = Color.parseColor(String.format("#%s", circle.color.substring(12)))
+                canvas.drawArc(oval, circle.startAngle.toFloat(), stepsSweepAngle, false, ring)
                 canvas.restoreToCount(count)
             } else {
-                drawCircle(canvas!!, settings.theme.stepsProgress!!.circle, ringBmp!!, stepsSweepAngle)
+                drawCircle(canvas!!, circle, ringBmp!!, stepsSweepAngle)
             }
         }
     }
@@ -155,6 +159,6 @@ class StepsWidget() : CircleWidget() {
     }
 
     companion object {
-        private const val TAG = "VergeIT-LOG"
+        private const val TAG = "VergeIT-LOG StepsWidget"
     }
 }

@@ -57,16 +57,19 @@ class BatteryWidget() : CircleWidget() {
         if (batteryData == null || settings.theme.battery == null) {
             return
         }
+
+        val level: Int = 45 //batteryData!!.level
+
         // Bar angle
         Log.d(TAG, String.format("settings.batteryProg > %d && settings.batteryProgType == %d", settings.batteryProg, settings.batteryProgType))
         if (settings.theme.battery?.scale != null) {
             Log.d(TAG, String.format("angle %d", angleLength))
-            batterySweepAngle = angleLength * (batteryData!!.level / batteryData!!.scale.toFloat())
+            batterySweepAngle = angleLength * (level / batteryData!!.scale.toFloat())
         }
 
         if (settings.theme.battery?.text != null) {
             val batterySteps: Int = settings.theme.battery!!.text!!.imagesCount
-            tempBattery = batteryData!!.level / batterySteps
+            tempBattery = level / batterySteps
         }
     }
 
