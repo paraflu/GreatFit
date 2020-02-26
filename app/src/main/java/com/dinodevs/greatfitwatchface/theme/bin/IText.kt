@@ -1,12 +1,12 @@
 package com.dinodevs.greatfitwatchface.theme.bin
 
 interface IText {
-    var topLeftX: Int
-    var topLeftY: Int
-    var bottomRightX: Int
-    var bottomRightY: Int
-    var alignment: String
-    var spacing: Int
-    var imageIndex: Int
-    var imagesCount: Int
+    val topLeftX: Int
+    val topLeftY: Int
+    val bottomRightX: Int
+    val bottomRightY: Int
+    val alignment: String
+    val spacing: Int
+    val imageIndex: Int
+    val imagesCount: Int
 }

@@ -15,17 +15,20 @@ import java.time.LocalDate
 import java.util.*
 import kotlin.math.roundToInt
 
-class DateWidget(private val settings: LoadSettings) : TextWidget(settings) {
+class DateWidget() : TextWidget() {
+
+    constructor(_settings: LoadSettings) : this() {
+        settings = _settings
+    }
 
     private var calendar: Calendar? = null
-    private var mService: Service? = null
     private var date: Date? = null
     private var lastDate: String? = null
-    
+
     override fun init(service: Service) {
         mService = service
         date = settings.theme.date
-        calendar= Calendar.getInstance()
+        calendar = Calendar.getInstance()
     }
 
     override fun buildSlptViewComponent(service: Service?): List<SlptViewComponent?>? {

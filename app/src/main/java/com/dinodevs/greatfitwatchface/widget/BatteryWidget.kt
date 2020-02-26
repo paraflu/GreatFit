@@ -15,8 +15,6 @@ import java.util.*
 import kotlin.math.roundToInt
 
 
-
-
 class BatteryWidget(private val settings: LoadSettings) : AbstractWidget() {
     private var batteryData: Battery? = null
     //    private Paint batteryPaint;
@@ -52,29 +50,29 @@ class BatteryWidget(private val settings: LoadSettings) : AbstractWidget() {
 //        }
 //
 // Progress Bar Circle
-        if (settings.theme.battery.scale != null) {
+        if (settings.theme.battery?.scale != null) {
             ring = Paint(Paint.ANTI_ALIAS_FLAG)
             ring!!.strokeCap = Paint.Cap.ROUND
             ring!!.style = Paint.Style.STROKE
-            ring!!.strokeWidth = settings.theme.battery.scale!!.width!!.toFloat()
+            ring!!.strokeWidth = settings.theme.battery!!.scale!!.width.toFloat()
         }
     }
 
     // Value updater
     override fun onDataUpdate(type: DataType, value: Any) { // Battery class
         batteryData = value as Battery
-        if (batteryData == null) {
+        if (batteryData == null || settings.theme.battery == null) {
             return
         }
         // Bar angle
         Log.d(TAG, String.format("settings.batteryProg > %d && settings.batteryProgType == %d", settings.batteryProg, settings.batteryProgType))
-        if (settings.theme.battery.scale != null) {
+        if (settings.theme.battery!!.scale != null) {
             Log.d(TAG, String.format("angle %d", angleLength))
             batterySweepAngle = angleLength * (batteryData!!.level / batteryData!!.scale.toFloat())
         }
 
-        if (settings.theme.battery != null) {
-            val batterySteps: Int = settings.theme.battery.text!!.imagesCount
+        if (settings.theme.battery != null && settings.theme.battery!!.text != null) {
+            val batterySteps: Int = settings.theme.battery!!.text!!.imagesCount
             tempBattery = batteryData!!.level / batterySteps
         }
     }
@@ -90,19 +88,19 @@ class BatteryWidget(private val settings: LoadSettings) : AbstractWidget() {
         val spacing = (width / text.imagesCount.toFloat()).roundToInt() + text.spacing
         var x = text.topLeftX
         val y = text.topLeftY
-        val bmp = Util.decodeImage(mService!!.resources, settings.getImagePath(settings.theme.battery.text!!.imageIndex))
+        val bmp = Util.decodeImage(mService!!.resources, settings.getImagePath(text.imageIndex))
         val imageSize = Size(bmp.width, bmp.height)
 
         val textString = String.format("%d", value)
         if (text.alignment == "Center") {
-            x += (width /2f - textString.length * imageSize.width / 2f).roundToInt()
+            x += (width / 2f - textString.length * imageSize.width / 2f).roundToInt()
         }
         Log.d(TAG, String.format("draw value %s", textString))
         for (i in textString.toCharArray().indices) {
             val charToPrint = textString.toCharArray()[i]
             val va = charToPrint - '0'
-            Log.d(TAG, String.format("draw char (x: %d, y: %d) %d - %c > bmp %s", x, y, i, charToPrint, settings.getImagePath(settings.theme.battery.text!!.imageIndex + va)))
-            val charBmp = Util.decodeImage(mService!!.resources, settings.getImagePath(settings.theme.battery.text!!.imageIndex + va))
+            Log.d(TAG, String.format("draw char (x: %d, y: %d) %d - %c > bmp %s", x, y, i, charToPrint, settings.getImagePath(text.imageIndex + va)))
+            val charBmp = Util.decodeImage(mService!!.resources, settings.getImagePath(text.imageIndex + va))
             canvas.drawBitmap(charBmp, x.toFloat(), y.toFloat(), settings.mGPaint)
             x += charBmp.width + spacing
         }
@@ -115,7 +113,9 @@ class BatteryWidget(private val settings: LoadSettings) : AbstractWidget() {
             return
         }
         try {
-            drawText(canvas, batteryData!!.level, settings.theme.battery.text!!)
+            if (settings.theme.battery?.text != null) {
+                drawText(canvas, batteryData!!.level, settings.theme.battery!!.text!!)
+            }
         } catch (e: Exception) {
             Log.e(TAG, e.message)
         }
@@ -137,12 +137,12 @@ class BatteryWidget(private val settings: LoadSettings) : AbstractWidget() {
 //        }
         // Battery bar
 //        if (settings.batteryProg > 0 && settings.batteryProgType == 0) {
-        if (settings.theme.battery.scale != null) {
+        if (settings.theme.battery?.scale != null) {
             val count = canvas.save()
             // Rotate canvas to 0 degrees = 12 o'clock
             canvas.rotate(-90f, centerX, centerY)
             // Define circle
-            val scale = settings.theme.battery.scale!!
+            val scale = settings.theme.battery!!.scale!!
             val radius = scale.radiusX.toFloat() /*- scale.getWidth()*/
             val oval = RectF(scale.centerX - radius, scale.centerY - radius,
                     scale.centerX + radius,
@@ -151,7 +151,7 @@ class BatteryWidget(private val settings: LoadSettings) : AbstractWidget() {
             ring!!.color = Color.parseColor(String.format("#%s", scale.color.substring(12)))
             //            canvas.drawArc(oval, scale.getStartAngle(), this.angleLength, false, ring);
 // this.ring.setColor(settings.colorCodes[settings.batteryProgColorIndex]); progressione colore
-            canvas.drawArc(oval, scale.startAngle.toFloat(), batterySweepAngle, false, ring)
+            canvas.drawArc(oval, scale.startAngle.toFloat(), batterySweepAngle, false, ring!!)
             canvas.restoreToCount(count)
         }
     }
@@ -212,11 +212,11 @@ class BatteryWidget(private val settings: LoadSettings) : AbstractWidget() {
 //            slpt_objects.add(power);
 //        }
 // Battery as images
-        if (settings.batteryProg > 0 && settings.batteryProgType == 1) {
+        if (settings.theme.battery?.text != null) {
             val battery_steps = 11
             val arrayOfByte = arrayOfNulls<ByteArray>(battery_steps)
             for (i in arrayOfByte.indices) {
-                arrayOfByte[i] = SimpleFile.readFileFromAssets(service, settings.getImagePath(settings.theme.battery.text!!.imageIndex + i))
+                arrayOfByte[i] = SimpleFile.readFileFromAssets(service, settings.getImagePath(settings.theme.battery!!.text!!.imageIndex + i))
             }
             val localSlptBatteryView = SlptBatteryView(battery_steps)
             localSlptBatteryView.setImagePictureArray(arrayOfByte)
@@ -251,7 +251,7 @@ class BatteryWidget(private val settings: LoadSettings) : AbstractWidget() {
 
     // Constructor
     init {
-        if (settings.theme.battery.scale != null) {
+        if (settings.theme.battery?.scale != null) {
             //        if (settings.batteryProgClockwise == 1) {
 //            this.angleLength = (settings.batteryProgEndAngle < settings.batteryProgStartAngle) ?
 //                    360 - (settings.theme.getbattery.scale().getStartAngle() - settings.theme.getbattery.scale().getEndAngle()) :
@@ -261,8 +261,8 @@ class BatteryWidget(private val settings: LoadSettings) : AbstractWidget() {
 //                    360 - (settings.theme.getbattery.scale().getStartAngle() - settings.theme.getbattery.scale().getEndAngle()) :
 //                    settings.theme.getbattery.scale().getEndAngle() - settings.theme.getbattery.scale().getStartAngle();
 //        }
-            val scale = settings.theme.battery.scale!!
-            angleLength = /*if (scale.startAngle > scale.endAngle) scale.endAngle - scale.startAngle else (360 - (*/scale.endAngle - scale.startAngle //))
+            val scale = settings.theme.battery!!.scale!!
+            angleLength = scale.endAngle - scale.startAngle
         }
     }
 }

@@ -12,10 +12,17 @@ For support, please feel free to contact me at https://www.linkedin.com/in/syeda
 package com.dinodevs.greatfitwatchface.theme.bin
 
 import com.google.gson.annotations.SerializedName
-data class Ones (
 
-	@SerializedName("X") val x : Int,
-	@SerializedName("Y") val y : Int,
-	@SerializedName("ImageIndex") val imageIndex : Int,
-	@SerializedName("ImagesCount") val imagesCount : Int
-)
+class Ones : ITimeDigit {
+
+    @SerializedName("X")
+    override val x: Int = 0
+
+    @SerializedName("Y")
+    override val y: Int = 0
+    @SerializedName("ImageIndex")
+    override val imageIndex: Int = 0
+
+    @SerializedName("ImagesCount")
+    override val imagesCount: Int = 0
+}

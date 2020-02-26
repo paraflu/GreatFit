@@ -12,11 +12,10 @@ package com.dinodevs.greatfitwatchface.theme.bin
 
 import com.google.gson.annotations.SerializedName
 
-data class Minutes(
-        @SerializedName("OnlyBorder") val onlyBorder: Boolean,
-        @SerializedName("Color") val color: String,
-        @SerializedName("CenterOffset") val centerOffset: CenterOffset,
-        @SerializedName("Image") val image: Image,
-        @SerializedName("Tens") val tens: Tens,
-        @SerializedName("Ones") val ones: Ones
+data class Seconds (
+
+		@SerializedName("OnlyBorder") val onlyBorder : Boolean,
+		@SerializedName("Color") val color : String,
+		@SerializedName("CenterOffset") val centerOffset : CenterOffset,
+		@SerializedName("Image") val image : Image
 )

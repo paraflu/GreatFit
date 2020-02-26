@@ -25,9 +25,10 @@ class GreatFit : AbstractWatchFace() {
         if (settings.theme.activity.calories != null) {
             widgets.add(CaloriesWidget(settings))
         }
-        if (settings.theme.battery != null) {
-            widgets.add(BatteryWidget(settings))
-        }
+
+//        if (settings.theme.battery != null) {
+//            widgets.add(BatteryWidget(settings))
+//        }
         //
 //        if(settings.isHeartRate()) {
 //            this.widgets.add(new HeartRateWidget(settings));
