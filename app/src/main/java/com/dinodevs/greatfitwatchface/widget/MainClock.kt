@@ -134,7 +134,11 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
                 -> {
                 }
             }
-            //            // Draw hours
+            val dayText = Util.formatTime(day)
+            val monthText = Util.formatTime(month)
+            val date = Util.formatTime(day) + "." + Util.formatTime(month) + "." + year.toString()
+            Log.d(TAG, "day: $day dayText: $dayText month: $minutes monthText: $monthText hours: ${Util.formatTime(hours)} minutes ${Util.formatTime(minutes)} seconds ${Util.formatTime(seconds)} dateString: $date")
+            //            // Draw hoursn
 //            canvas.drawText((settings.no_0_on_hour_first_digit) ? hours + "" : Util.formatTime(hours), settings.hoursLeft, settings.hoursTop, this.hourFont);
 //
 //            // Draw minutes
