@@ -12,14 +12,9 @@ package com.dinodevs.greatfitwatchface.theme.bin
 
 import com.google.gson.annotations.SerializedName
 
-class MonthName : IFont {
+data class HourCenterImage(
 
-    @SerializedName("X")
-    override val x: Int = 0
-    @SerializedName("Y")
-    override val y: Int = 0
-    @SerializedName("ImageIndex")
-    override val imageIndex: Int? = null
-    @SerializedName("ImagesCount")
-    override val imagesCount: Int? = null
-}
+        @SerializedName("X") val x: Int,
+        @SerializedName("Y") val y: Int,
+        @SerializedName("ImageIndex") val imageIndex: Int
+)

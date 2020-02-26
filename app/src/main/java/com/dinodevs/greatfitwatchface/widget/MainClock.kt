@@ -28,6 +28,8 @@ import java.lang.Exception
 import java.util.*
 
 class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
+    private var hourCenterBmp: Bitmap? = null
+    private var minCenterBmp: Bitmap? = null
     private var amBmp: Bitmap? = null
     private var pmBmp: Bitmap? = null
     private val hourFont: TextPaint? = null
@@ -67,10 +69,24 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
         }
 
         if (settings.theme.analogDialFace != null) {
-            hourHand = getBitmap(settings.theme.analogDialFace!!.hours.image.imageIndex)
-            minuteHand = getBitmap(settings.theme.analogDialFace!!.minutes.image.imageIndex)
-            if (settings.theme.analogDialFace!!.seconds != null) {
-                secondsHand = getBitmap(settings.theme.analogDialFace!!.seconds!!.image.imageIndex)
+            val cfg = settings.theme.analogDialFace!!
+            Log.d(TAG, "theme ")
+            if (cfg.hours != null) {
+                hourHand = getBitmap(cfg.hours.image.imageIndex)
+            }
+            if (cfg.minutes != null) {
+                minuteHand = getBitmap(cfg.minutes.image.imageIndex)
+            }
+            if (cfg.seconds != null) {
+                secondsHand = getBitmap(cfg.seconds.image.imageIndex)
+            }
+            if (cfg.hourCenterImage != null) {
+                hourCenterBmp = getBitmap(cfg.hourCenterImage.imageIndex)
+                Log.d(TAG, "loadImage hour ${cfg.hourCenterImage.imageIndex}")
+            }
+            if (cfg.minCenterImage != null) {
+                minCenterBmp = getBitmap(cfg.minCenterImage.imageIndex)
+                Log.d(TAG, "loadImage min ${cfg.minCenterImage.imageIndex}")
             }
         }
         weekdayFont = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
@@ -155,7 +171,14 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
             }
 
             if (settings.theme.analogDialFace != null) {
-                drawAnalogClock(canvas, settings.theme.analogDialFace!!, hours, minutes, seconds)
+                val cfg = settings.theme.analogDialFace!!
+                if (minCenterBmp != null) {
+                    canvas.drawBitmap(minCenterBmp!!, cfg.minCenterImage!!.x.toFloat(), cfg.minCenterImage.y.toFloat(), settings.mGPaint)
+                }
+                if (hourCenterBmp != null) {
+                    canvas.drawBitmap(hourCenterBmp!!, cfg.hourCenterImage!!.x.toFloat(), cfg.hourCenterImage.y.toFloat(), settings.mGPaint)
+                }
+                drawAnalogClock(canvas, cfg, hours, minutes, seconds)
             }
         } catch (e: Exception) {
             Log.e(TAG, e.message)
@@ -165,19 +188,23 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
     private fun drawAnalogClock(canvas: Canvas, analogDialFace: AnalogDialFace, hours: Int, minutes: Int, seconds: Int) {
         Log.d(TAG, "drawAnalogClock $hours:$minutes:$seconds")
         val centerScreen = if (settings.isVerge) Point(180, 179) else Point(160, 159)
-        canvas.save()
-        canvas.rotate((hours * 30).toFloat() + minutes.toFloat() / 60.0f * 30.0f, centerScreen.x.toFloat(), centerScreen.y.toFloat())
-        canvas.drawBitmap(hourHand!!,
-                (centerScreen.x + analogDialFace.hours.centerOffset.x - analogDialFace.hours.image.x).toFloat(),
-                (centerScreen.y + analogDialFace.hours.centerOffset.y - analogDialFace.hours.image.x).toFloat(), null)
-        canvas.restore()
+        if (analogDialFace.hours != null) {
+            canvas.save()
+            canvas.rotate((hours * 30).toFloat() + minutes.toFloat() / 60.0f * 30.0f, centerScreen.x.toFloat(), centerScreen.y.toFloat())
+            canvas.drawBitmap(hourHand!!,
+                    (centerScreen.x + analogDialFace.hours.centerOffset.x - analogDialFace.hours.image.x).toFloat(),
+                    (centerScreen.y + analogDialFace.hours.centerOffset.y - analogDialFace.hours.image.x).toFloat(), null)
+            canvas.restore()
+        }
 
-        canvas.save()
-        canvas.rotate((minutes * 6).toFloat(), centerScreen.x.toFloat(), centerScreen.y.toFloat())
-        canvas.drawBitmap(minuteHand!!,
-                (centerScreen.x + analogDialFace.minutes.centerOffset.x - analogDialFace.minutes.image.x).toFloat(),
-                (centerScreen.y + analogDialFace.minutes.centerOffset.y - analogDialFace.minutes.image.y).toFloat(), null)
-        canvas.restore()
+        if (analogDialFace.minutes != null) {
+            canvas.save()
+            canvas.rotate((minutes * 6).toFloat(), centerScreen.x.toFloat(), centerScreen.y.toFloat())
+            canvas.drawBitmap(minuteHand!!,
+                    (centerScreen.x + analogDialFace.minutes.centerOffset.x - analogDialFace.minutes.image.x).toFloat(),
+                    (centerScreen.y + analogDialFace.minutes.centerOffset.y - analogDialFace.minutes.image.y).toFloat(), null)
+            canvas.restore()
+        }
         if (analogDialFace.seconds != null) {
             canvas.save()
             canvas.rotate((seconds * 6).toFloat(), centerScreen.x.toFloat(), centerScreen.y.toFloat())

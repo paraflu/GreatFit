@@ -54,11 +54,11 @@ open class TextWidget() : AbstractWidget() {
      * @param value Digit to write
      * @param spec Coordinates
      */
-    protected fun drawText(canvas: Canvas, value: Int, spec: IText) {
+    protected fun drawText(canvas: Canvas, value: Int, spec: IText, skipZero: Boolean = false) {
         val width = spec.bottomRightX - spec.topLeftX
         val height = spec.bottomRightY - spec.topLeftY
         val spacing = (width / spec.imagesCount.toFloat()).roundToInt() + spec.spacing
-        var x = spec.topLeftX
+        val x = spec.topLeftX
         val y = spec.topLeftY
         val bmp: Bitmap = getBitmap(spec.imageIndex)
         val imageSize = Size(bmp.width, bmp.height)
@@ -67,18 +67,25 @@ open class TextWidget() : AbstractWidget() {
         // la lunghezza della stringa una volta stampata
         // numero di caratteri x dimensione dell'immagine più eventuale spaziatura
         val stringLength = valueToPrint.length * imageSize.width + (valueToPrint.length - 1) * spacing
+        val centerX = (width / 2f).roundToInt()
+        val centerY = (height / 2f).roundToInt()
         val startPoint: Point = when (spec.alignment) {
-            "Center" -> {
-                val centerX = (width / 2f).roundToInt()
-                val centerY = (height / 2f).roundToInt()
-                Point(x + centerX - stringLength, y + centerY - imageSize.height)
-            }
+            // #TopLeft, TopCenter, TopRight, Left, Center, Right, BottomLeft, BottomCenter, BottomRight
+            "TopLeft" -> Point(x, y)
+            "TopCenter" -> Point(x + centerX - (stringLength / 2f).roundToInt(), y)
             "TopRight" -> Point(x + width - stringLength, y)
+            "Center" -> Point(x + centerX - (stringLength / 2f).roundToInt(), y + centerY - (imageSize.height / 2f).roundToInt())
+            "Left" -> Point(x, y + centerY - imageSize.height)
+            "Right" -> Point(x + width - stringLength, y + centerY - imageSize.height)
+            "BottomLeft" -> Point(x, y + height - imageSize.height)
+            "BottomRight" -> Point(x + width - stringLength, y + height - imageSize.height)
             else -> Point(x, y)
         }
         for (i in valueToPrint.toCharArray().indices) {
             val charToPrint = valueToPrint.toCharArray()[i]
             val va = charToPrint - '0'
+            if (skipZero && va == 0) continue
+
             val charBmp: Bitmap = getBitmap(spec.imageIndex + va)
             canvas.drawBitmap(charBmp, startPoint.x.toFloat(), startPoint.y.toFloat(), settings.mGPaint)
             startPoint.x += charBmp.width + spacing

@@ -14,5 +14,6 @@ import com.google.gson.annotations.SerializedName
 
 data class Separate(
         @SerializedName("Day") val day: Day?,
+        @SerializedName("Month") val month: Month?,
         @SerializedName("MonthName") val monthName: MonthName?
 )

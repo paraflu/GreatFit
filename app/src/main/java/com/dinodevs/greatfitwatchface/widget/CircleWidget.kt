@@ -1,6 +1,7 @@
 package com.dinodevs.greatfitwatchface.widget
 
 import android.graphics.*
+import android.util.Log
 import com.dinodevs.greatfitwatchface.settings.LoadSettings
 import com.dinodevs.greatfitwatchface.theme.bin.Circle
 
@@ -26,6 +27,7 @@ open class CircleWidget() : TextWidget() {
         maskPaint.isAntiAlias = true
         //choose entire bitmap as a rect
         val rect = RectF(0f, 0f, width.toFloat(), height.toFloat())
+        Log.d(TAG, "drawArc sweepAngle $sweepAngle w:$width h:$height")
         canvas.drawArc(rect, startAngle, sweepAngle, true, maskPaint) //mask the pie
         val result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         for (i in 0 until height) {

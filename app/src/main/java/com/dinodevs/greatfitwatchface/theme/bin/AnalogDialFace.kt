@@ -16,7 +16,9 @@ For support, please feel free to contact me at https://www.linkedin.com/in/syeda
 
 data class AnalogDialFace(
 
-        @SerializedName("Hours") val hours: Hours,
-        @SerializedName("Minutes") val minutes: Minutes,
-        @SerializedName("Seconds") val seconds: Seconds?
+        @SerializedName("Hours") val hours: Hours?,
+        @SerializedName("Minutes") val minutes: Minutes?,
+        @SerializedName("Seconds") val seconds: Seconds?,
+        @SerializedName("HourCenterImage") val hourCenterImage : HourCenterImage?,
+        @SerializedName("MinCenterImage") val minCenterImage : MinCenterImage?
 )

@@ -2,7 +2,6 @@ package com.dinodevs.greatfitwatchface.widget
 
 import android.app.Service
 import android.graphics.Canvas
-import android.graphics.Point
 import android.util.Log
 import com.dinodevs.greatfitwatchface.settings.LoadSettings
 import com.dinodevs.greatfitwatchface.theme.bin.Date
@@ -37,13 +36,12 @@ class DateWidget() : TextWidget() {
         return null
     }
 
-    fun drawWeekday(canvas: Canvas, weekDay: Int, spec: WeekDay) {
+    private fun drawWeekday(canvas: Canvas, weekDay: Int, spec: WeekDay) {
         val bmp = getBitmap(spec.imageIndex + weekDay)
         canvas.drawBitmap(bmp, spec.x.toFloat(), spec.y.toFloat(), settings.mGPaint)
     }
 
     override fun draw(canvas: Canvas?, width: Float, height: Float, centerX: Float, centerY: Float) {
-        val now = Date()
         val date = settings.theme.date;
         if (date != null) {
             if (date.monthAndDay != null) {
@@ -53,7 +51,12 @@ class DateWidget() : TextWidget() {
             }
             if (date.weekDay != null) {
                 val calendar = Calendar.getInstance()
-                val weekDay = calendar[Calendar.DAY_OF_WEEK]
+                var weekDay = calendar[Calendar.DAY_OF_WEEK]
+                if (weekDay == Calendar.SUNDAY) {
+                    weekDay = 6
+                } else {
+                    weekDay -= 2
+                }
                 drawWeekday(canvas!!, weekDay, date.weekDay)
             }
         }
@@ -61,14 +64,19 @@ class DateWidget() : TextWidget() {
 
     private fun drawMonthDay(canvas: Canvas, month: Int, day: Int, monthAndDay: MonthAndDay) {
         if (monthAndDay.separate != null) {
-            val monthSpec = monthAndDay.separate.monthName
+            val monthNameSpec = monthAndDay.separate.monthName
+            val monthSpec = monthAndDay.separate.month
             val daySpec = monthAndDay.separate.day
+            if (monthNameSpec?.imageIndex != null) {
+                drawBitmap(canvas, monthNameSpec.imageIndex + month, monthNameSpec.x, monthNameSpec.y)
+            }
+
             if (monthSpec != null) {
-                drawBitmap(canvas, monthSpec.imageIndex + month, monthSpec.x, monthSpec.y)
+                drawText(canvas, month, monthSpec, monthAndDay.twoDigitsDay == false)
             }
 
             if (daySpec != null) {
-                drawText(canvas, day, daySpec)
+                drawText(canvas, day, daySpec, monthAndDay.twoDigitsDay == false)
             }
         }
     }
