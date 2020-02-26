@@ -178,6 +178,7 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
                 if (hourCenterBmp != null) {
                     canvas.drawBitmap(hourCenterBmp!!, cfg.hourCenterImage!!.x.toFloat(), cfg.hourCenterImage.y.toFloat(), settings.mGPaint)
                 }
+
                 drawAnalogClock(canvas, cfg, hours, minutes, seconds)
             }
         } catch (e: Exception) {
