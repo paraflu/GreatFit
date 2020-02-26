@@ -17,28 +17,28 @@
   "Time": {
     "Hours": {
       "Tens": {
-        "X": 187,
-        "Y": 152,
+        "X": 210,
+        "Y": 171,
         "ImageIndex": 26,
         "ImagesCount": 10
       },
       "Ones": {
-        "X": 205,
-        "Y": 152,
+        "X": 230,
+        "Y": 171,
         "ImageIndex": 26,
         "ImagesCount": 10
       }
     },
     "Minutes": {
       "Tens": {
-        "X": 226,
-        "Y": 152,
+        "X": 254,
+        "Y": 171,
         "ImageIndex": 26,
         "ImagesCount": 10
       },
       "Ones": {
-        "X": 245,
-        "Y": 152,
+        "X": 275,
+        "Y": 171,
         "ImageIndex": 26,
         "ImagesCount": 10
       }
@@ -47,10 +47,10 @@
   "Activity": {
     "Steps": {
       "Step": {
-        "TopLeftX": 130,
-        "TopLeftY": 231,
-        "BottomRightX": 186,
-        "BottomRightY": 245,
+        "TopLeftX": 146,
+        "TopLeftY": 260,
+        "BottomRightX": 210,
+        "BottomRightY": 275,
         "Alignment": "TopRight",
         "Spacing": 2,
         "ImageIndex": 4,
@@ -63,16 +63,16 @@
     "MonthAndDay": {
       "Separate": {
         "MonthName": {
-          "X": 105,
-          "Y": 168,
+          "X": 118,
+          "Y": 189,
           "ImageIndex": 14,
           "ImagesCount": 12
         },
         "Day": {
-          "TopLeftX": 71,
-          "TopLeftY": 168,
-          "BottomRightX": 84,
-          "BottomRightY": 84,
+          "TopLeftX": 80,
+          "TopLeftY": 189,
+          "BottomRightX": 95,
+          "BottomRightY": 95,
           "Alignment": "TopLeft",
           "Spacing": 1,
           "ImageIndex": 4,
@@ -83,18 +83,18 @@
       "TwoDigitsDay": true
     },
     "WeekDay": {
-      "X": 71,
-      "Y": 138,
+      "X": 80,
+      "Y": 155,
       "ImageIndex": 36,
       "ImagesCount": 7
     }
   },
   "StepsProgress": {
     "Circle": {
-      "CenterX": 160,
-      "CenterY": 160,
-      "RadiusX": 152,
-      "RadiusY": 152,
+      "CenterX": 180,
+      "CenterY": 180,
+      "RadiusX": 172,
+      "RadiusY": 172,
       "StartAngle": 0,
       "EndAngle": 360,
       "Width": 10,
@@ -105,10 +105,10 @@
   },
   "Battery": {
     "Scale": {
-      "CenterX": 160,
-      "CenterY": 226,
-      "RadiusX": 28,
-      "RadiusY": 28,
+      "CenterX": 180,
+      "CenterY": 254,
+      "RadiusX": 32,
+      "RadiusY": 32,
       "StartAngle": -90,
       "EndAngle": 90,
       "Width": 21,
@@ -126,8 +126,8 @@
         "Y": 0
       },
       "Image": {
-        "X": 11,
-        "Y": 95,
+        "X": 12,
+        "Y": 107,
         "ImageIndex": 43
       }
     },
@@ -139,8 +139,8 @@
         "Y": 0
       },
       "Image": {
-        "X": 11,
-        "Y": 140,
+        "X": 12,
+        "Y": 157,
         "ImageIndex": 44
       }
     },
@@ -152,8 +152,8 @@
         "Y": 0
       },
       "Image": {
-        "X": 11,
-        "Y": 143,
+        "X": 12,
+        "Y": 161,
         "ImageIndex": 45
       }
     }

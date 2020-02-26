@@ -209,11 +209,4 @@ class CaloriesWidget() : CircleWidget() {
         private const val TAG = "VergeIT-LOG Calories"
     }
 
-    // Constructor
-    init {
-        if (settings.theme.activity.calories?.circle != null) {
-            val scale = settings.theme.activity.calories!!.circle!!
-            angleLength = if (scale.startAngle > scale.endAngle) scale.endAngle - scale.startAngle else scale.startAngle - scale.endAngle
-        }
-    }
 }

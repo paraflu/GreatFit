@@ -22,7 +22,6 @@ open class TextWidget() : AbstractWidget() {
 
     companion object {
         const val TAG = "VergeIT-LOG"
-
     }
 
     protected lateinit var mService: Service
