@@ -18,7 +18,6 @@ import java.util.*
 
 
 class StepsWidget() : CircleWidget() {
-    private var ringBmp: Bitmap? = null
 
     constructor(_settings: LoadSettings) : this() {
         settings = _settings
@@ -28,23 +27,10 @@ class StepsWidget() : CircleWidget() {
     private val stepsPaint: Paint? = null
     private val icon: Bitmap? = null
     private var stepsSweepAngle = 0f
-    private val angleLength: Int
-    private var ring: Paint? = null
+    private var angleLength: Int = 0
     // Screen-on init (runs once)
     override fun init(service: Service) {
         mService = service
-        //        if (settings.steps > 0) {
-//            this.stepsPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-//            this.stepsPaint.setTypeface(ResourceManager.getTypeFace(service.getResources(), settings.font));
-//            this.stepsPaint.setTextSize(settings.stepsFontSize);
-//            this.stepsPaint.setColor(settings.stepsColor);
-//            this.stepsPaint.setTextAlign((settings.stepsAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER);
-//
-//            if (settings.stepsIcon) {
-//                this.icon = Util.decodeImage(mService.getResources(), "icons/" + settings.is_white_bg + "steps.png");
-//            }
-//        }
-//        if (settings.stepsProg > 0 && settings.stepsProgType == 0) {
         if (settings.theme.stepsProgress != null) {
             if (settings.theme.stepsProgress!!.circle.imageIndex == null) {
                 ring = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -52,25 +38,21 @@ class StepsWidget() : CircleWidget() {
                 ring!!.style = Paint.Style.STROKE
                 ring!!.strokeWidth = settings.theme.stepsProgress!!.circle.width.toFloat()
             } else {
-                ringBmp = Util.decodeImage(service.resources, settings.getImagePath(settings.theme.stepsProgress!!.circle.imageIndex!!))
+                ringBmp = getBitmap(settings.theme.stepsProgress!!.circle.imageIndex!!)
             }
         }
+        angleLength = settings.theme.stepsProgress!!.circle.startAngle - settings.theme.stepsProgress!!.circle.endAngle
     }
 
-    // Value updater
     override fun onDataUpdate(type: DataType, value: Any) { // Steps class
         stepsData = value as Steps
-        // Bar angle
         stepsSweepAngle = if (stepsData == null) 0f else angleLength * (Math.min(stepsData!!.steps, stepsData!!.target).toFloat() / stepsData!!.target)
     }
 
-    // Register update listeners
     override fun getDataTypes(): List<DataType> {
         return listOf(DataType.STEPS)
     }
 
-
-    // Draw screen-on
     override fun draw(canvas: Canvas?, width: Float, height: Float, centerX: Float, centerY: Float) {
         if (stepsData == null) {
             return
@@ -91,29 +73,18 @@ class StepsWidget() : CircleWidget() {
                 // Background
                 Log.d(TAG, String.format("getStartAngle: %d angleLength: %d", cal.circle.startAngle, angleLength))
                 ring!!.color = Color.parseColor(String.format("#%s", cal.circle.color.substring(12)))
-                //            canvas.drawArc(oval, cal.getCircle().getStartAngle(), this.angleLength, false, ring);
-// this.ring.setColor(settings.colorCodes[settings.batteryProgColorIndex]); progressione colore
                 canvas.drawArc(oval, cal.circle.startAngle.toFloat(), stepsSweepAngle, false, ring)
                 canvas.restoreToCount(count)
             } else {
-//                val count = canvas!!.save()
-//                val circle = settings.theme.stepsProgress!!.circle
-//                // Rotate canvas to 0 degrees = 12 o'clock
-//                canvas.rotate(-90f, circle.centerX.toFloat(), circle.centerY.toFloat())
-//                canvas.drawBitmap(applyPieMask(ringBmp!!, 0f, stepsSweepAngle),
-//                        circle.centerX.toFloat(), circle.centerY.toFloat(), settings.mGPaint)
-//                canvas.restoreToCount(count)
                 drawCircle(canvas!!, settings.theme.stepsProgress!!.circle, ringBmp!!, stepsSweepAngle)
             }
         }
     }
 
-    // Screen-off (SLPT)
     override fun buildSlptViewComponent(service: Service?): List<SlptViewComponent?>? {
         return buildSlptViewComponent(service, false)
     }
 
-    // Screen-off (SLPT) - Better screen quality
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent?>? {
         var better_resolution = better_resolution
         better_resolution = better_resolution && settings.better_resolution_when_raising_hand
@@ -185,15 +156,5 @@ class StepsWidget() : CircleWidget() {
 
     companion object {
         private const val TAG = "VergeIT-LOG"
-    }
-
-    // Constructor
-    init {
-        angleLength = settings.theme.stepsProgress!!.circle.startAngle - settings.theme.stepsProgress!!.circle.endAngle
-        //        if(settings.stepsProgClockwise==1) {
-//            this.angleLength = (settings.stepsProgEndAngle<settings.stepsProgStartAngle)? 360-(settings.stepsProgStartAngle-settings.stepsProgEndAngle) : settings.stepsProgEndAngle - settings.stepsProgStartAngle;
-//        }else{
-//            this.angleLength = (settings.stepsProgEndAngle>settings.stepsProgStartAngle)? 360-(settings.stepsProgStartAngle-settings.stepsProgEndAngle) : settings.stepsProgEndAngle - settings.stepsProgStartAngle;
-//        }
     }
 }

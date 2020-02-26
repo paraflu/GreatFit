@@ -12,7 +12,7 @@ package com.dinodevs.greatfitwatchface.theme.bin
 
 import com.google.gson.annotations.SerializedName
 
-data class Separate (
-
-	@SerializedName("Day") val day : Day
+data class Separate(
+        @SerializedName("Day") val day: Day?,
+        @SerializedName("MonthName") val monthName: MonthName?
 )

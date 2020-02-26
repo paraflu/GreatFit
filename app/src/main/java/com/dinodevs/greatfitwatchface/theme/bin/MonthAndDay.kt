@@ -14,7 +14,7 @@ package com.dinodevs.greatfitwatchface.theme.bin
 import com.google.gson.annotations.SerializedName
 data class MonthAndDay (
 
-	@SerializedName("Separate") val separate : Separate,
-	@SerializedName("TwoDigitsMonth") val twoDigitsMonth : Boolean,
-	@SerializedName("TwoDigitsDay") val twoDigitsDay : Boolean
+	@SerializedName("Separate") val separate : Separate?,
+	@SerializedName("TwoDigitsMonth") val twoDigitsMonth : Boolean?,
+	@SerializedName("TwoDigitsDay") val twoDigitsDay : Boolean?
 )

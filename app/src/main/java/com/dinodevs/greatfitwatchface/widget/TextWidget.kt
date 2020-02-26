@@ -3,13 +3,14 @@ package com.dinodevs.greatfitwatchface.widget
 import android.app.Service
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.util.Log
+import android.graphics.Point
 import android.util.Size
 import com.dinodevs.greatfitwatchface.data.DataType
 import com.dinodevs.greatfitwatchface.settings.LoadSettings
 import com.dinodevs.greatfitwatchface.theme.bin.IText
 import com.huami.watch.watchface.util.Util
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
+import kotlin.math.roundToInt
 
 
 open class TextWidget() : AbstractWidget() {
@@ -46,28 +47,52 @@ open class TextWidget() : AbstractWidget() {
         super.onDataUpdate(type, value)
     }
 
+    /**
+     * drawText on canvas
+     *
+     * @param canvas Canvas to contain draw
+     * @param value Digit to write
+     * @param spec Coordinates
+     */
     protected fun drawText(canvas: Canvas, value: Int, spec: IText) {
         val width = spec.bottomRightX - spec.topLeftX
         val height = spec.bottomRightY - spec.topLeftY
-        val spacing = Math.round(width / spec.imagesCount.toFloat()) + spec.spacing
+        val spacing = (width / spec.imagesCount.toFloat()).roundToInt() + spec.spacing
         var x = spec.topLeftX
         val y = spec.topLeftY
-        val bmp: Bitmap = Util.decodeImage(mService.resources, settings.getImagePath(spec.imageIndex))
+        val bmp: Bitmap = getBitmap(spec.imageIndex)
         val imageSize = Size(bmp.width, bmp.height)
-        if (spec.alignment == "Center") {
-            x += imageSize.getWidth() / 2 + width / 2 - value / 10 * spacing
+        val valueToPrint = value.toString()
+
+        // la lunghezza della stringa una volta stampata
+        // numero di caratteri x dimensione dell'immagine più eventuale spaziatura
+        val stringLength = valueToPrint.length * imageSize.width + (valueToPrint.length - 1) * spacing
+        val startPoint: Point = when (spec.alignment) {
+            "Center" -> {
+                val centerX = (width / 2f).roundToInt()
+                val centerY = (height / 2f).roundToInt()
+                Point(x + centerX - stringLength, y + centerY - imageSize.height)
+            }
+            "TopRight" -> Point(x + width - stringLength, y)
+            else -> Point(x, y)
         }
-        val text = String.format("%d", value)
-        Log.d(TAG, String.format("draw value %s", text))
-        for (i in text.toCharArray().indices) {
-            val charToPrint = text.toCharArray()[i]
+        for (i in valueToPrint.toCharArray().indices) {
+            val charToPrint = valueToPrint.toCharArray()[i]
             val va = charToPrint - '0'
-            val charBmp: Bitmap = Util.decodeImage(mService.resources, settings.getImagePath(spec.imageIndex + va))
-            canvas.drawBitmap(charBmp, x.toFloat(), y.toFloat(), settings.mGPaint)
-            x += charBmp.width + spacing
+            val charBmp: Bitmap = getBitmap(spec.imageIndex + va)
+            canvas.drawBitmap(charBmp, startPoint.x.toFloat(), startPoint.y.toFloat(), settings.mGPaint)
+            startPoint.x += charBmp.width + spacing
         }
-        Log.d(TAG, "complete")
     }
 
+    protected fun getBitmap(imageIdx: Int): Bitmap = Util.decodeImage(mService.resources, settings.getImagePath(imageIdx))
+
+    protected fun drawBitmap(canvas: Canvas, imageIdx: Int, x: Int, y: Int) {
+        drawBitmap(canvas, imageIdx, Point(x, y))
+    }
+
+    private fun drawBitmap(canvas: Canvas, imageIdx: Int, point: Point) {
+        canvas.drawBitmap(getBitmap(imageIdx), point.x.toFloat(), point.y.toFloat(), settings.mGPaint)
+    }
 
 }

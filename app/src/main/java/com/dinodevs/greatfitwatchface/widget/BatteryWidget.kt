@@ -15,46 +15,39 @@ import java.util.*
 import kotlin.math.roundToInt
 
 
-class BatteryWidget(private val settings: LoadSettings) : AbstractWidget() {
+class BatteryWidget() : CircleWidget() {
+    constructor(_settings: LoadSettings) : this() {
+        settings = _settings
+    }
+
     private var batteryData: Battery? = null
-    //    private Paint batteryPaint;
-    private var ring: Paint? = null
-    //
     private var batterySweepAngle = 0f
     private var angleLength: Int = 0
-    //
     private var batteryIcon: Bitmap? = null
     //    private Bitmap icon;
 //
     private var tempBattery = 0
-    private var mService: Service? = null
+
     // Screen-on init (runs once)
     override fun init(service: Service) {
-        mService = service
-        // Battery percent element
-//        if(settings.battery_percent>0){
-//            if(settings.battery_percentIcon){
-//                this.icon = Util.decodeImage(mService.getResources(),"icons/"+settings.is_white_bg+"battery.png");
-//            }
-//
-//            this.batteryPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-//            this.batteryPaint.setTypeface(ResourceManager.getTypeFace(service.getResources(), settings.font));
-//            this.batteryPaint.setTextSize(settings.battery_percentFontSize);
-//            this.batteryPaint.setColor(settings.battery_percentColor);
-//            this.batteryPaint.setTextAlign( (settings.battery_percentAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER );
-//        }
-//
-//        // Battery as images
-//        if(settings.batteryProg>0 && settings.batteryProgType==1) {
-//            this.batteryIcon = Util.decodeImage(mService.getResources(),"battery/battery0.png");
-//        }
-//
-// Progress Bar Circle
+        super.init(service)
+
         if (settings.theme.battery?.scale != null) {
-            ring = Paint(Paint.ANTI_ALIAS_FLAG)
-            ring!!.strokeCap = Paint.Cap.ROUND
-            ring!!.style = Paint.Style.STROKE
-            ring!!.strokeWidth = settings.theme.battery!!.scale!!.width.toFloat()
+            val scale = settings.theme.battery!!.scale!!
+            angleLength = scale.endAngle - scale.startAngle
+        }
+
+        // Progress Bar Circle
+        if (settings.theme.battery?.scale != null) {
+            if (settings.theme.battery!!.scale?.imageIndex == null) {
+                ring = Paint(Paint.ANTI_ALIAS_FLAG)
+                ring!!.strokeCap = Paint.Cap.ROUND
+                ring!!.style = Paint.Style.STROKE
+                ring!!.strokeWidth = settings.theme.battery!!.scale!!.width.toFloat()
+                ring!!.color = Color.parseColor(String.format("#%s", settings.theme.battery!!.scale!!.color.substring(12)))
+            } else {
+                ringBmp = getBitmap(settings.theme.battery!!.scale!!.imageIndex!!)
+            }
         }
     }
 
@@ -66,12 +59,12 @@ class BatteryWidget(private val settings: LoadSettings) : AbstractWidget() {
         }
         // Bar angle
         Log.d(TAG, String.format("settings.batteryProg > %d && settings.batteryProgType == %d", settings.batteryProg, settings.batteryProgType))
-        if (settings.theme.battery!!.scale != null) {
+        if (settings.theme.battery?.scale != null) {
             Log.d(TAG, String.format("angle %d", angleLength))
             batterySweepAngle = angleLength * (batteryData!!.level / batteryData!!.scale.toFloat())
         }
 
-        if (settings.theme.battery != null && settings.theme.battery!!.text != null) {
+        if (settings.theme.battery?.text != null) {
             val batterySteps: Int = settings.theme.battery!!.text!!.imagesCount
             tempBattery = batteryData!!.level / batterySteps
         }
@@ -82,78 +75,51 @@ class BatteryWidget(private val settings: LoadSettings) : AbstractWidget() {
         return listOf(DataType.BATTERY)
     }
 
-    private fun drawText(canvas: Canvas, value: Int, text: com.dinodevs.greatfitwatchface.theme.bin.Text) {
-        val width = text.bottomRightX - text.topLeftX
-        val height = text.bottomRightY - text.topLeftY
-        val spacing = (width / text.imagesCount.toFloat()).roundToInt() + text.spacing
-        var x = text.topLeftX
-        val y = text.topLeftY
-        val bmp = Util.decodeImage(mService!!.resources, settings.getImagePath(text.imageIndex))
-        val imageSize = Size(bmp.width, bmp.height)
-
-        val textString = String.format("%d", value)
-        if (text.alignment == "Center") {
-            x += (width / 2f - textString.length * imageSize.width / 2f).roundToInt()
-        }
-        Log.d(TAG, String.format("draw value %s", textString))
-        for (i in textString.toCharArray().indices) {
-            val charToPrint = textString.toCharArray()[i]
-            val va = charToPrint - '0'
-            Log.d(TAG, String.format("draw char (x: %d, y: %d) %d - %c > bmp %s", x, y, i, charToPrint, settings.getImagePath(text.imageIndex + va)))
-            val charBmp = Util.decodeImage(mService!!.resources, settings.getImagePath(text.imageIndex + va))
-            canvas.drawBitmap(charBmp, x.toFloat(), y.toFloat(), settings.mGPaint)
-            x += charBmp.width + spacing
-        }
-        Log.d(TAG, "complete")
-    }
+//    private fun drawText(canvas: Canvas, value: Int, text: com.dinodevs.greatfitwatchface.theme.bin.Text) {
+//        val width = text.bottomRightX - text.topLeftX
+//        val height = text.bottomRightY - text.topLeftY
+//        val spacing = (width / text.imagesCount.toFloat()).roundToInt() + text.spacing
+//        var x = text.topLeftX
+//        val y = text.topLeftY
+//        val bmp = getBitmap(text.imageIndex))
+//        val imageSize = Size(bmp.width, bmp.height)
+//
+//        val textString = String.format("%d", value)
+//        if (text.alignment == "Center") {
+//            x += (width / 2f - textString.length * imageSize.width / 2f).roundToInt()
+//        }
+//        Log.d(TAG, String.format("draw value %s", textString))
+//        for (i in textString.toCharArray().indices) {
+//            val charToPrint = textString.toCharArray()[i]
+//            val va = charToPrint - '0'
+//            Log.d(TAG, String.format("draw char (x: %d, y: %d) %d - %c > bmp %s", x, y, i, charToPrint, settings.getImagePath(text.imageIndex + va)))
+//            val charBmp = Util.decodeImage(mService!!.resources, settings.getImagePath(text.imageIndex + va))
+//            canvas.drawBitmap(charBmp, x.toFloat(), y.toFloat(), settings.mGPaint)
+//            x += charBmp.width + spacing
+//        }
+//        Log.d(TAG, "complete")
+//    }
 
     // Draw screen-on
-    override fun draw(canvas: Canvas, width: Float, height: Float, centerX: Float, centerY: Float) {
+    override fun draw(canvas: Canvas?, width: Float, height: Float, centerX: Float, centerY: Float) {
         if (batteryData == null) {
             return
         }
-        try {
-            if (settings.theme.battery?.text != null) {
-                drawText(canvas, batteryData!!.level, settings.theme.battery!!.text!!)
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, e.message)
+
+        if (settings.theme.battery?.text != null) {
+            drawText(canvas!!, batteryData!!.level, settings.theme.battery!!.text!!)
         }
-        // Battery % widget
-//        if(settings.battery_percent>0){
-//            if(settings.battery_percentIcon){
-//                canvas.drawBitmap(this.icon, settings.battery_percentIconLeft, settings.battery_percentIconTop, settings.mGPaint);
-//            }
-//
-//            String text = Integer.toString(this.batteryData.getLevel() * 100 / this.batteryData.getScale())+"%";
-//            canvas.drawText(text, settings.battery_percentLeft, settings.battery_percentTop, batteryPaint);
-//        }
-// Battery Progress Image
-//        if (settings.theme.battery.text != null) {
-//            canvas.drawBitmap(batteryIcon!!,
-//                    settings.theme.battery.text!!.topLeftX.toFloat(),
-//                    settings.theme.battery.text!!.topLeftX.toFloat(),
-//                    settings.mGPaint)
-//        }
-        // Battery bar
-//        if (settings.batteryProg > 0 && settings.batteryProgType == 0) {
-        if (settings.theme.battery?.scale != null) {
-            val count = canvas.save()
-            // Rotate canvas to 0 degrees = 12 o'clock
-            canvas.rotate(-90f, centerX, centerY)
-            // Define circle
-            val scale = settings.theme.battery!!.scale!!
-            val radius = scale.radiusX.toFloat() /*- scale.getWidth()*/
-            val oval = RectF(scale.centerX - radius, scale.centerY - radius,
-                    scale.centerX + radius,
-                    scale.centerY + radius)
-            // Background
-            ring!!.color = Color.parseColor(String.format("#%s", scale.color.substring(12)))
-            //            canvas.drawArc(oval, scale.getStartAngle(), this.angleLength, false, ring);
-// this.ring.setColor(settings.colorCodes[settings.batteryProgColorIndex]); progressione colore
-            canvas.drawArc(oval, scale.startAngle.toFloat(), batterySweepAngle, false, ring!!)
-            canvas.restoreToCount(count)
+
+        val scale = settings.theme.battery?.scale
+
+        if (ring != null) {
+            drawRing(canvas!!, scale!!, ring!!, batterySweepAngle)
         }
+
+        if (ringBmp != null) {
+            drawCircle(canvas!!, scale!!, ringBmp!!, batterySweepAngle)
+        }
+
     }
 
     // Screen-off (SLPT)
@@ -170,48 +136,7 @@ class BatteryWidget(private val settings: LoadSettings) : AbstractWidget() {
         val show_all = !settings.clock_only_slpt || better_resolution
         if (!show_all) return slpt_objects
         var tmp_left: Int
-        //        // Show battery
-//        if(settings.battery_percent>0){
-//            // Show or Not icon
-//            if (settings.battery_percentIcon) {
-//                SlptPictureView battery_percentIcon = new SlptPictureView();
-//                battery_percentIcon.setImagePicture( SimpleFile.readFileFromAssets(service, ( (better_resolution)?"":"slpt_" )+"icons/"+settings.is_white_bg+"battery.png") );
-//                battery_percentIcon.setStart(
-//                        (int) settings.battery_percentIconLeft,
-//                        (int) settings.battery_percentIconTop
-//                );
-//                slpt_objects.add(battery_percentIcon);
-//            }
-//
-//            SlptLinearLayout power = new SlptLinearLayout();
-//            SlptPictureView percentage = new SlptPictureView();
-//            percentage.setStringPicture("%");
-//            power.add(new SlptPowerNumView());
-//            power.add(percentage);
-//            power.setTextAttrForAll(
-//                    settings.battery_percentFontSize,
-//                    settings.battery_percentColor,
-//                    ResourceManager.getTypeFace(service.getResources(), settings.font)
-//            );
-//            // Position based on screen on
-//            power.alignX = 2;
-//            power.alignY = 0;
-//            tmp_left = (int) settings.battery_percentLeft;
-//            if(!settings.battery_percentAlignLeft) {
-//                // If text is centered, set rectangle
-//                power.setRect(
-//                        (int) (2 * tmp_left + 640),
-//                        (int) (((float)settings.font_ratio/100)*settings.battery_percentFontSize)
-//                );
-//                tmp_left = -320;
-//            }
-//            power.setStart(
-//                    tmp_left,
-//                    (int) (settings.battery_percentTop-((float)settings.font_ratio/100)*settings.battery_percentFontSize)
-//            );
-//            slpt_objects.add(power);
-//        }
-// Battery as images
+
         if (settings.theme.battery?.text != null) {
             val battery_steps = 11
             val arrayOfByte = arrayOfNulls<ByteArray>(battery_steps)
@@ -223,46 +148,10 @@ class BatteryWidget(private val settings: LoadSettings) : AbstractWidget() {
             localSlptBatteryView.setStart(settings.batteryProgLeft.toInt(), settings.batteryProgTop.toInt())
             slpt_objects.add(localSlptBatteryView)
         }
-        //        // Battery bar
-//        if(settings.batteryProg>0 && settings.batteryProgType==0){
-//            // Draw background image
-//            if(settings.batteryProgBgBool) {
-//                SlptPictureView ring_background = new SlptPictureView();
-//                ring_background.setImagePicture(SimpleFile.readFileFromAssets(service, ((settings.isVerge())?"verge_":( (better_resolution)?"":"slpt_" ))+"circles/ring1_bg.png"));
-//                ring_background.setStart((int) (settings.batteryProgLeft-settings.batteryProgRadius), (int) (settings.batteryProgTop-settings.batteryProgRadius));
-//                slpt_objects.add(ring_background);
-//            }
-//
-//            SlptPowerArcAnglePicView localSlptPowerArcAnglePicView = new SlptPowerArcAnglePicView();
-//            localSlptPowerArcAnglePicView.setImagePicture(SimpleFile.readFileFromAssets(service, ((settings.isVerge())?"verge_":( (better_resolution)?"":"slpt_" ))+settings.batteryProgSlptImage));
-//            localSlptPowerArcAnglePicView.setStart((int) (settings.batteryProgLeft-settings.batteryProgRadius), (int) (settings.batteryProgTop-settings.batteryProgRadius));
-//            localSlptPowerArcAnglePicView.start_angle = (settings.batteryProgClockwise==1)? settings.batteryProgStartAngle : settings.batteryProgEndAngle;
-//            localSlptPowerArcAnglePicView.len_angle = 0;
-//            localSlptPowerArcAnglePicView.full_angle = (settings.batteryProgClockwise==1)? this.angleLength : -this.angleLength;
-//            localSlptPowerArcAnglePicView.draw_clockwise = settings.batteryProgClockwise;
-//            slpt_objects.add(localSlptPowerArcAnglePicView);
-//        }
         return slpt_objects
     }
 
     companion object {
         private const val TAG = "VergeIT-LOG"
-    }
-
-    // Constructor
-    init {
-        if (settings.theme.battery?.scale != null) {
-            //        if (settings.batteryProgClockwise == 1) {
-//            this.angleLength = (settings.batteryProgEndAngle < settings.batteryProgStartAngle) ?
-//                    360 - (settings.theme.getbattery.scale().getStartAngle() - settings.theme.getbattery.scale().getEndAngle()) :
-//                    settings.theme.getbattery.scale().getEndAngle() - settings.theme.getbattery.scale().getStartAngle();
-//        } else {
-//            this.angleLength = (settings.theme.getbattery.scale().getEndAngle() > settings.theme.getbattery.scale().getStartAngle()) ?
-//                    360 - (settings.theme.getbattery.scale().getStartAngle() - settings.theme.getbattery.scale().getEndAngle()) :
-//                    settings.theme.getbattery.scale().getEndAngle() - settings.theme.getbattery.scale().getStartAngle();
-//        }
-            val scale = settings.theme.battery!!.scale!!
-            angleLength = scale.endAngle - scale.startAngle
-        }
     }
 }

@@ -12,15 +12,14 @@ package com.dinodevs.greatfitwatchface.theme.bin
 
 import com.google.gson.annotations.SerializedName
 
-data class Scale (
+class MonthName : IFont {
 
-	@SerializedName("CenterX") val centerX : Int,
-	@SerializedName("CenterY") val centerY : Int,
-	@SerializedName("RadiusX") val radiusX : Int,
-	@SerializedName("RadiusY") val radiusY : Int,
-	@SerializedName("StartAngle") val startAngle : Int,
-	@SerializedName("EndAngle") val endAngle : Int,
-	@SerializedName("Width") val width : Int,
-	@SerializedName("Color") val color : String,
-	@SerializedName("Flatness") val flatness : Int
-)
+    @SerializedName("X")
+    override val x: Int = 0
+    @SerializedName("Y")
+    override val y: Int = 0
+    @SerializedName("ImageIndex")
+    override val imageIndex: Int = 0
+    @SerializedName("ImagesCount")
+    override val imagesCount: Int = 0
+}

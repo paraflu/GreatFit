@@ -18,7 +18,7 @@ data class Theme(
         @SerializedName("Background") val background: Background,
         @SerializedName("Time") val time: Time?,
         @SerializedName("Activity") val activity: Activity,
-        @SerializedName("Date") val date: Date,
+        @SerializedName("Date") val date: Date?,
         @SerializedName("Weather") val weather: Weather,
         @SerializedName("StepsProgress") val stepsProgress: StepsProgress?,
         @SerializedName("Status") val status: Status,

@@ -24,9 +24,12 @@ import com.ingenic.iwds.slpt.view.core.SlptViewComponent
 import com.ingenic.iwds.slpt.view.digital.*
 import com.ingenic.iwds.slpt.view.sport.SlptSportUtil
 import com.ingenic.iwds.slpt.view.utils.SimpleFile
+import java.lang.Exception
 import java.util.*
 
 class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
+    private var amBmp: Bitmap? = null
+    private var pmBmp: Bitmap? = null
     private val hourFont: TextPaint? = null
     private val minutesFont: TextPaint? = null
     private val secondsFont: TextPaint? = null
@@ -45,11 +48,13 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
     private val digitalNums = arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
     private val digitalNumsNo0 = arrayOf("", "1", "2", "3", "4", "5", "6", "7", "8", "9") //no 0 on first digit
     private var mService: Service? = null
-    override fun init(service: Service?) {
-        mService = service
-        val image = settings.getImagePath(settings.theme.background.image.imageIndex)
 
-        background = Util.decodeImage(service!!.resources, image)
+    fun getBitmap(imageIdx: Int): Bitmap = Util.decodeImage(mService!!.resources, settings.getImagePath(imageIdx))
+
+    override fun init(service: Service?) {
+        mService = service!!
+
+        background = getBitmap(settings.theme.background.image.imageIndex)
         if (settings.date > 0) {
             dateFont = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
             dateFont!!.typeface = getTypeFace(service.resources, settings.font)
@@ -62,10 +67,10 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
         }
 
         if (settings.theme.analogDialFace != null) {
-            hourHand = Util.decodeImage(service.resources, settings.getImagePath(settings.theme.analogDialFace!!.hours.image.imageIndex))
-            minuteHand = Util.decodeImage(service.resources, settings.getImagePath(settings.theme.analogDialFace!!.minutes.image.imageIndex))
+            hourHand = getBitmap(settings.theme.analogDialFace!!.hours.image.imageIndex)
+            minuteHand = getBitmap(settings.theme.analogDialFace!!.minutes.image.imageIndex)
             if (settings.theme.analogDialFace!!.seconds != null) {
-                secondsHand = Util.decodeImage(service.resources, settings.getImagePath(settings.theme.analogDialFace!!.seconds!!.image.imageIndex))
+                secondsHand = getBitmap(settings.theme.analogDialFace!!.seconds!!.image.imageIndex)
             }
         }
         weekdayFont = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
@@ -88,6 +93,12 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
         yearFont!!.textSize = settings.yearFontSize
         yearFont!!.color = settings.yearColor
         yearFont!!.textAlign = if (settings.yearAlignLeft) Paint.Align.LEFT else Paint.Align.CENTER
+
+        if (settings.theme?.time?.amPm != null) {
+            val amPm = settings.theme!!.time!!.amPm!!
+            amBmp = getBitmap(amPm.imageIndexAMEN)
+            pmBmp = getBitmap(amPm.imageIndexPMEN)
+        }
     }
 
     /*fun drawTime(canvas: Canvas?, value: Int, font: Ones) {
@@ -113,125 +124,46 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
             val charToPrint = text.toCharArray()[i]
             val va = charToPrint - '0'
             Log.d(TAG, "drawTime $text : $va")
-            val charBmp = Util.decodeImage(mService!!.resources, settings.getImagePath(font.imageIndex + va))
+            val charBmp = getBitmap(font.imageIndex + va)
             canvas.drawBitmap(charBmp, x.toFloat(), y.toFloat(), settings.mGPaint)
             x += charBmp.width
         }
     }
 
     // Screen open watch mode
-    override fun onDrawDigital(canvas: Canvas?, width: Float, height: Float, centerX: Float, centerY: Float, seconds: Int, minutes: Int, hours: Int, year: Int, month: Int, day: Int, week: Int, ampm: Int) { // Draw background image
-//this.background.draw(canvas);
-        canvas!!.drawBitmap(background, 0f, 0f, settings.mGPaint)
-        if (settings.theme.time != null) {
-            Log.d(TAG, String.format("%d%d:%d%d", hours / 10, hours % 10, minutes / 10, minutes % 10))
-            val time = settings.theme.time!!
-            drawTime(canvas, hours / 10, time.hours.tens)
-            drawTime(canvas, hours % 10, time.hours.ones)
-            drawTime(canvas, minutes / 10, time.minutes.tens)
-            drawTime(canvas, minutes % 10, time.minutes.ones)
-            when (ampm) {
-                0, 1 -> canvas.drawBitmap(
-                        Util.decodeImage(mService!!.resources,
-                                settings.getImagePath(
-                                        if (ampm == 0) settings.theme.time!!.amPm.imageIndexAMEN else
-                                            settings.theme.time!!.amPm.imageIndexPMEN)),
-                        settings.theme.time!!.amPm.x.toFloat(),
-                        settings.theme.time!!.amPm.y.toFloat(), settings.mGPaint)
-                else
-                -> {
+    override fun onDrawDigital(canvas: Canvas?, width: Float, height: Float, centerX: Float, centerY: Float, seconds: Int, minutes: Int, hours: Int, year: Int, month: Int, day: Int, week: Int, ampm: Int) {
+
+        try {
+            canvas!!.drawBitmap(background, 0f, 0f, settings.mGPaint)
+
+            if (settings.theme.time != null) {
+                val time = settings.theme.time!!
+                if (time.hours != null) {
+                    drawTime(canvas, hours / 10, time.hours.tens)
+                    drawTime(canvas, hours % 10, time.hours.ones)
+                }
+                if (time.minutes != null) {
+                    drawTime(canvas, minutes / 10, time.minutes.tens)
+                    drawTime(canvas, minutes % 10, time.minutes.ones)
+                }
+                if (time.amPm != null) {
+                    canvas.drawBitmap(
+                            if (ampm == 0) amBmp!! else pmBmp!!,
+                            time.amPm.x.toFloat(),
+                            time.amPm.y.toFloat(), settings.mGPaint)
                 }
             }
-            val dayText = Util.formatTime(day)
-            val monthText = Util.formatTime(month)
-            val date = Util.formatTime(day) + "." + Util.formatTime(month) + "." + year.toString()
-            Log.d(TAG, "day: $day dayText: $dayText month: $minutes monthText: $monthText hours: ${Util.formatTime(hours)} minutes ${Util.formatTime(minutes)} seconds ${Util.formatTime(seconds)} dateString: $date")
 
             if (settings.theme.analogDialFace != null) {
                 drawAnalogClock(canvas, settings.theme.analogDialFace!!, hours, minutes, seconds)
             }
-            //            // Draw hoursn
-//            canvas.drawText((settings.no_0_on_hour_first_digit) ? hours + "" : Util.formatTime(hours), settings.hoursLeft, settings.hoursTop, this.hourFont);
-//
-//            // Draw minutes
-//            canvas.drawText(Util.formatTime(minutes), settings.minutesLeft, settings.minutesTop, this.minutesFont);
-//
-//            // Draw Seconds
-//            if (settings.secondsBool) {
-//                canvas.drawText(Util.formatTime(seconds), settings.secondsLeft, settings.secondsTop, this.secondsFont);
-//            }
-//
-//            // : indicator Draw + Flashing
-//            if (settings.indicatorBool) {
-//                String indicator = ":";
-//                if (seconds % 2 == 0 || !settings.flashing_indicator) { // Draw only on even seconds (flashing : symbol)
-//                    canvas.drawText(indicator, settings.indicatorLeft, settings.indicatorTop, this.indicatorFont);
-//                }
-//            }
-//
-//            // AM-PM (ONLY FOR 12h format)
-//            switch (ampm) {
-//                case 0:
-//                    canvas.drawText("AM", this.settings.am_pmLeft, this.settings.am_pmTop, this.ampmFont);
-//                    break;
-//                case 1:
-//                    canvas.drawText("PM", this.settings.am_pmLeft, this.settings.am_pmTop, this.ampmFont);
-//                    break;
-//                default:
-//                    //Log.d("VergeIT-LOG", "AM-PM: 24h time format is on");
-//            }
+        } catch (e: Exception) {
+            Log.e(TAG, e.message)
         }
-//        if (settings.analog_clock) {
-//            canvas.save()
-//            canvas.rotate((hours * 30).toFloat() + minutes.toFloat() / 60.0f * 30.0f, 160.0f + if (settings.isVerge) 20f else 0f, 159.0f + if (settings.isVerge) 20f else 0f)
-//            canvas.drawBitmap(hourHand, centerX - hourHand!!.width / 2f, centerY - hourHand.height / 2f, null)
-//            canvas.restore()
-//            canvas.save()
-//            canvas.rotate((minutes * 6) as Float, 160.0f + if (settings.isVerge) 20f else 0f, 159.0f + if (settings.isVerge) 20f else 0f)
-//            canvas.drawBitmap(minuteHand, centerX - minuteHand!!.width / 2f, centerY - minuteHand.height / 2f, null)
-//            canvas.restore()
-//            if (settings.secondsBool) {
-//                canvas.save()
-//                canvas.rotate((seconds * 6).toFloat(), 160.0f + if (settings.isVerge) 20f else 0f, 159.0f + if (settings.isVerge) 20f else 0f)
-//                canvas.drawBitmap(secondsHand, centerX - secondsHand!!.width / 2f, centerY - secondsHand.height / 2f, null)
-//                canvas.restore()
-//            }
-//        }
-//        // JAVA calendar get/show time library
-//        val calendar = Calendar.getInstance()
-//        calendar[Calendar.DAY_OF_WEEK] = week
-//        // Draw Date
-//        if (settings.date > 0) {
-//            if (settings.dateIcon) {
-//                canvas.drawBitmap(dateIcon, settings.dateIconLeft, settings.dateIconTop, settings.mGPaint)
-//            }
-//            val date = Util.formatTime(day) + "." + Util.formatTime(month) + "." + Integer.toString(year)
-//            canvas.drawText(date, settings.dateLeft, settings.dateTop, dateFont)
-//        }
-//        // Draw Day
-//        if (settings.dayBool) {
-//            val dayText = Util.formatTime(day)
-//            canvas.drawText(dayText, settings.dayLeft, settings.dayTop, dayFont)
-//        }
-//        // Get + Draw WeekDay (using JAVA)
-//        if (settings.weekdayBool) { //String weekday = String.format("%S", new SimpleDateFormat("EE").format(calendar.getTime()));
-//            val weekdaynum = calendar[Calendar.DAY_OF_WEEK] - 1
-//            val weekday = if (settings.three_letters_day_if_text) days_3let[settings.language][weekdaynum] else days[settings.language][weekdaynum]
-//            canvas.drawText(weekday, settings.weekdayLeft, settings.weekdayTop, weekdayFont)
-//        }
-//        // Draw Month
-//        if (settings.monthBool) {
-//            val monthText = if (settings.month_as_text) if (settings.three_letters_month_if_text) months_3let[settings.language][month] else months[settings.language][month] else if (settings.no_0_on_hour_first_digit) Integer.toString(month) else String.format("%02d", month)
-//            canvas.drawText(monthText, settings.monthLeft, settings.monthTop, monthFont)
-//        }
-//        // Draw Year
-//        if (settings.yearBool) {
-//            canvas.drawText(Integer.toString(year), settings.yearLeft, settings.yearTop, yearFont)
-//        }
     }
 
     private fun drawAnalogClock(canvas: Canvas, analogDialFace: AnalogDialFace, hours: Int, minutes: Int, seconds: Int) {
-        Log.d(TAG, "drawAnalogClock")
+        Log.d(TAG, "drawAnalogClock $hours:$minutes:$seconds")
         val centerScreen = if (settings.isVerge) Point(180, 179) else Point(160, 159)
         canvas.save()
         canvas.rotate((hours * 30).toFloat() + minutes.toFloat() / 60.0f * 30.0f, centerScreen.x.toFloat(), centerScreen.y.toFloat())

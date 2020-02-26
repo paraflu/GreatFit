@@ -1,18 +1,19 @@
 package com.dinodevs.greatfitwatchface.widget
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.RectF
+import android.graphics.*
 import com.dinodevs.greatfitwatchface.settings.LoadSettings
 import com.dinodevs.greatfitwatchface.theme.bin.Circle
 
 open class CircleWidget() : TextWidget() {
+
+    protected var ring: Paint? = null
+    protected var ringBmp: Bitmap? = null
+
     constructor(_settings: LoadSettings) : this() {
         settings = _settings
     }
 
-    fun applyPieMask(src: Bitmap, startAngle: Float, sweepAngle: Float): Bitmap {
+    private fun applyPieMask(src: Bitmap, startAngle: Float, sweepAngle: Float): Bitmap {
         val width = src.width
         val height = src.height
         //create bitmap mask with the same dimension of the src bitmap
@@ -36,11 +37,24 @@ open class CircleWidget() : TextWidget() {
         return result
     }
 
-    fun drawCircle(canvas: Canvas, circle: Circle, ring: Bitmap, sweepAngle: Float) {
+    protected fun drawCircle(canvas: Canvas, circle: Circle, ring: Bitmap, sweepAngle: Float) {
         val count = canvas.save()
         canvas.rotate(-90f, circle.centerX.toFloat(), circle.centerY.toFloat())
-        canvas.drawBitmap(applyPieMask(ring!!, 0f, sweepAngle),
+        canvas.drawBitmap(applyPieMask(ring, 0f, sweepAngle),
                 circle.centerX.toFloat(), circle.centerY.toFloat(), settings.mGPaint)
+        canvas.restoreToCount(count)
+    }
+
+    protected fun drawRing(canvas: Canvas, circle: Circle, ring: Paint, sweepAngle: Float) {
+        val count = canvas.save()
+        // Rotate canvas to 0 degrees = 12 o'clock
+        canvas.rotate(-90f, circle.centerX.toFloat(), circle.centerY.toFloat())
+        // Define circle
+        val radius = circle.radiusX.toFloat() /*- scale.getWidth()*/
+        val oval = RectF(circle.centerX - radius, circle.centerY - radius,
+                circle.centerX + radius,
+                circle.centerY + radius)
+        canvas.drawArc(oval, circle.startAngle.toFloat(), sweepAngle, false, ring)
         canvas.restoreToCount(count)
     }
 }

@@ -16,19 +16,22 @@ class GreatFit : AbstractWatchFace() {
         val settings = LoadSettings(this.applicationContext)
         clock = MainClock(settings)
         widgets.add(DateWidget(settings))
+
         if (settings.theme.activity.pulse != null) {
             widgets.add(HeartRateWidget(settings))
         }
+
         if (settings.theme.activity.steps != null) {
             widgets.add(StepsWidget(settings))
         }
+
         if (settings.theme.activity.calories != null) {
             widgets.add(CaloriesWidget(settings))
         }
 
-//        if (settings.theme.battery != null) {
-//            widgets.add(BatteryWidget(settings))
-//        }
+        if (settings.theme.battery != null) {
+            widgets.add(BatteryWidget(settings))
+        }
         //
 //        if(settings.isHeartRate()) {
 //            this.widgets.add(new HeartRateWidget(settings));
