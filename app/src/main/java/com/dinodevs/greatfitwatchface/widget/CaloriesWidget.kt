@@ -4,16 +4,11 @@ import android.app.Service
 import android.content.Context
 import android.graphics.*
 import android.text.TextPaint
-import android.util.Log
-import android.util.Size
 import com.dinodevs.greatfitwatchface.AbstractWatchFace
 import com.dinodevs.greatfitwatchface.data.Calories
 import com.dinodevs.greatfitwatchface.data.DataType
 import com.dinodevs.greatfitwatchface.resource.ResourceManager.getTypeFace
 import com.dinodevs.greatfitwatchface.settings.LoadSettings
-import com.dinodevs.greatfitwatchface.theme.bin.Circle
-import com.dinodevs.greatfitwatchface.theme.bin.IText
-import com.huami.watch.watchface.util.Util
 import com.ingenic.iwds.slpt.view.arc.SlptArcAnglePicView
 import com.ingenic.iwds.slpt.view.core.SlptLinearLayout
 import com.ingenic.iwds.slpt.view.core.SlptPictureView
@@ -22,7 +17,6 @@ import com.ingenic.iwds.slpt.view.sport.SlptTodayCaloriesView
 import com.ingenic.iwds.slpt.view.utils.SimpleFile
 import java.util.*
 import kotlin.math.abs
-import kotlin.math.roundToInt
 
 class CaloriesWidget() : CircleWidget() {
 
@@ -41,13 +35,13 @@ class CaloriesWidget() : CircleWidget() {
     override fun init(service: Service) {
         mService = service
 
-        if (settings.theme.activity.calories?.circle != null) {
-            val circle = settings.theme.activity.calories!!.circle!!
-            if (circle?.imageIndex == null) {
+        if (settings.theme.activity?.calories?.circle != null) {
+            val circle = settings.theme.activity!!.calories!!.circle!!
+            if (circle.imageIndex == null) {
                 ring = Paint(Paint.ANTI_ALIAS_FLAG)
                 ring!!.strokeCap = Paint.Cap.ROUND
                 ring!!.style = Paint.Style.STROKE
-                ring!!.strokeWidth = settings.theme.activity.calories!!.circle!!.width!!.toFloat()
+                ring!!.strokeWidth = settings.theme.activity!!.calories!!.circle!!.width.toFloat()
             } else {
                 ringBmp = getBitmap(circle.imageIndex)
             }
@@ -63,12 +57,12 @@ class CaloriesWidget() : CircleWidget() {
     override fun onDataUpdate(type: DataType, value: Any) {
         calories = value as Calories
         // Bar angle
-        if (settings.theme.activity.calories != null) {
+        if (settings.theme.activity?.calories != null) {
             caloriesSweepAngle = angleLength * Math.min(calories!!.calories / settings.target_calories, 1f)
             if (abs(calories!!.calories - lastSlptUpdateCalories) / settings.target_calories > 0.05) {
                 lastSlptUpdateCalories = calories!!.calories
                 // Save the value to get it on the new slpt service
-                val sharedPreferences = mService!!.getSharedPreferences(mService!!.packageName + "_settings", Context.MODE_PRIVATE)
+                val sharedPreferences = mService.getSharedPreferences(mService.packageName + "_settings", Context.MODE_PRIVATE)
                 sharedPreferences.edit().putInt("temp_calories", lastSlptUpdateCalories).apply()
                 // Restart slpt
                 (mService as AbstractWatchFace?)!!.restartSlpt()
@@ -83,10 +77,10 @@ class CaloriesWidget() : CircleWidget() {
         }
 
         if (settings.theme.activity?.calories != null) {
-            drawText(canvas!!, calories!!.calories, settings.theme.activity.calories!!)
+            drawText(canvas!!, calories!!.calories, settings.theme.activity!!.calories!!)
         }
 
-        val scale = settings.theme.activity.calories?.circle
+        val scale = settings.theme.activity!!.calories?.circle
 
         if (ring != null) {
             drawRing(canvas!!, scale!!, ring!!, caloriesSweepAngle)
@@ -138,16 +132,16 @@ class CaloriesWidget() : CircleWidget() {
 
     // Screen-off (SLPT) - Better screen quality
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent> {
-        var better_resolution = better_resolution
-        better_resolution = better_resolution && settings.better_resolution_when_raising_hand
+        var betterResolution = better_resolution
+        betterResolution = betterResolution && settings.better_resolution_when_raising_hand
         val slpt_objects: MutableList<SlptViewComponent> = ArrayList()
         // Do not show in SLPT (but show on raise of hand)
-        val show_all = !settings.clock_only_slpt || better_resolution
+        val show_all = !settings.clock_only_slpt || betterResolution
         if (!show_all) return slpt_objects
         if (settings.calories > 0) { // Show or Not icon
             if (settings.caloriesIcon) {
                 val caloriesIcon = SlptPictureView()
-                caloriesIcon.setImagePicture(SimpleFile.readFileFromAssets(service, (if (better_resolution) "26wc_" else "slpt_") + "icons/" + settings.is_white_bg + "calories.png"))
+                caloriesIcon.setImagePicture(SimpleFile.readFileFromAssets(service, (if (betterResolution) "26wc_" else "slpt_") + "icons/" + settings.is_white_bg + "calories.png"))
                 caloriesIcon.setStart(
                         settings.caloriesIconLeft.toInt(),
                         settings.caloriesIconTop.toInt()
@@ -188,13 +182,13 @@ class CaloriesWidget() : CircleWidget() {
         if (settings.caloriesProg > 0 && settings.caloriesProgType == 0) { // Draw background image
             if (settings.caloriesProgBgBool) {
                 val ring_background = SlptPictureView()
-                ring_background.setImagePicture(SimpleFile.readFileFromAssets(service, (if (settings.isVerge) "verge_" else if (better_resolution) "" else "slpt_") + "circles/ring1_bg.png"))
+                ring_background.setImagePicture(SimpleFile.readFileFromAssets(service, (if (settings.isVerge) "verge_" else if (betterResolution) "" else "slpt_") + "circles/ring1_bg.png"))
                 ring_background.setStart((settings.caloriesProgLeft - settings.caloriesProgRadius).toInt(), (settings.caloriesProgTop - settings.caloriesProgRadius).toInt())
                 slpt_objects.add(ring_background)
             }
             //if(calories==null){calories = new Calories(0);}
             val localSlptArcAnglePicView = SlptArcAnglePicView()
-            localSlptArcAnglePicView.setImagePicture(SimpleFile.readFileFromAssets(service, (if (settings.isVerge) "verge_" else if (better_resolution) "" else "slpt_") + settings.caloriesProgSlptImage))
+            localSlptArcAnglePicView.setImagePicture(SimpleFile.readFileFromAssets(service, (if (settings.isVerge) "verge_" else if (betterResolution) "" else "slpt_") + settings.caloriesProgSlptImage))
             localSlptArcAnglePicView.setStart((settings.caloriesProgLeft - settings.caloriesProgRadius).toInt(), (settings.caloriesProgTop - settings.caloriesProgRadius).toInt())
             localSlptArcAnglePicView.start_angle = if (settings.caloriesProgClockwise == 1) settings.caloriesProgStartAngle else settings.caloriesProgEndAngle
             localSlptArcAnglePicView.len_angle = (angleLength * Math.min(settings.temp_calories / settings.target_calories, 1f)).toInt()

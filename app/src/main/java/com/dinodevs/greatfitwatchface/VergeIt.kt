@@ -17,31 +17,32 @@ class VergeIt : AbstractWatchFace() {
         clock = MainClock(settings)
         widgets.add(DateWidget(settings))
 
-        if (settings.theme.activity.pulse != null) {
+        if (settings.theme.activity?.pulse != null) {
             widgets.add(HeartRateWidget(settings))
         }
 
-        if (settings.theme.activity.steps != null) {
+        if (settings.theme.activity?.steps != null) {
             widgets.add(StepsWidget(settings))
         }
 
-        if (settings.theme.activity.calories != null) {
+        if (settings.theme.activity?.calories != null) {
             widgets.add(CaloriesWidget(settings))
         }
 
         if (settings.theme.battery != null) {
             widgets.add(BatteryWidget(settings))
         }
-        //
-//        if(settings.isHeartRate()) {
-//            this.widgets.add(new HeartRateWidget(settings));
-//        }
-        if(settings.theme.activity?.steps != null || settings.theme.stepsProgress != null) {
+
+        if (settings.theme.activity?.pulse != null) {
+            this.widgets.add(HeartRateWidget(settings));
+        }
+        if (settings.theme.activity?.steps != null || settings.theme.stepsProgress != null) {
             this.widgets.add(StepsWidget(settings));
         }
         if (settings.theme.weather != null) {
-            this.widgets.add(WeatherWidget (settings));
+            this.widgets.add(WeatherWidget(settings));
         }
+
 //        if(settings.isTodayDistanceRate()) {
 //            this.widgets.add(new SportTodayDistanceWidget(settings));
 //        }
@@ -54,9 +55,7 @@ class VergeIt : AbstractWatchFace() {
 //        if(settings.isFloor()) {
 //            this.widgets.add(new FloorWidget(settings));
 //        }
-//        if(settings.isWeather()) {
-//            this.widgets.add(new WeatherWidget(settings));
-//        }
+
 //        if (settings.isMoonPhase()){
 //            this.widgets.add(new MoonPhaseWidget(settings));
 //        }

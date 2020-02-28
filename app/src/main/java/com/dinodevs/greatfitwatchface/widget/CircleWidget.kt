@@ -41,11 +41,15 @@ open class CircleWidget() : TextWidget() {
 
     protected fun drawCircle(canvas: Canvas, circle: Circle, ring: Bitmap, sweepAngle: Float) {
         val count = canvas.save()
-        canvas.rotate(-90f, circle.centerX.toFloat(), circle.centerY.toFloat())
+        canvas.rotate(0f,
+                circle.centerX.toFloat(), circle.centerY.toFloat())
 //        canvas.drawBitmap(applyPieMask(ring, circle.startAngle.toFloat(), sweepAngle),
 //                circle.centerX.toFloat(), circle.centerY.toFloat(), settings.mGPaint)
-        canvas.drawBitmap(applyPieMask(ring, circle.startAngle.toFloat(), sweepAngle),
-                180f, 180f, settings.mGPaint)
+        canvas.drawBitmap(
+                applyPieMask(ring, circle.startAngle - 90f, sweepAngle ),
+                // ring,
+                circle.centerX.toFloat() - ring.width / 2f,
+                circle.centerY.toFloat() - ring.height / 2f, settings.mGPaint)
         canvas.restoreToCount(count)
     }
 

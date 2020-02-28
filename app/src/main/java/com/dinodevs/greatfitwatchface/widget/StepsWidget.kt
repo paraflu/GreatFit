@@ -61,15 +61,15 @@ class StepsWidget() : CircleWidget() {
         if (stepsData == null) {
             return
         }
-        if (settings.theme.activity.steps != null) { // Draw icon
-            drawText(canvas!!, stepsData!!.steps, settings.theme.activity.steps!!.step)
+        if (settings.theme.activity?.steps != null) { // Draw icon
+            drawText(canvas!!, stepsData!!.steps, settings.theme.activity!!.steps!!.step)
         }
         if (settings.theme.stepsProgress?.circle != null) {
             val circle = settings.theme.stepsProgress?.circle!!
             if (circle.imageIndex == null) {
                 val count = canvas!!.save()
                 // Rotate canvas to 0 degrees = 12 o'clock
-                canvas.rotate(-90f, circle.centerX.toFloat(), circle.centerY.toFloat())
+                canvas.rotate(circle.startAngle.toFloat(), circle.centerX.toFloat(), circle.centerY.toFloat())
                 val radius = circle.radiusX /*- scale.getWidth()*/.toFloat()
                 val oval = RectF(circle.centerX - radius, circle.centerY - radius,
                         circle.centerX + radius,
@@ -90,18 +90,18 @@ class StepsWidget() : CircleWidget() {
     }
 
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent?>? {
-        var better_resolution = better_resolution
-        better_resolution = better_resolution && settings.better_resolution_when_raising_hand
+        var betterResolution = better_resolution
+        betterResolution = betterResolution && settings.better_resolution_when_raising_hand
         val slpt_objects: MutableList<SlptViewComponent?> = ArrayList()
         var tmp_left: Int
         // Do not show in SLPT (but show on raise of hand)
-        val show_all = !settings.clock_only_slpt || better_resolution
+        val show_all = !settings.clock_only_slpt || betterResolution
         if (!show_all) return slpt_objects
         // Show steps
         if (settings.steps > 0) { // Show or Not icon
             if (settings.stepsIcon) {
                 val stepsIcon = SlptPictureView()
-                stepsIcon.setImagePicture(SimpleFile.readFileFromAssets(service, (if (better_resolution) "26wc_" else "slpt_") + "icons/" + settings.is_white_bg + "steps.png"))
+                stepsIcon.setImagePicture(SimpleFile.readFileFromAssets(service, (if (betterResolution) "26wc_" else "slpt_") + "icons/" + settings.is_white_bg + "steps.png"))
                 stepsIcon.setStart(
                         settings.stepsIconLeft.toInt(),
                         settings.stepsIconTop.toInt()
@@ -141,12 +141,12 @@ class StepsWidget() : CircleWidget() {
         if (settings.stepsProg > 0 && settings.stepsProgType == 0) { // Draw background image
             if (settings.stepsProgBgBool) {
                 val ring_background = SlptPictureView()
-                ring_background.setImagePicture(SimpleFile.readFileFromAssets(service, (if (settings.isVerge) "verge_" else if (better_resolution) "" else "slpt_") + "circles/ring1_bg.png"))
+                ring_background.setImagePicture(SimpleFile.readFileFromAssets(service, (if (settings.isVerge) "verge_" else if (betterResolution) "" else "slpt_") + "circles/ring1_bg.png"))
                 ring_background.setStart((settings.stepsProgLeft - settings.stepsProgRadius).toInt(), (settings.stepsProgTop - settings.stepsProgRadius).toInt())
                 slpt_objects.add(ring_background)
             }
             val stepsArcAnglePicView = SlptTodayStepArcAnglePicView()
-            stepsArcAnglePicView.setImagePicture(SimpleFile.readFileFromAssets(service, (if (settings.isVerge) "verge_" else if (better_resolution) "" else "slpt_") + settings.stepsProgSlptImage))
+            stepsArcAnglePicView.setImagePicture(SimpleFile.readFileFromAssets(service, (if (settings.isVerge) "verge_" else if (betterResolution) "" else "slpt_") + settings.stepsProgSlptImage))
             stepsArcAnglePicView.setStart((settings.stepsProgLeft - settings.stepsProgRadius).toInt(), (settings.stepsProgTop - settings.stepsProgRadius).toInt())
             stepsArcAnglePicView.start_angle = if (settings.stepsProgClockwise == 1) settings.stepsProgStartAngle else settings.stepsProgEndAngle
             //stepsArcAnglePicView.start_angle = settings.stepsProgStartAngle;

@@ -3,16 +3,13 @@ package com.dinodevs.greatfitwatchface.widget
 import android.app.Service
 import android.graphics.*
 import android.util.Log
-import android.util.Size
 import com.dinodevs.greatfitwatchface.data.Battery
 import com.dinodevs.greatfitwatchface.data.DataType
 import com.dinodevs.greatfitwatchface.settings.LoadSettings
-import com.huami.watch.watchface.util.Util
 import com.ingenic.iwds.slpt.view.core.SlptBatteryView
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
 import com.ingenic.iwds.slpt.view.utils.SimpleFile
 import java.util.*
-import kotlin.math.roundToInt
 
 
 class BatteryWidget() : CircleWidget() {
@@ -34,11 +31,7 @@ class BatteryWidget() : CircleWidget() {
 
         if (settings.theme.battery?.scale != null) {
             val scale = settings.theme.battery!!.scale!!
-            angleLength = scale.endAngle - scale.startAngle
-        }
-
-        // Progress Bar Circle
-        if (settings.theme.battery?.scale != null) {
+            angleLength = if (scale.startAngle > scale.endAngle) scale.startAngle - scale.endAngle else scale.endAngle - scale.startAngle
             if (settings.theme.battery!!.scale?.imageIndex == null) {
                 ring = Paint(Paint.ANTI_ALIAS_FLAG)
                 ring!!.strokeCap = Paint.Cap.ROUND
@@ -58,7 +51,7 @@ class BatteryWidget() : CircleWidget() {
             return
         }
 
-        val level: Int = 45 //batteryData!!.level
+        val level: Int = 45 // batteryData!!.level
 
         // Bar angle
         Log.d(TAG, String.format("settings.batteryProg > %d && settings.batteryProgType == %d", settings.batteryProg, settings.batteryProgType))
@@ -132,11 +125,11 @@ class BatteryWidget() : CircleWidget() {
 
     // Screen-off (SLPT) - Better screen quality
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent> {
-        var better_resolution = better_resolution
-        better_resolution = better_resolution && settings.better_resolution_when_raising_hand
+        var betterResolution = better_resolution
+        betterResolution = betterResolution && settings.better_resolution_when_raising_hand
         val slpt_objects: MutableList<SlptViewComponent> = ArrayList()
         // Do not show in SLPT (but show on raise of hand)
-        val show_all = !settings.clock_only_slpt || better_resolution
+        val show_all = !settings.clock_only_slpt || betterResolution
         if (!show_all) return slpt_objects
         var tmp_left: Int
 
