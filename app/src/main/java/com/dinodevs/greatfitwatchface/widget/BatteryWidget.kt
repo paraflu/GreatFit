@@ -51,7 +51,7 @@ class BatteryWidget() : CircleWidget() {
             return
         }
 
-        val level: Int = 45 // batteryData!!.level
+        val level: Int = batteryData!!.level
 
         // Bar angle
         Log.d(TAG, String.format("settings.batteryProg > %d && settings.batteryProgType == %d", settings.batteryProg, settings.batteryProgType))

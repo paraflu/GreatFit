@@ -257,7 +257,8 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
             // Draw background image
             Log.d(TAG, "buildSlptViewComponent")
             val background = SlptPictureView()
-            background.setImagePicture(SimpleFile.readFileFromAssets(service, settings.is_white_bg + "background" + (if (betterResolution) "_better" else "") + (if (settings.isVerge) "_verge" else "") + "_slpt.png"))
+//            background.setImagePicture(SimpleFile.readFileFromAssets(service, settings.is_white_bg + "background" + (if (betterResolution) "_better" else "") + (if (settings.isVerge) "_verge" else "") + "_slpt.png"))
+            background.setImagePicture(Util.Bitmap2Bytes(getBitmap(settings.theme.background.image.imageIndex)))
             //Alternative way
 //background.setImagePicture(ResourceManager.getVergeImageFromAssets(settings.isVerge(), service, "background"+ ((better_resolution)?"_better":"") +"_slpt.png"));
             slpt_objects.add(background)
