@@ -13,10 +13,12 @@ package com.dinodevs.greatfitwatchface.theme.bin
 import com.google.gson.annotations.SerializedName
 
 
-data class Activity (
+data class Activity(
 
-		@SerializedName("Calories") val calories : Calories?,
-		@SerializedName("Pulse") val pulse : Pulse?,
-		@SerializedName("Steps") val steps : Steps?,
-		@SerializedName("StarImage") val starImage : StarImage?
+        @SerializedName("Calories") val calories: Calories?,
+        @SerializedName("Pulse") val pulse: Pulse?,
+        @SerializedName("Steps") val steps: Steps?,
+        @SerializedName("StarImage") val starImage: StarImage?,
+        @SerializedName("PulseMeter") val pulseMeter: PulseMeter?,
+        @SerializedName("NoDataImageIndex") val noDataImageIndex: Int?
 )

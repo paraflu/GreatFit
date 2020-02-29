@@ -17,6 +17,8 @@ class BatteryWidget() : CircleWidget() {
         settings = _settings
     }
 
+    override var ring: Paint? = null
+    override var ringBmp: Bitmap? = null
     private var batteryData: Battery? = null
     private var batterySweepAngle = 0f
     private var angleLength: Int = 0
@@ -31,13 +33,13 @@ class BatteryWidget() : CircleWidget() {
 
         if (settings.theme.battery?.scale != null) {
             val scale = settings.theme.battery!!.scale!!
-            angleLength = if (scale.startAngle > scale.endAngle) scale.startAngle - scale.endAngle else scale.endAngle - scale.startAngle
+            angleLength = calcAngle(scale)
             if (settings.theme.battery!!.scale?.imageIndex == null) {
                 ring = Paint(Paint.ANTI_ALIAS_FLAG)
                 ring!!.strokeCap = Paint.Cap.ROUND
                 ring!!.style = Paint.Style.STROKE
-                ring!!.strokeWidth = settings.theme.battery!!.scale!!.width.toFloat()
-                ring!!.color = Color.parseColor(String.format("#%s", settings.theme.battery!!.scale!!.color.substring(12)))
+                ring!!.strokeWidth = settings.theme.battery!!.scale!!.width!!.toFloat()
+                ring!!.color = Color.parseColor(String.format("#%s", settings.theme.battery!!.scale!!.color!!.substring(12)))
             } else {
                 ringBmp = getBitmap(settings.theme.battery!!.scale!!.imageIndex!!)
             }

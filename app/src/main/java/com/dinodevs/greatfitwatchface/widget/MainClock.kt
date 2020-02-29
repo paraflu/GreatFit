@@ -27,6 +27,8 @@ import java.io.ByteArrayOutputStream
 
 
 class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
+    private var imageCache = mutableMapOf<Int, Bitmap>()
+
     private var hourCenterBmp: Bitmap? = null
     private var minCenterBmp: Bitmap? = null
     private var amBmp: Bitmap? = null
@@ -50,7 +52,17 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
     private val digitalNumsNo0 = arrayOf("", "1", "2", "3", "4", "5", "6", "7", "8", "9") //no 0 on first digit
     private var mService: Service? = null
 
-    fun getBitmap(imageIdx: Int): Bitmap = Util.decodeImage(mService!!.resources, settings.getImagePath(imageIdx))
+    fun getBitmap(imageIdx: Int): Bitmap {
+        var bmp: Bitmap? = null
+        if (!imageCache.containsKey(imageIdx)) {
+            bmp = Util.decodeImage(mService!!.resources, settings.getImagePath(imageIdx))
+            Log.d(TextWidget.TAG, "cache image $imageIdx")
+            imageCache[imageIdx] = bmp
+        } else {
+            bmp = imageCache[imageIdx]
+        }
+        return bmp!!;
+    }
 
     override fun init(service: Service?) {
 
@@ -230,11 +242,15 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
         return buildSlptViewComponent(service, false)
     }
 
-    fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
-        val stream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        val image: ByteArray = stream.toByteArray()
-        return image
+    fun loadCache(digit: ITimeDigit): Map<Int, ByteArray> {
+        var idx = settings.theme.time!!.hours!!.tens.imageIndex
+        var count = settings.theme.time!!.hours!!.tens.imagesCount
+        var array = mutableMapOf<Int, ByteArray>()
+        for (i in 0..count) {
+            val buff = Util.assetToBytes(settings.ctx, settings.getImagePath(idx + i))
+            array[idx + i] = buff
+        }
+        return array
     }
 
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent?>? {
@@ -257,11 +273,9 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
             // Draw background image
             Log.d(TAG, "buildSlptViewComponent")
             val background = SlptPictureView()
-//            background.setImagePicture(SimpleFile.readFileFromAssets(service, settings.is_white_bg + "background" + (if (betterResolution) "_better" else "") + (if (settings.isVerge) "_verge" else "") + "_slpt.png"))
             background.setImagePicture(Util.Bitmap2Bytes(getBitmap(settings.theme.background.image.imageIndex)))
-            //Alternative way
-//background.setImagePicture(ResourceManager.getVergeImageFromAssets(settings.isVerge(), service, "background"+ ((better_resolution)?"_better":"") +"_slpt.png"));
             slpt_objects.add(background)
+
             // Set low power icon
             if (settings.low_power) { // Draw low power icon
                 val lowpower = SlptPictureView()
@@ -274,10 +288,43 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
                 SlptSportUtil.setLowBatteryIconView(lowpower)
                 slpt_objects.add(lowpower)
             }
-            // Set font
+
             val timeTypeFace = getTypeFace(service!!.resources, settings.font)
+
+            if (settings.theme.time != null) {
+                val hourLayout = SlptLinearLayout()
+                val firstDigit: SlptViewComponent = SlptHourHView()
+                val pictureArray = loadCache(settings.theme.time!!.hours!!.tens).values.toTypedArray()
+                (firstDigit as SlptNumView)
+                        .setImagePictureArray(pictureArray)
+                hourLayout.add(firstDigit)
+                val secondDigit: SlptViewComponent = SlptHourLView()
+                (secondDigit as SlptNumView).setImagePictureArray(pictureArray)
+                hourLayout.add(secondDigit)
+                hourLayout.setTextAttrForAll(
+                        settings.hoursFontSize,
+                        settings.hoursColor,
+                        timeTypeFace
+                )
+                // Position based on screen on
+                hourLayout.alignX = 2
+                hourLayout.alignY = 0
+                hourLayout.setRect(
+                        (2 * settings.hoursLeft + 640).toInt(),
+                        (settings.font_ratio.toFloat() / 100 * settings.hoursFontSize).toInt()
+                )
+                hourLayout.setStart(
+                        -320,
+                        (settings.hoursTop - settings.font_ratio.toFloat() / 100 * settings.hoursFontSize).toInt()
+                )
+                //Add it to the list
+                slpt_objects.add(hourLayout)
+            }
+
+            // Set font
+            //val timeTypeFace = getTypeFace(service!!.resources, settings.font)
             if (settings.digital_clock) { // Draw hours
-                if (settings.hoursBool) {
+                if (settings.hoursBool && false) {
                     val hourLayout = SlptLinearLayout()
                     if (settings.no_0_on_hour_first_digit) { // No 0 on first digit
                         val firstDigit: SlptViewComponent = SlptHourHView()

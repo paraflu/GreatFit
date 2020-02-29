@@ -20,6 +20,9 @@ import kotlin.math.abs
 
 class CaloriesWidget() : CircleWidget() {
 
+    override var ring: Paint? = null
+    override var ringBmp: Bitmap? = null
+
     constructor(_settings: LoadSettings) : this() {
         settings = _settings
     }
@@ -37,11 +40,13 @@ class CaloriesWidget() : CircleWidget() {
 
         if (settings.theme.activity?.calories?.circle != null) {
             val circle = settings.theme.activity!!.calories!!.circle!!
+            angleLength = calcAngle(circle)
+
             if (circle.imageIndex == null) {
                 ring = Paint(Paint.ANTI_ALIAS_FLAG)
                 ring!!.strokeCap = Paint.Cap.ROUND
                 ring!!.style = Paint.Style.STROKE
-                ring!!.strokeWidth = settings.theme.activity!!.calories!!.circle!!.width.toFloat()
+                ring!!.strokeWidth = settings.theme.activity!!.calories!!.circle!!.width!!.toFloat()
             } else {
                 ringBmp = getBitmap(circle.imageIndex)
             }
@@ -80,14 +85,14 @@ class CaloriesWidget() : CircleWidget() {
             drawText(canvas!!, calories!!.calories, settings.theme.activity!!.calories!!)
         }
 
-        val scale = settings.theme.activity!!.calories?.circle
+        val circle = settings.theme.activity!!.calories?.circle
 
         if (ring != null) {
-            drawRing(canvas!!, scale!!, ring!!, caloriesSweepAngle)
+            drawRing(canvas!!, circle!!, ring!!, caloriesSweepAngle)
         }
 
         if (ringBmp != null) {
-            drawCircle(canvas!!, scale!!, ringBmp!!, caloriesSweepAngle)
+            drawCircle(canvas!!, circle!!, ringBmp!!, caloriesSweepAngle)
         }
 //        ifB (settings.theme.activity.calories != null) { //            if(settings.caloriesIcon){
 //            drawText(canvas, calories!!.calories, settings.theme.activity.calories!!)
@@ -111,7 +116,7 @@ class CaloriesWidget() : CircleWidget() {
 ////
 ////            this.ring.setColor(settings.colorCodes[settings.caloriesProgColorIndex]);
 ////            canvas.drawArc(oval, settings.caloriesProgStartAngle, this.caloriesSweepAngle, false, ring);
-//            val radius = cal!!.circle!!.radiusX /*- scale.getWidth()*/!!.toFloat()
+//            val radius = cal!!.circle!!.radiusX /*- circle.getWidth()*/!!.toFloat()
 //            val oval = RectF(cal.circle!!.centerX!! - radius, cal.circle!!.centerY!! - radius,
 //                    cal.circle!!.centerX!! + radius,
 //                    cal.circle!!.centerY!! + radius)

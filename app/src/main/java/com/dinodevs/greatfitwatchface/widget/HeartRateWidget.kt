@@ -16,46 +16,39 @@ import com.ingenic.iwds.slpt.view.sport.SlptLastHeartRateView
 import com.ingenic.iwds.slpt.view.utils.SimpleFile
 import java.util.*
 
-class HeartRateWidget//
-//        if(!(settings.heart_rateProg>0 && settings.heart_rateProgType==0)){return;}
-//        if(settings.heart_rateProgClockwise==1) {
-//            this.angleLength = (settings.heart_rateProgEndAngle < settings.heart_rateProgStartAngle) ? 360 - (settings.heart_rateProgStartAngle - settings.heart_rateProgEndAngle) : settings.heart_rateProgEndAngle - settings.heart_rateProgStartAngle;
-//        }else{
-//            this.angleLength = (settings.heart_rateProgEndAngle > settings.heart_rateProgStartAngle) ? 360 - (settings.heart_rateProgStartAngle - settings.heart_rateProgEndAngle) : settings.heart_rateProgEndAngle - settings.heart_rateProgStartAngle;
-//        }
-// Constructor
-(private val settings: LoadSettings) : AbstractWidget() {
+class HeartRateWidget() : CircleWidget() {
+
+    override var ring: Paint? = null
+    override var ringBmp: Bitmap? = null
+
+    constructor(_settings: LoadSettings) : this() {
+        settings = _settings
+    }
+
+    private var caloriesSweepAngle = 0f
+
     private val textPaint: TextPaint? = null
     private var heartRate: HeartRate? = null
-    private val heart_rateSweepAngle = 0f
+    private var heartRateSweepAngle = 0f
     private val lastSlptUpdateHeart_rate = 0
-    private val angleLength: Int? = null
+    private var angleLength: Int = 0
     private val maxHeartRate = 200f
-    private val ring: Paint? = null
-    private val heart_rateIcon: Bitmap? = null
-    private val heart_rate_flashingIcon: Bitmap? = null
-    private var mService: Service? = null
-    // Screen-on init (runs once)
+
     override fun init(service: Service) {
-        mService = service
-        //        this.textPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
-//        this.textPaint.setColor(settings.heart_rateColor);
-//        this.textPaint.setTypeface(ResourceManager.getTypeFace(service.getResources(), settings.font));
-//        this.textPaint.setTextSize(settings.heart_rateFontSize);
-//        this.textPaint.setTextAlign( (settings.heart_rateAlignLeft) ? Paint.Align.LEFT : Paint.Align.CENTER );
-//
-//        if(settings.heart_rateIcon){
-//            this.heart_rateIcon = Util.decodeImage(service.getResources(),"icons/"+settings.is_white_bg+"heart_rate.png");
-//            this.heart_rate_flashingIcon = Util.decodeImage(service.getResources(),"icons/"+settings.is_white_bg+"heart_rate_flashing.png");
-//        }
-//
-//        // Progress Bar Circle
-//        if(settings.heart_rateProg>0 && settings.heart_rateProgType==0){
-//            this.ring = new Paint(Paint.ANTI_ALIAS_FLAG);
-//            this.ring.setStrokeCap(Paint.Cap.ROUND);
-//            this.ring.setStyle(Paint.Style.STROKE);
-//            this.ring.setStrokeWidth(settings.heart_rateProgThickness);
-//        }
+        super.init(service)
+
+        if (settings.theme.activity?.pulseMeter != null) {
+            val circle = settings.theme.activity!!.pulseMeter!!
+            angleLength = calcAngle(circle)
+            if (circle.imageIndex == null) {
+                ring = Paint(Paint.ANTI_ALIAS_FLAG)
+                ring!!.strokeCap = Paint.Cap.ROUND
+                ring!!.style = Paint.Style.STROKE
+                ring!!.strokeWidth = settings.theme.activity!!.pulseMeter!!.width!!.toFloat()
+            } else {
+                ringBmp = getBitmap(circle.imageIndex)
+            }
+        }
     }
 
     // Register update listeners
@@ -63,72 +56,30 @@ class HeartRateWidget//
         return listOf(DataType.HEART_RATE)
     }
 
-    private fun drawText(canvas: Canvas, value: Int, spec: Element) {
-        throw NotImplementedError("pulse DrawText")
-    }
-
     // Value updater
     override fun onDataUpdate(type: DataType, value: Any) { // Heart rate class
         heartRate = value as HeartRate
-        //        // Bar angle
-//        //this.heartRateSweepAngle = (this.heartRate == null)? 0f : Math.min( this.angleLength, this.angleLength*(heartRate.getHeartRate()/this.maxHeartRate) ) ;
-//        // Bar angle
-//        if(settings.heart_rateProg>0 && settings.heart_rateProgType==0 && heartRate!=null && heartRate.getHeartRate()>25 ) {
-//            this.heart_rateSweepAngle = this.angleLength * Math.min(heartRate.getHeartRate()/this.maxHeartRate,1f);
-//
-//            //Log.w("VergeIT-LOG", "Heart rate update: "+heartRate.getHeartRate()+", Sweep angle:"+ heart_rateSweepAngle+", %"+(Math.abs(heartRate.getHeartRate()-this.lastSlptUpdateHeart_rate)/this.maxHeartRate));
-//
-//            if(Math.abs(heartRate.getHeartRate()-this.lastSlptUpdateHeart_rate)/this.maxHeartRate>0.05){
-//                this.lastSlptUpdateHeart_rate = heartRate.getHeartRate();
-//                // Save the value to get it on the new slpt service
-//                SharedPreferences sharedPreferences = mService.getSharedPreferences(mService.getPackageName()+"_settings", Context.MODE_PRIVATE);
-//                sharedPreferences.edit().putInt( "temp_heart_rate", this.lastSlptUpdateHeart_rate).apply();
-//                // Restart slpt
-//                ((AbstractWatchFace) this.mService).restartSlpt();
-//            }
-//        }
+        heartRateSweepAngle = angleLength * (heartRate!!.heartRate / settings.target_calories).coerceAtMost(1f)
     }
 
     // Draw screen-on
-    override fun draw(canvas: Canvas, width: Float, height: Float, centerX: Float, centerY: Float) { // Draw heart rate element
-        if (settings.heart_rate > 0) { // Draw icon
-//            if(settings.heart_rateIcon){
-//                // Draw flashing heart icon
-//                if(settings.flashing_heart_rate_icon) {
-//                    Calendar calendar = Calendar.getInstance();
-//                    if (calendar.get(Calendar.SECOND) % 2 == 1) {
-//                        canvas.drawBitmap(this.heart_rate_flashingIcon, settings.heart_rateIconLeft, settings.heart_rateIconTop, settings.mGPaint);
-//                    }else{
-//                        canvas.drawBitmap(this.heart_rateIcon, settings.heart_rateIconLeft, settings.heart_rateIconTop, settings.mGPaint);
-//                    }
-//                }else{
-//                    canvas.drawBitmap(this.heart_rateIcon, settings.heart_rateIconLeft, settings.heart_rateIconTop, settings.mGPaint);
-//                }
-//            }
-//
-//            // if units are enabled
-//            String units = (settings.heart_rateUnits) ? " bpm" : "";
-//            // Draw Heart rate
-//            String text = (heartRate == null || heartRate.getHeartRate() < 25) ? "--" : heartRate.getHeartRate() + units;
-//            canvas.drawText(text, settings.heart_rateLeft, settings.heart_rateTop, textPaint);
-            drawText(canvas, heartRate!!.heartRate, settings.theme.activity!!.pulse!!.element)
+    override fun draw(canvas: Canvas?, width: Float, height: Float, centerX: Float, centerY: Float) { // Draw heart rate element
+        if (heartRate == null) {
+            return
         }
-        // heart_rate bar
-        if (settings.heart_rateProg > 0 && settings.heart_rateProgType == 0) {
-            val count = canvas.save()
-            // Rotate canvas to 0 degrees = 12 o'clock
-            canvas.rotate(-90f, centerX, centerY)
-            // Define circle
-            val radius = settings.heart_rateProgRadius - settings.heart_rateProgThickness
-            val oval = RectF(settings.heart_rateProgLeft - radius, settings.heart_rateProgTop - radius, settings.heart_rateProgLeft + radius, settings.heart_rateProgTop + radius)
-            // Background
-            if (settings.heart_rateProgBgBool) {
-                ring!!.color = Color.parseColor("#999999")
-                canvas.drawArc(oval, settings.heart_rateProgStartAngle.toFloat(), angleLength!!.toFloat(), false, ring)
-            }
-            ring!!.color = settings.colorCodes[settings.heart_rateProgColorIndex]
-            canvas.drawArc(oval, settings.heart_rateProgStartAngle.toFloat(), heart_rateSweepAngle, false, ring)
-            canvas.restoreToCount(count)
+
+        if (settings.theme.activity?.pulse != null) { // Draw icon
+            drawText(canvas!!, heartRate!!.heartRate, settings.theme.activity!!.pulse!!)
+        }
+        val scale = settings.theme.activity?.pulseMeter
+
+        if (ring != null) {
+            drawRing(canvas!!, scale!!, ring!!, heartRateSweepAngle)
+        }
+
+        if (ringBmp != null) {
+            drawCircle(canvas!!, scale!!, ringBmp!!, heartRateSweepAngle)
+//            Log.d(TAG, "stepsWidget ${ringBmp!!.width}")
         }
     }
 
@@ -158,9 +109,10 @@ class HeartRateWidget//
 
     // Screen-off (SLPT) - Better screen quality
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent?>? {
-        var betterResolution = better_resolution
+        return null;
+        /*var betterResolution = better_resolution
         betterResolution = betterResolution && settings.better_resolution_when_raising_hand
-        mService = service
+        mService = service!!
         val slpt_objects: MutableList<SlptViewComponent?> = ArrayList()
         var tmp_left: Int
         // Do not show in SLPT (but show on raise of hand)
@@ -227,6 +179,7 @@ class HeartRateWidget//
             slpt_objects.add(localSlptArcAnglePicView)
         }
         return slpt_objects
+         */
     }
 
     companion object {

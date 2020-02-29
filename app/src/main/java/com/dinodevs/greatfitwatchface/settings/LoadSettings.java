@@ -37,6 +37,10 @@ public class LoadSettings {
         return themeAssets.path(imageIndex);
     }
 
+    public Context getCtx() {
+        return context;
+    }
+
     private Context context;
     public SharedPreferences sharedPreferences;
     private int versionCode;

@@ -22,6 +22,8 @@ class StepsWidget() : CircleWidget() {
         settings = _settings
     }
 
+    override var ring: Paint? = null
+    override var ringBmp: Bitmap? = null
     private var stepsData: Steps? = null
     private val stepsPaint: Paint? = null
     private val icon: Bitmap? = null
@@ -31,16 +33,17 @@ class StepsWidget() : CircleWidget() {
     override fun init(service: Service) {
         mService = service
         if (settings.theme.stepsProgress != null) {
-            if (settings.theme.stepsProgress!!.circle.imageIndex == null) {
+            val circle = settings.theme.stepsProgress!!.circle!!
+            angleLength = calcAngle(circle)
+            if (circle?.imageIndex == null) {
                 ring = Paint(Paint.ANTI_ALIAS_FLAG)
                 ring!!.strokeCap = Paint.Cap.ROUND
                 ring!!.style = Paint.Style.STROKE
-                ring!!.strokeWidth = settings.theme.stepsProgress!!.circle.width.toFloat()
+                ring!!.strokeWidth = settings.theme.stepsProgress!!.circle.width!!.toFloat()
             } else {
                 ringBmp = getBitmap(settings.theme.stepsProgress!!.circle.imageIndex!!)
             }
         }
-        angleLength = settings.theme.stepsProgress!!.circle.startAngle - settings.theme.stepsProgress!!.circle.endAngle
     }
 
     override fun onDataUpdate(type: DataType, value: Any) { // Steps class
@@ -64,25 +67,17 @@ class StepsWidget() : CircleWidget() {
         if (settings.theme.activity?.steps != null) { // Draw icon
             drawText(canvas!!, stepsData!!.steps, settings.theme.activity!!.steps!!.step)
         }
-        if (settings.theme.stepsProgress?.circle != null) {
-            val circle = settings.theme.stepsProgress?.circle!!
-            if (circle.imageIndex == null) {
-                val count = canvas!!.save()
-                // Rotate canvas to 0 degrees = 12 o'clock
-                canvas.rotate(circle.startAngle.toFloat(), circle.centerX.toFloat(), circle.centerY.toFloat())
-                val radius = circle.radiusX /*- scale.getWidth()*/.toFloat()
-                val oval = RectF(circle.centerX - radius, circle.centerY - radius,
-                        circle.centerX + radius,
-                        circle.centerY + radius)
-                // Background
-                Log.d(TAG, String.format("getStartAngle: %d angleLength: %d", circle.startAngle, angleLength))
-                ring!!.color = Color.parseColor(String.format("#%s", circle.color.substring(12)))
-                canvas.drawArc(oval, circle.startAngle.toFloat(), stepsSweepAngle, false, ring)
-                canvas.restoreToCount(count)
-            } else {
-                drawCircle(canvas!!, circle, ringBmp!!, stepsSweepAngle)
-            }
+        val scale = settings.theme.stepsProgress!!.circle
+
+        if (ring != null) {
+            drawRing(canvas!!, scale, ring!!, stepsSweepAngle)
         }
+
+        if (ringBmp != null) {
+            drawCircle(canvas!!, scale, ringBmp!!, stepsSweepAngle)
+//            Log.d(TAG, "stepsWidget ${ringBmp!!.width}")
+        }
+
     }
 
     override fun buildSlptViewComponent(service: Service?): List<SlptViewComponent?>? {
