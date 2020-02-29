@@ -35,7 +35,8 @@ open class TextWidget() : AbstractWidget() {
     }
 
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent?>? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        mService = service!!
+        return null
     }
 
     override fun draw(canvas: Canvas?, width: Float, height: Float, centerX: Float, centerY: Float) {

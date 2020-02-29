@@ -32,16 +32,16 @@ class BatteryWidget() : CircleWidget() {
         super.init(service)
 
         if (settings.theme.battery?.scale != null) {
-            val scale = settings.theme.battery!!.scale!!
-            angleLength = calcAngle(scale)
+            val circle = settings.theme.battery!!.scale!!
+            angleLength = calcAngle(circle)
             if (settings.theme.battery!!.scale?.imageIndex == null) {
                 ring = Paint(Paint.ANTI_ALIAS_FLAG)
                 ring!!.strokeCap = Paint.Cap.ROUND
                 ring!!.style = Paint.Style.STROKE
-                ring!!.strokeWidth = settings.theme.battery!!.scale!!.width!!.toFloat()
-                ring!!.color = Color.parseColor(String.format("#%s", settings.theme.battery!!.scale!!.color!!.substring(12)))
+                ring!!.strokeWidth = circle.width!!.toFloat()
+                ring!!.color = Color.parseColor(String.format("#%s", circle.color!!.substring(12)))
             } else {
-                ringBmp = getBitmap(settings.theme.battery!!.scale!!.imageIndex!!)
+                ringBmp = getBitmap(circle.imageIndex!!)
             }
         }
     }

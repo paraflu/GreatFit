@@ -33,15 +33,16 @@ class StepsWidget() : CircleWidget() {
     override fun init(service: Service) {
         mService = service
         if (settings.theme.stepsProgress != null) {
-            val circle = settings.theme.stepsProgress!!.circle!!
+            val circle = settings.theme.stepsProgress!!.circle
             angleLength = calcAngle(circle)
-            if (circle?.imageIndex == null) {
+            if (circle.imageIndex == null) {
                 ring = Paint(Paint.ANTI_ALIAS_FLAG)
                 ring!!.strokeCap = Paint.Cap.ROUND
                 ring!!.style = Paint.Style.STROKE
-                ring!!.strokeWidth = settings.theme.stepsProgress!!.circle.width!!.toFloat()
+                ring!!.strokeWidth = circle.width!!.toFloat()
+                ring!!.color = Color.parseColor(String.format("#%s", circle.color!!.substring(12)))
             } else {
-                ringBmp = getBitmap(settings.theme.stepsProgress!!.circle.imageIndex!!)
+                ringBmp = getBitmap(circle.imageIndex!!)
             }
         }
     }

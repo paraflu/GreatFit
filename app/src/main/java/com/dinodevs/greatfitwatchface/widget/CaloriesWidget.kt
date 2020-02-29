@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Context
 import android.graphics.*
 import android.text.TextPaint
+import android.util.Log
 import com.dinodevs.greatfitwatchface.AbstractWatchFace
 import com.dinodevs.greatfitwatchface.data.Calories
 import com.dinodevs.greatfitwatchface.data.DataType
@@ -46,7 +47,8 @@ class CaloriesWidget() : CircleWidget() {
                 ring = Paint(Paint.ANTI_ALIAS_FLAG)
                 ring!!.strokeCap = Paint.Cap.ROUND
                 ring!!.style = Paint.Style.STROKE
-                ring!!.strokeWidth = settings.theme.activity!!.calories!!.circle!!.width!!.toFloat()
+                ring!!.strokeWidth = circle.width!!.toFloat()
+                ring!!.color = Color.parseColor(String.format("#%s", circle.color!!.substring(12)))
             } else {
                 ringBmp = getBitmap(circle.imageIndex)
             }
@@ -136,7 +138,11 @@ class CaloriesWidget() : CircleWidget() {
     }
 
     // Screen-off (SLPT) - Better screen quality
-    override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent> {
+    override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean):
+            List<SlptViewComponent> {
+        super.buildSlptViewComponent(service, better_resolution)
+
+        Log.d(TAG, "buildSlptViewComponent Calories $mService $ring $ringBmp")
         var betterResolution = better_resolution
         betterResolution = betterResolution && settings.better_resolution_when_raising_hand
         val slpt_objects: MutableList<SlptViewComponent> = ArrayList()

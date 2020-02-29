@@ -18,6 +18,9 @@ class VergeItSlpt : AbstractWatchFaceSlpt() {
         // Load settings
         val settings = LoadSettings(context)
         clock = MainClock(settings)
+        if (settings.theme.activity?.calories != null) {
+            widgets.add(CaloriesWidget(settings))
+        }
         // Disable all except clock in both SLPT modes
 //if(settings.clock_only_slpt)
 //    return super.onStartCommand(intent, flags, startId);

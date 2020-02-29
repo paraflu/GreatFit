@@ -15,7 +15,7 @@ abstract class CircleWidget() : TextWidget() {
     }
 
     protected fun calcAngle(circle: ICircle): Int {
-        return if (circle.startAngle!! > circle.endAngle!!) circle.endAngle!! - circle.startAngle!! else circle.startAngle!! - circle.endAngle!!
+        return if (circle.startAngle!! > circle.endAngle!!) (circle.endAngle!! % 360) - (circle.startAngle!! % 360) else (circle.startAngle!! % 360) - (circle.endAngle!! % 360)
     }
 
     private fun applyPieMask(src: Bitmap, startAngle: Float, sweepAngle: Float): Bitmap {

@@ -45,6 +45,7 @@ class HeartRateWidget() : CircleWidget() {
                 ring!!.strokeCap = Paint.Cap.ROUND
                 ring!!.style = Paint.Style.STROKE
                 ring!!.strokeWidth = settings.theme.activity!!.pulseMeter!!.width!!.toFloat()
+                ring!!.color = Color.parseColor(String.format("#%s", circle.color!!.substring(12)))
             } else {
                 ringBmp = getBitmap(circle.imageIndex)
             }

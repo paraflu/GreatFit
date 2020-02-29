@@ -53,7 +53,7 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
     private var mService: Service? = null
 
     fun getBitmap(imageIdx: Int): Bitmap {
-        var bmp: Bitmap? = null
+        var bmp: Bitmap?
         if (!imageCache.containsKey(imageIdx)) {
             bmp = Util.decodeImage(mService!!.resources, settings.getImagePath(imageIdx))
             Log.d(TextWidget.TAG, "cache image $imageIdx")
@@ -271,7 +271,7 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
             mService = service
             var tmp_left: Int
             // Draw background image
-            Log.d(TAG, "buildSlptViewComponent")
+            Log.d(TAG, "buildSlptViewComponent mainClock")
             val background = SlptPictureView()
             background.setImagePicture(Util.Bitmap2Bytes(getBitmap(settings.theme.background.image.imageIndex)))
             slpt_objects.add(background)
