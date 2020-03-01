@@ -15,5 +15,6 @@ import com.google.gson.annotations.SerializedName
 data class DoNotDisturb (
 
 	@SerializedName("Coordinates") val coordinates : Coordinates,
-	@SerializedName("ImageIndexOn") val imageIndexOn : Int
+	@SerializedName("ImageIndexOn") val imageIndexOn : Int?,
+	@SerializedName("ImageIndexOff") val imageIndexOff : Int?
 )

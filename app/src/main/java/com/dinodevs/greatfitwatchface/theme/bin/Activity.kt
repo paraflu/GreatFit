@@ -15,6 +15,7 @@ import com.google.gson.annotations.SerializedName
 
 data class Activity(
 
+        @SerializedName("Distance") val distance: Distance?,
         @SerializedName("Calories") val calories: Calories?,
         @SerializedName("Pulse") val pulse: Pulse?,
         @SerializedName("Steps") val steps: Steps?,

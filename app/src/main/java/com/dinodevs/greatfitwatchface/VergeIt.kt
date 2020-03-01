@@ -13,7 +13,7 @@ class VergeIt : AbstractWatchFace() {
     override fun onCreate() {
         instance = WeakReference<VergeIt?>(this)
         // Load settings
-        val settings = LoadSettings(this.applicationContext)
+        val settings = LoadSettings(applicationContext)
         clock = MainClock(settings)
         widgets.add(DateWidget(settings))
 
@@ -34,34 +34,39 @@ class VergeIt : AbstractWatchFace() {
         }
 
         if (settings.theme.activity?.pulse != null) {
-            this.widgets.add(HeartRateWidget(settings));
+            widgets.add(HeartRateWidget(settings));
         }
         if (settings.theme.activity?.steps != null || settings.theme.stepsProgress != null) {
-            this.widgets.add(StepsWidget(settings));
+            widgets.add(StepsWidget(settings));
         }
+
         if (settings.theme.weather != null) {
-            this.widgets.add(WeatherWidget(settings));
+            widgets.add(WeatherWidget(settings));
+        }
+
+        if (settings.theme.activity?.distance != null) {
+            widgets.add(SportTodayDistanceWidget(settings))
         }
 
 //        if(settings.isTodayDistanceRate()) {
-//            this.widgets.add(new SportTodayDistanceWidget(settings));
+//            widgets.add(new SportTodayDistanceWidget(settings));
 //        }
 //        if(settings.isTotalDistanceRate()) {
-//            this.widgets.add(new SportTotalDistanceWidget(settings));
+//            widgets.add(new SportTotalDistanceWidget(settings));
 //        }
 //        if(settings.isCalories()) {
-//            this.widgets.add(new CaloriesWidget(settings));
+//            widgets.add(new CaloriesWidget(settings));
 //        }
 //        if(settings.isFloor()) {
-//            this.widgets.add(new FloorWidget(settings));
+//            widgets.add(new FloorWidget(settings));
 //        }
 
 //        if (settings.isMoonPhase()){
-//            this.widgets.add(new MoonPhaseWidget(settings));
+//            widgets.add(new MoonPhaseWidget(settings));
 //        }
 //        if(settings.isGreat()) {
-//            this.greatWidget = new GreatWidget(settings);
-//            this.widgets.add(this.greatWidget);
+//            greatWidget = new GreatWidget(settings);
+//            widgets.add(greatWidget);
 //        }
         status_bar(settings.status_bar, settings.status_barLeft, settings.status_barTop)
         super.onCreate()

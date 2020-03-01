@@ -14,6 +14,6 @@ import com.google.gson.annotations.SerializedName
 
 data class Temperature (
 
-	@SerializedName("Current") val current : Current,
-	@SerializedName("Symbols") val symbols : Symbols
+	@SerializedName("Current") val current : Current?,
+	@SerializedName("Symbols") val symbols : Symbols?
 )

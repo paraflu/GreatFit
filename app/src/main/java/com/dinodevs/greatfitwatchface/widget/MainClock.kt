@@ -52,17 +52,7 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
     private val digitalNumsNo0 = arrayOf("", "1", "2", "3", "4", "5", "6", "7", "8", "9") //no 0 on first digit
     private var mService: Service? = null
 
-    fun getBitmap(imageIdx: Int): Bitmap {
-        var bmp: Bitmap?
-        if (!imageCache.containsKey(imageIdx)) {
-            bmp = Util.decodeImage(mService!!.resources, settings.getImagePath(imageIdx))
-            Log.d(TextWidget.TAG, "cache image $imageIdx")
-            imageCache[imageIdx] = bmp
-        } else {
-            bmp = imageCache[imageIdx]
-        }
-        return bmp!!;
-    }
+    fun getBitmap(imageIdx: Int): Bitmap = settings.getBitmap(mService, imageIdx)
 
     override fun init(service: Service?) {
 

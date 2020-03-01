@@ -12,8 +12,8 @@ package com.dinodevs.greatfitwatchface.theme.bin
 
 import com.google.gson.annotations.SerializedName
 
-data class Battery (
-
-	@SerializedName("Text") val text : Text?,
-	@SerializedName("Scale") val scale : Circle?
+data class Battery(
+        @SerializedName("Unknown4") val unknown4: Unknown4,
+        @SerializedName("Text") val text: Text?,
+        @SerializedName("Scale") val scale: Circle?
 )

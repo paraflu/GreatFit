@@ -42,7 +42,7 @@ class StepsWidget() : CircleWidget() {
                 ring!!.strokeWidth = circle.width!!.toFloat()
                 ring!!.color = Color.parseColor(String.format("#%s", circle.color!!.substring(12)))
             } else {
-                ringBmp = getBitmap(circle.imageIndex!!)
+                ringBmp = getBitmap(circle.imageIndex)
             }
         }
     }

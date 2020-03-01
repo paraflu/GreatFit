@@ -9,6 +9,7 @@ import android.util.Log
 import com.dinodevs.greatfitwatchface.data.DataType
 import com.dinodevs.greatfitwatchface.data.WeatherData
 import com.dinodevs.greatfitwatchface.settings.LoadSettings
+import com.dinodevs.greatfitwatchface.theme.bin.Temperature
 import com.ingenic.iwds.slpt.view.core.SlptPictureView
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
 import com.ingenic.iwds.slpt.view.utils.SimpleFile
@@ -22,7 +23,6 @@ class WeatherWidget() : TextWidget() {
     constructor(_settings: LoadSettings) : this() {
         settings = _settings
     }
-
 
     // Screen-on init (runs once)
     override fun init(service: Service) {
@@ -56,21 +56,27 @@ class WeatherWidget() : TextWidget() {
                 drawBitmap(canvas!!, weatherIcon.noWeatherImageIndex, weatherIcon.images.x, weatherIcon.images.y)
             }
         }
+        if (settings.theme.weather?.temperature != null) {
+            val temperature = settings.theme.weather!!.temperature!!
+            drawText(canvas!!, /*weather!!.tempString*/ "-20", temperature)
+        }
     }
-    // Get ALL data from system
-    // Extract data from JSON
-    //weatherType = weather_data.getInt("weatherCodeFrom");
-    // New custom values in weather saved by Amazmod
+
+
+// Get ALL data from system
+// Extract data from JSON
+//weatherType = weather_data.getInt("weatherCodeFrom");
+// New custom values in weather saved by Amazmod
 /*
-            if (weather_data.has("tempMin"))
-                tempMin = weather_data.getString("tempMin");
-            if (weather_data.has("tempMax"))
-                tempMax = weather_data.getString("tempMax");
-            */
-    // Unknown weather
-    // Normal
+        if (weather_data.has("tempMin"))
+            tempMin = weather_data.getString("tempMin");
+        if (weather_data.has("tempMax"))
+            tempMax = weather_data.getString("tempMax");
+        */
+// Unknown weather
+// Normal
 // Default variables
-    // WeatherInfo
+// WeatherInfo
 // {"isAlert":true, "isNotification":true, "tempFormatted":"28ºC",
 // "tempUnit":"C", "v":1, "weatherCode":0, "aqi":-1, "aqiLevel":0, "city":"Somewhere",
 // "forecasts":[{"tempFormatted":"31ºC/21ºC","tempMax":31,"tempMin":21,"weatherCodeFrom":0,"weatherCodeTo":0,"day":1,"weatherFrom":0,"weatherTo":0},{"tempFormatted":"33ºC/23ºC","tempMax":33,"tempMin":23,"weatherCodeFrom":0,"weatherCodeTo":0,"day":2,"weatherFrom":0,"weatherTo":0},{"tempFormatted":"34ºC/24ºC","tempMax":34,"tempMin":24,"weatherCodeFrom":0,"weatherCodeTo":0,"day":3,"weatherFrom":0,"weatherTo":0},{"tempFormatted":"34ºC/23ºC","tempMax":34,"tempMin":23,"weatherCodeFrom":0,"weatherCodeTo":0,"day":4,"weatherFrom":0,"weatherTo":0},{"tempFormatted":"32ºC/22ºC","tempMax":32,"tempMin":22,"weatherCodeFrom":0,"weatherCodeTo":0,"day":5,"weatherFrom":0,"weatherTo":0}],
@@ -116,14 +122,16 @@ class WeatherWidget() : TextWidget() {
             sunset = 0
             sunrise = sunset
             // WeatherInfo
-// {"isAlert":true, "isNotification":true, "tempFormatted":"28ºC",
-// "tempUnit":"C", "v":1, "weatherCode":0, "aqi":-1, "aqiLevel":0, "city":"Somewhere",
-// "forecasts":[{"tempFormatted":"31ºC/21ºC","tempMax":31,"tempMin":21,"weatherCodeFrom":0,"weatherCodeTo":0,"day":1,"weatherFrom":0,"weatherTo":0},{"tempFormatted":"33ºC/23ºC","tempMax":33,"tempMin":23,"weatherCodeFrom":0,"weatherCodeTo":0,"day":2,"weatherFrom":0,"weatherTo":0},{"tempFormatted":"34ºC/24ºC","tempMax":34,"tempMin":24,"weatherCodeFrom":0,"weatherCodeTo":0,"day":3,"weatherFrom":0,"weatherTo":0},{"tempFormatted":"34ºC/23ºC","tempMax":34,"tempMin":23,"weatherCodeFrom":0,"weatherCodeTo":0,"day":4,"weatherFrom":0,"weatherTo":0},{"tempFormatted":"32ºC/22ºC","tempMax":32,"tempMin":22,"weatherCodeFrom":0,"weatherCodeTo":0,"day":5,"weatherFrom":0,"weatherTo":0}],
-// "pm25":-1, "sd":"50%", //(Humidity)
-// "temp":28, "time":1531292274457, "uv":"Strong",
-// "weather":0, "windDirection":"NW", "windStrength":"7.4km/h"}
-// WeatherCheckedSummary
-// {"tempUnit":"1","temp":"31\/21","weatherCodeFrom":0}
+            /*
+    // {"isAlert":true, "isNotification":true, "tempFormatted":"28ºC",
+    // "tempUnit":"C", "v":1, "weatherCode":0, "aqi":-1, "aqiLevel":0, "city":"Somewhere",
+    // "forecasts":[{"tempFormatted":"31ºC/21ºC","tempMax":31,"tempMin":21,"weatherCodeFrom":0,"weatherCodeTo":0,"day":1,"weatherFrom":0,"weatherTo":0},{"tempFormatted":"33ºC/23ºC","tempMax":33,"tempMin":23,"weatherCodeFrom":0,"weatherCodeTo":0,"day":2,"weatherFrom":0,"weatherTo":0},{"tempFormatted":"34ºC/24ºC","tempMax":34,"tempMin":24,"weatherCodeFrom":0,"weatherCodeTo":0,"day":3,"weatherFrom":0,"weatherTo":0},{"tempFormatted":"34ºC/23ºC","tempMax":34,"tempMin":23,"weatherCodeFrom":0,"weatherCodeTo":0,"day":4,"weatherFrom":0,"weatherTo":0},{"tempFormatted":"32ºC/22ºC","tempMax":32,"tempMin":22,"weatherCodeFrom":0,"weatherCodeTo":0,"day":5,"weatherFrom":0,"weatherTo":0}],
+    // "pm25":-1, "sd":"50%", //(Humidity)
+    // "temp":28, "time":1531292274457, "uv":"Strong",
+    // "weather":0, "windDirection":"NW", "windStrength":"7.4km/h"}
+    // WeatherCheckedSummary
+    // {"tempUnit":"1","temp":"31\/21","weatherCodeFrom":0}
+             */
             try { // Get ALL data from system
                 val str = Settings.System.getString(mService.applicationContext.contentResolver, "WeatherInfo")
                 Log.d(TAG, "weatherData $str")
@@ -140,11 +148,11 @@ class WeatherWidget() : TextWidget() {
                 if (weatherData.has("windStrength")) windStrength = weatherData.getString("windStrength")
                 // New custom values in weather saved by Amazmod
 /*
-            if (weather_data.has("tempMin"))
-                tempMin = weather_data.getString("tempMin");
-            if (weather_data.has("tempMax"))
-                tempMax = weather_data.getString("tempMax");
-            */if (weatherData.has("pressure")) pressure = weatherData.getString("pressure")
+        if (weather_data.has("tempMin"))
+            tempMin = weather_data.getString("tempMin");
+        if (weather_data.has("tempMax"))
+            tempMax = weather_data.getString("tempMax");
+        */if (weatherData.has("pressure")) pressure = weatherData.getString("pressure")
                 if (weatherData.has("visibility")) visibility = weatherData.getString("visibility")
                 if (weatherData.has("clouds")) clouds = weatherData.getString("clouds")
                 if (weatherData.has("sunrise")) sunrise = weatherData.getInt("sunrise")
@@ -172,11 +180,11 @@ class WeatherWidget() : TextWidget() {
         val slpt_objects = mutableListOf<SlptViewComponent?>()
         val weatherIcon = SlptPictureView()
 //            weatherIcon.setImagePicture(SimpleFile.readFileFromAssets(service, String.format((if (better_resolution) "26wc_" else "slpt_") + "weather/%s.png", settings.is_white_bg + weatherImageStrList[weather!!.weatherType])))
-            weatherIcon.setStart(
-                    settings.weather_imgIconLeft.toInt() - 2,  // the icons are 3px larger in width than other
-                    settings.weather_imgIconTop.toInt() - 2 // icons, thus -2 to calibrate it a little
-            )
-            slpt_objects.add(weatherIcon)
+        weatherIcon.setStart(
+                settings.weather_imgIconLeft.toInt() - 2,  // the icons are 3px larger in width than other
+                settings.weather_imgIconTop.toInt() - 2 // icons, thus -2 to calibrate it a little
+        )
+        slpt_objects.add(weatherIcon)
 //        var better_resolution = better_resolution
 //        better_resolution = better_resolution && settings.better_resolution_when_raising_hand
 //        val slpt_objects: MutableList<SlptViewComponent?> = ArrayList()
@@ -713,7 +721,7 @@ class WeatherWidget() : TextWidget() {
         private const val TAG = "VergeIT-LOG"
     }
 
-    // Constructor
+// Constructor
 //    init {
 //        // Load weather icons
 //        val weatherIconNames = arrayOf(

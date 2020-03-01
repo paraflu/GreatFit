@@ -12,23 +12,11 @@ For support, please feel free to contact me at https://www.linkedin.com/in/syeda
 package com.dinodevs.greatfitwatchface.theme.bin
 
 import com.google.gson.annotations.SerializedName
+data class Unknown4 (
 
-class Current : IText {
-
-    @SerializedName("TopLeftX")
-    override val topLeftX: Int = 0
-    @SerializedName("TopLeftY")
-    override val topLeftY: Int = 0
-    @SerializedName("BottomRightX")
-    override val bottomRightX: Int = 0
-    @SerializedName("BottomRightY")
-    override val bottomRightY: Int = 0
-    @SerializedName("Alignment")
-    override val alignment: String = "Center"
-    @SerializedName("Spacing")
-    override val spacing: Int = 0
-    @SerializedName("ImageIndex")
-    override val imageIndex: Int = 0
-    @SerializedName("ImagesCount")
-    override val imagesCount: Int = 0
-}
+	@SerializedName("OnlyBorder") val onlyBorder : Boolean,
+	@SerializedName("Color") val color : String,
+	@SerializedName("CenterOffset") val centerOffset : CenterOffset,
+	@SerializedName("Image") val image : Image,
+	@SerializedName("Sector") val sector : Sector
+)

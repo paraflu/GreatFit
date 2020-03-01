@@ -1,9 +1,11 @@
 package com.dinodevs.greatfitwatchface.settings;
 
+import android.app.Service;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
@@ -18,6 +20,8 @@ import com.dinodevs.greatfitwatchface.theme.bin.ThemeAssets;
 import com.google.gson.Gson;
 import com.huami.watch.watchface.util.Util;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 
 import java.io.FileReader;
@@ -34,7 +38,7 @@ public class LoadSettings {
     }
 
     public String getImagePath(int imageIndex) {
-        return themeAssets.path(imageIndex);
+        return themeAssets.getPath(imageIndex);
     }
 
     public Context getCtx() {
@@ -1851,5 +1855,10 @@ public class LoadSettings {
     // GREAT WIDGET
     public boolean isGreat() {
         return this.am_pm_always || watch_alarm > 0 || xdrip > 0 || air_pressure > 0 || altitude > 0 || phone_battery > 0 || phone_alarm > 0 || notifications > 0 || phone_batteryProg > 0 || world_time > 0 || walked_distance > 0;
+    }
+
+    @NotNull
+    public Bitmap getBitmap(Service service, int imageIdx) {
+        return themeAssets.getBitmap(service, imageIdx);
     }
 }

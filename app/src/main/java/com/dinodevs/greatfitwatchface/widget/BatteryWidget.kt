@@ -118,6 +118,10 @@ class BatteryWidget() : CircleWidget() {
             drawCircle(canvas!!, scale!!, ringBmp!!, batterySweepAngle)
         }
 
+        if (settings.theme.battery?.unknown4 !=null) {
+            drawProgress(canvas!!, settings.theme.battery?.unknown4!!, batterySweepAngle)
+        }
+
     }
 
     // Screen-off (SLPT)
@@ -127,25 +131,25 @@ class BatteryWidget() : CircleWidget() {
 
     // Screen-off (SLPT) - Better screen quality
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent> {
-        var betterResolution = better_resolution
-        betterResolution = betterResolution && settings.better_resolution_when_raising_hand
+//        var betterResolution = better_resolution
+//        betterResolution = betterResolution && settings.better_resolution_when_raising_hand
         val slpt_objects: MutableList<SlptViewComponent> = ArrayList()
-        // Do not show in SLPT (but show on raise of hand)
-        val show_all = !settings.clock_only_slpt || betterResolution
-        if (!show_all) return slpt_objects
-        var tmp_left: Int
-
-        if (settings.theme.battery?.text != null) {
-            val battery_steps = 11
-            val arrayOfByte = arrayOfNulls<ByteArray>(battery_steps)
-            for (i in arrayOfByte.indices) {
-                arrayOfByte[i] = SimpleFile.readFileFromAssets(service, settings.getImagePath(settings.theme.battery!!.text!!.imageIndex + i))
-            }
-            val localSlptBatteryView = SlptBatteryView(battery_steps)
-            localSlptBatteryView.setImagePictureArray(arrayOfByte)
-            localSlptBatteryView.setStart(settings.batteryProgLeft.toInt(), settings.batteryProgTop.toInt())
-            slpt_objects.add(localSlptBatteryView)
-        }
+//        // Do not show in SLPT (but show on raise of hand)
+//        val show_all = !settings.clock_only_slpt || betterResolution
+//        if (!show_all) return slpt_objects
+//        var tmp_left: Int
+//
+//        if (settings.theme.battery?.text != null) {
+//            val battery_steps = 11
+//            val arrayOfByte = arrayOfNulls<ByteArray>(battery_steps)
+//            for (i in arrayOfByte.indices) {
+//                arrayOfByte[i] = SimpleFile.readFileFromAssets(service, settings.getImagePath(settings.theme.battery!!.text!!.imageIndex + i))
+//            }
+//            val localSlptBatteryView = SlptBatteryView(battery_steps)
+//            localSlptBatteryView.setImagePictureArray(arrayOfByte)
+//            localSlptBatteryView.setStart(settings.batteryProgLeft.toInt(), settings.batteryProgTop.toInt())
+//            slpt_objects.add(localSlptBatteryView)
+//        }
         return slpt_objects
     }
 

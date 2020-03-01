@@ -13,7 +13,7 @@ package com.dinodevs.greatfitwatchface.theme.bin
 
 import com.google.gson.annotations.SerializedName
 
-class Current : IText {
+class Number : IText {
 
     @SerializedName("TopLeftX")
     override val topLeftX: Int = 0

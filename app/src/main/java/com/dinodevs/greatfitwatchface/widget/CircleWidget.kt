@@ -4,6 +4,7 @@ import android.graphics.*
 import android.util.Log
 import com.dinodevs.greatfitwatchface.settings.LoadSettings
 import com.dinodevs.greatfitwatchface.theme.bin.ICircle
+import com.dinodevs.greatfitwatchface.theme.bin.Unknown4
 
 abstract class CircleWidget() : TextWidget() {
 
@@ -15,7 +16,20 @@ abstract class CircleWidget() : TextWidget() {
     }
 
     protected fun calcAngle(circle: ICircle): Int {
-        return if (circle.startAngle!! > circle.endAngle!!) (circle.endAngle!! % 360) - (circle.startAngle!! % 360) else (circle.startAngle!! % 360) - (circle.endAngle!! % 360)
+        return calcAngle(circle.startAngle!!, circle.endAngle!!)
+    }
+
+    private fun calcAngle(startAngle: Int, endAngle: Int): Int {
+        return if (startAngle > endAngle) (endAngle % 360) - (startAngle % 360) else (startAngle!! % 360) - (endAngle!! % 360)
+    }
+
+    protected fun drawProgress(canvas: Canvas, unknown4: Unknown4, batterySweepAngle: Float) {
+        val count = canvas.save()
+        val bmp = getBitmap(unknown4.image.imageIndex)
+        val angle = calcAngle(unknown4.sector.startAngle, unknown4.sector.endAngle)
+        canvas.rotate(angle.toFloat(), unknown4.centerOffset.x.toFloat(), unknown4.centerOffset.y.toFloat())
+        canvas.drawBitmap(bmp, unknown4.image.x.toFloat(), unknown4.image.y.toFloat(), settings.mGPaint)
+        canvas.restoreToCount(count)
     }
 
     private fun applyPieMask(src: Bitmap, startAngle: Float, sweepAngle: Float): Bitmap {

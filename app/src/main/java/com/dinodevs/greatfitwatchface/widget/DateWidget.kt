@@ -72,11 +72,11 @@ class DateWidget() : TextWidget() {
             }
 
             if (monthSpec != null) {
-                drawText(canvas, month, monthSpec, monthAndDay.twoDigitsDay == false)
+                drawText(canvas, String.format("%02d", month), monthSpec, monthAndDay.twoDigitsDay == false)
             }
 
             if (daySpec != null) {
-                drawText(canvas, day, daySpec, monthAndDay.twoDigitsDay == false)
+                drawText(canvas, String.format("%02d", day), daySpec, monthAndDay.twoDigitsDay == false)
             }
         }
     }
