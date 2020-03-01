@@ -192,7 +192,6 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
     }
 
     private fun drawAnalogClock(canvas: Canvas, analogDialFace: AnalogDialFace, hours: Int, minutes: Int, seconds: Int) {
-        Log.d(TAG, "drawAnalogClock $hours:$minutes:$seconds")
         val centerScreen = if (settings.isVerge) Point(180, 179) else Point(160, 159)
         if (analogDialFace.hours != null) {
             val centerPoint = Point(centerScreen.x + analogDialFace.hours.centerOffset.x,

@@ -41,7 +41,6 @@ class ThemeAssets(val context: Context, val path: String) {
             _theme = Gson().fromJson<Theme>(FileReader(localPath), Theme::class.java)
             preCache()
         } else {
-
             val content = StringReader(String(SimpleFile.readFileFromAssets(context, path)))
             _theme = Gson().fromJson<Theme>(content, Theme::class.java)
         }

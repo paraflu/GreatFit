@@ -17,10 +17,13 @@ class BatteryWidget() : CircleWidget() {
         settings = _settings
     }
 
+    private var angleUnknown: Int = 0
+    private var progressBmp: Bitmap? = null
     override var ring: Paint? = null
     override var ringBmp: Bitmap? = null
     private var batteryData: Battery? = null
     private var batterySweepAngle = 0f
+    private var batteryUnknown4SweepAngle = 0f
     private var angleLength: Int = 0
     private var batteryIcon: Bitmap? = null
     //    private Bitmap icon;
@@ -34,6 +37,7 @@ class BatteryWidget() : CircleWidget() {
         if (settings.theme.battery?.scale != null) {
             val circle = settings.theme.battery!!.scale!!
             angleLength = calcAngle(circle)
+
             if (settings.theme.battery!!.scale?.imageIndex == null) {
                 ring = Paint(Paint.ANTI_ALIAS_FLAG)
                 ring!!.strokeCap = Paint.Cap.ROUND
@@ -43,6 +47,12 @@ class BatteryWidget() : CircleWidget() {
             } else {
                 ringBmp = getBitmap(circle.imageIndex!!)
             }
+
+        }
+        if (settings.theme.battery?.unknown4 != null) {
+            val unknown4 = settings.theme.battery!!.unknown4
+            angleUnknown = calcAngle(unknown4.sector.startAngle, unknown4.sector.endAngle)
+            progressBmp = getBitmap(settings.theme.battery!!.unknown4.image.imageIndex)
         }
     }
 
@@ -65,6 +75,11 @@ class BatteryWidget() : CircleWidget() {
         if (settings.theme.battery?.text != null) {
             val batterySteps: Int = settings.theme.battery!!.text!!.imagesCount
             tempBattery = level / batterySteps
+        }
+
+        if (settings.theme.battery?.unknown4 != null) {
+            val unknown4 = settings.theme.battery!!.unknown4
+            batteryUnknown4SweepAngle = angleUnknown * (level / batteryData!!.scale.toFloat())
         }
     }
 
@@ -118,8 +133,8 @@ class BatteryWidget() : CircleWidget() {
             drawCircle(canvas!!, scale!!, ringBmp!!, batterySweepAngle)
         }
 
-        if (settings.theme.battery?.unknown4 !=null) {
-            drawProgress(canvas!!, settings.theme.battery?.unknown4!!, batterySweepAngle)
+        if (progressBmp != null) {
+            drawProgress(canvas!!, progressBmp!!, settings.theme.battery?.unknown4!!, batteryUnknown4SweepAngle)
         }
 
     }

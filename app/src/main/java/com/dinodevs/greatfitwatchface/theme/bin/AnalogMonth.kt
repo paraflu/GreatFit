@@ -15,7 +15,7 @@ import com.google.gson.annotations.SerializedName
 data class AnalogMonth (
 
 	@SerializedName("OnlyBorder") val onlyBorder : Boolean,
-	@SerializedName("Color") val color : Int,
+	@SerializedName("Color") val color : String,
 	@SerializedName("CenterOffset") val centerOffset : CenterOffset,
 	@SerializedName("Image") val image : Image,
 	@SerializedName("Sector") val sector : Sector

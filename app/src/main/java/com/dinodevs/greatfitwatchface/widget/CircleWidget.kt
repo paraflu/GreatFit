@@ -5,6 +5,7 @@ import android.util.Log
 import com.dinodevs.greatfitwatchface.settings.LoadSettings
 import com.dinodevs.greatfitwatchface.theme.bin.ICircle
 import com.dinodevs.greatfitwatchface.theme.bin.Unknown4
+import kotlin.math.abs
 
 abstract class CircleWidget() : TextWidget() {
 
@@ -19,17 +20,32 @@ abstract class CircleWidget() : TextWidget() {
         return calcAngle(circle.startAngle!!, circle.endAngle!!)
     }
 
-    private fun calcAngle(startAngle: Int, endAngle: Int): Int {
-        return if (startAngle > endAngle) (endAngle % 360) - (startAngle % 360) else (startAngle!! % 360) - (endAngle!! % 360)
+    protected fun calcAngle(startAngle: Int, endAngle: Int): Int {
+        var start: Float = parseAngle(startAngle.toFloat())
+        var end: Float = parseAngle(endAngle.toFloat())
+        val res = if (start > end) (end % 360f) - (start % 360f) else (start % 360f) - (end % 360f)
+        return abs(res.toInt())
     }
 
-    protected fun drawProgress(canvas: Canvas, unknown4: Unknown4, batterySweepAngle: Float) {
-        val count = canvas.save()
-        val bmp = getBitmap(unknown4.image.imageIndex)
-        val angle = calcAngle(unknown4.sector.startAngle, unknown4.sector.endAngle)
-        canvas.rotate(angle.toFloat(), unknown4.centerOffset.x.toFloat(), unknown4.centerOffset.y.toFloat())
-        canvas.drawBitmap(bmp, unknown4.image.x.toFloat(), unknown4.image.y.toFloat(), settings.mGPaint)
-        canvas.restoreToCount(count)
+    private fun parseAngle(angle:Float): Float {
+        if (abs(angle) > 100) {
+            return angle / 100f
+        }
+        return angle;
+    }
+
+    protected fun drawProgress(canvas: Canvas, bmp: Bitmap, unknown4: Unknown4, batterySweepAngle: Float) {
+        val centerScreen = if (settings.isVerge) Point(180, 179) else Point(160, 159)
+
+        val centerPoint = Point(centerScreen.x + unknown4.centerOffset.x,
+                centerScreen.y + unknown4.centerOffset.y)
+        canvas.save()
+        var degree = parseAngle(unknown4.sector.startAngle.toFloat()) - batterySweepAngle;
+        canvas.rotate(degree                /*degree*/, centerPoint.x.toFloat(), centerPoint.y.toFloat())
+        canvas.drawBitmap(bmp,
+                (centerPoint.x - unknown4.image.x).toFloat(),
+                (centerPoint.y - unknown4.image.y).toFloat(), null)
+        canvas.restore()
     }
 
     private fun applyPieMask(src: Bitmap, startAngle: Float, sweepAngle: Float): Bitmap {
