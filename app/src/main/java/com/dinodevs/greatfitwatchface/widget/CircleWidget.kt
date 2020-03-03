@@ -3,8 +3,8 @@ package com.dinodevs.greatfitwatchface.widget
 import android.graphics.*
 import android.util.Log
 import com.dinodevs.greatfitwatchface.settings.LoadSettings
+import com.dinodevs.greatfitwatchface.theme.bin.ClockHand
 import com.dinodevs.greatfitwatchface.theme.bin.ICircle
-import com.dinodevs.greatfitwatchface.theme.bin.Unknown4
 import kotlin.math.abs
 
 abstract class CircleWidget() : TextWidget() {
@@ -34,18 +34,18 @@ abstract class CircleWidget() : TextWidget() {
         return angle;
     }
 
-    protected fun drawProgress(canvas: Canvas, bmp: Bitmap, unknown4: Unknown4, batterySweepAngle: Float) {
+    protected fun drawProgress(canvas: Canvas, bmp: Bitmap, clockHand: ClockHand, batterySweepAngle: Float) {
         val centerScreen = if (settings.isVerge) Point(180, 179) else Point(160, 159)
 
-        val centerPoint = Point(centerScreen.x + unknown4.centerOffset.x,
-                centerScreen.y + unknown4.centerOffset.y)
-        canvas.save()
-        var degree = parseAngle(unknown4.sector.startAngle.toFloat()) - batterySweepAngle;
+        val centerPoint = Point(centerScreen.x + clockHand.centerOffset.x,
+                centerScreen.y + clockHand.centerOffset.y)
+        val count = canvas.save()
+        val degree = parseAngle(clockHand.sector.startAngle.toFloat()) - batterySweepAngle;
         canvas.rotate(degree                /*degree*/, centerPoint.x.toFloat(), centerPoint.y.toFloat())
         canvas.drawBitmap(bmp,
-                (centerPoint.x - unknown4.image.x).toFloat(),
-                (centerPoint.y - unknown4.image.y).toFloat(), null)
-        canvas.restore()
+                (centerPoint.x - clockHand.image.x).toFloat(),
+                (centerPoint.y - clockHand.image.y).toFloat(), null)
+        canvas.restoreToCount(count)
     }
 
     private fun applyPieMask(src: Bitmap, startAngle: Float, sweepAngle: Float): Bitmap {

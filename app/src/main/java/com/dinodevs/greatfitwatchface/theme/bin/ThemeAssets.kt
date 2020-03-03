@@ -2,8 +2,6 @@ package com.dinodevs.greatfitwatchface.theme.bin
 
 import android.app.Service
 import android.content.Context
-import android.content.ContextWrapper
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
@@ -11,22 +9,21 @@ import com.google.gson.Gson
 import com.huami.watch.watchface.util.Util
 import com.ingenic.iwds.slpt.view.utils.SimpleFile
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileReader
 import java.io.StringReader
 
 
-class ThemeAssets(val context: Context, val path: String) {
+class ThemeAssets(val context: Context, private val themeName: String) {
 
     private var imageCache = mutableMapOf<Int, Bitmap>()
 
     private var _theme: Theme
-    private var localPath: String? = null
+    private var localPath: String = ""
 
     private var isLocal = false
 
     companion object {
-        val TAG = "VergeIT Tools"
+        const val TAG = "VergeIT Tools"
     }
 
     private fun preCache() {
@@ -35,13 +32,17 @@ class ThemeAssets(val context: Context, val path: String) {
     }
 
     init {
-        localPath = context.filesDir.absolutePath + "/theme/config.json";
+        ///data/data/com.dinodevs.greatfitwatchface/files/theme/Nuclear_pure_analog_cmp_vergelite/config.json
+        ///data/data/com.dinodevs.greatfitwatchface/files/theme/Nuclear_pure_analog_cmp_vergelite/config.json
+        localPath = context.filesDir.absolutePath + "/theme/$themeName/config.json";
+        Log.d(TAG, "theme $localPath")
         if (File(localPath).exists()) {
             isLocal = true
             _theme = Gson().fromJson<Theme>(FileReader(localPath), Theme::class.java)
             preCache()
         } else {
-            val content = StringReader(String(SimpleFile.readFileFromAssets(context, path)))
+            Log.d(TAG, "theme not found")
+            val content = StringReader(String(SimpleFile.readFileFromAssets(context, "$themeName/config.json")))
             _theme = Gson().fromJson<Theme>(content, Theme::class.java)
         }
     }
@@ -65,7 +66,7 @@ class ThemeAssets(val context: Context, val path: String) {
     fun getPath(imageIdx: Int): String {
         return if (isLocal)
             String.format("%s/%04d.png", File(localPath).parent, imageIdx)
-        else String.format("%s/%04d.png", File(this.path).parent, imageIdx)
+        else String.format("%s/%04d.png", File(this.themeName).parent, imageIdx)
     }
 
     val theme: Theme

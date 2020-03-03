@@ -12,8 +12,11 @@ package com.dinodevs.greatfitwatchface.theme.bin
 
 import com.google.gson.annotations.SerializedName
 
-data class Battery(
-        @SerializedName("Unknown4") val unknown4: ClockHand,
-        @SerializedName("Text") val text: Text?,
-        @SerializedName("Scale") val scale: Circle?
+data class ClockHand (
+
+	@SerializedName("OnlyBorder") val onlyBorder : Boolean,
+	@SerializedName("Color") val color : String,
+	@SerializedName("CenterOffset") val centerOffset : CenterOffset,
+	@SerializedName("Image") val image : Image,
+	@SerializedName("Sector") val sector : Sector
 )

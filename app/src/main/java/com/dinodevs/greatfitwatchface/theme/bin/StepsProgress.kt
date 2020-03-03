@@ -14,5 +14,6 @@ import com.google.gson.annotations.SerializedName
 
 data class StepsProgress (
 
-	@SerializedName("Circle") val circle : Circle
+	@SerializedName("Circle") val circle : Circle?,
+	@SerializedName("ClockHand") val clockHand : ClockHand?
 )

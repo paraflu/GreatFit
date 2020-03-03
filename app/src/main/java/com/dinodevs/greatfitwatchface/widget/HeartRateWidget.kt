@@ -5,19 +5,14 @@ import android.graphics.*
 import android.text.TextPaint
 import com.dinodevs.greatfitwatchface.data.DataType
 import com.dinodevs.greatfitwatchface.data.HeartRate
-import com.dinodevs.greatfitwatchface.resource.ResourceManager.getTypeFace
 import com.dinodevs.greatfitwatchface.settings.LoadSettings
-import com.dinodevs.greatfitwatchface.theme.bin.Element
-import com.ingenic.iwds.slpt.view.arc.SlptArcAnglePicView
-import com.ingenic.iwds.slpt.view.core.SlptLinearLayout
-import com.ingenic.iwds.slpt.view.core.SlptPictureView
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
-import com.ingenic.iwds.slpt.view.sport.SlptLastHeartRateView
-import com.ingenic.iwds.slpt.view.utils.SimpleFile
-import java.util.*
 
 class HeartRateWidget() : CircleWidget() {
 
+    private var angleGraph: Int = 0
+    private var heartGraphSweepAngle = 0f
+    private var progressBmp: Bitmap? = null
     override var ring: Paint? = null
     override var ringBmp: Bitmap? = null
 
@@ -50,6 +45,11 @@ class HeartRateWidget() : CircleWidget() {
                 ringBmp = getBitmap(circle.imageIndex)
             }
         }
+        if (settings.theme.activity?.pulseGraph?.clockHand != null) {
+            val clockHand = settings.theme.activity!!.pulseGraph!!.clockHand;
+            angleGraph = calcAngle(clockHand.sector.startAngle, clockHand.sector.endAngle)
+            progressBmp = getBitmap(clockHand.image.imageIndex);
+        }
     }
 
     // Register update listeners
@@ -61,6 +61,10 @@ class HeartRateWidget() : CircleWidget() {
     override fun onDataUpdate(type: DataType, value: Any) { // Heart rate class
         heartRate = value as HeartRate
         heartRateSweepAngle = angleLength * (heartRate!!.heartRate / settings.target_calories).coerceAtMost(1f)
+        if (settings.theme.activity?.pulseGraph?.clockHand != null) {
+            val clockHand = settings.theme.activity!!.pulseGraph!!.clockHand;
+            heartGraphSweepAngle = angleGraph * (heartRate!!.heartRate / settings.target_calories).coerceAtMost(1f)
+        }
     }
 
     // Draw screen-on
@@ -73,6 +77,7 @@ class HeartRateWidget() : CircleWidget() {
             drawText(canvas!!, heartRate!!.heartRate, settings.theme.activity!!.pulse!!)
         }
         val scale = settings.theme.activity?.pulseMeter
+        val clockHand = settings.theme.activity?.pulseGraph?.clockHand
 
         if (ring != null) {
             drawRing(canvas!!, scale!!, ring!!, heartRateSweepAngle)
@@ -82,6 +87,11 @@ class HeartRateWidget() : CircleWidget() {
             drawCircle(canvas!!, scale!!, ringBmp!!, heartRateSweepAngle)
 //            Log.d(TAG, "stepsWidget ${ringBmp!!.width}")
         }
+
+        if (progressBmp != null) {
+            drawProgress(canvas!!, progressBmp!!, clockHand!!, heartGraphSweepAngle)
+        }
+
     }
 
     // This doesn't work. There is an error when getting the index

@@ -50,13 +50,14 @@ public class LoadSettings {
     private int versionCode;
     private Resources res;
     private final static String TAG = "VergeIT-LOG";
+    private final static String themeName = "nuclear";
 
     public LoadSettings(Context context) {
         this.context = context;
         this.res = context.getResources();
         this.sharedPreferences = context.getSharedPreferences(context.getPackageName() + "_settings", Context.MODE_PRIVATE);
         defaultParameters();
-        this.themeAssets = new ThemeAssets(context, context.getString(R.string.theme));
+        this.themeAssets = new ThemeAssets(context, themeName);
     }
 
     // GENERAL

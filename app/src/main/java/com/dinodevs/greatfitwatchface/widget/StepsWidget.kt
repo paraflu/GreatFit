@@ -22,6 +22,9 @@ class StepsWidget() : CircleWidget() {
         settings = _settings
     }
 
+    private var stepProgressGraphSweepAngle = 0f
+    private var progressBmp: Bitmap? = null
+    private var angleGraph: Int = 0
     override var ring: Paint? = null
     override var ringBmp: Bitmap? = null
     private var stepsData: Steps? = null
@@ -32,8 +35,8 @@ class StepsWidget() : CircleWidget() {
     // Screen-on init (runs once)
     override fun init(service: Service) {
         mService = service
-        if (settings.theme.stepsProgress != null) {
-            val circle = settings.theme.stepsProgress!!.circle
+        if (settings.theme.stepsProgress?.circle != null) {
+            val circle = settings.theme.stepsProgress!!.circle!!
             angleLength = calcAngle(circle)
             if (circle.imageIndex == null) {
                 ring = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -44,16 +47,28 @@ class StepsWidget() : CircleWidget() {
             } else {
                 ringBmp = getBitmap(circle.imageIndex)
             }
+
+        }
+
+        if (settings.theme.stepsProgress?.clockHand != null) {
+            val clockHand = settings.theme.stepsProgress!!.clockHand!!;
+            angleGraph = calcAngle(clockHand.sector.startAngle, clockHand.sector.endAngle)
+            progressBmp = getBitmap(clockHand.image.imageIndex);
         }
     }
 
     override fun onDataUpdate(type: DataType, value: Any) { // Steps class
         stepsData = value as Steps
         stepsSweepAngle = 0f
+
         if (stepsData != null) {
-            Log.d(TAG, "target ${stepsData!!.target} steps ${stepsData!!.steps}")
             val steps = stepsData!!.steps
+
             stepsSweepAngle = angleLength * (steps.coerceAtMost(stepsData!!.target).toFloat() / stepsData!!.target)
+            if (settings.theme.stepsProgress?.clockHand != null) {
+                val clockHand = settings.theme.activity!!.pulseGraph!!.clockHand;
+                stepProgressGraphSweepAngle = angleGraph * (steps.coerceAtMost(stepsData!!.target).toFloat() / stepsData!!.target)
+            }
         }
     }
 
@@ -69,14 +84,19 @@ class StepsWidget() : CircleWidget() {
             drawText(canvas!!, stepsData!!.steps, settings.theme.activity!!.steps!!.step)
         }
         val scale = settings.theme.stepsProgress!!.circle
+        val clockHand = settings.theme.activity?.pulseGraph?.clockHand
 
         if (ring != null) {
-            drawRing(canvas!!, scale, ring!!, stepsSweepAngle)
+            drawRing(canvas!!, scale!!, ring!!, stepsSweepAngle)
         }
 
         if (ringBmp != null) {
-            drawCircle(canvas!!, scale, ringBmp!!, stepsSweepAngle)
+            drawCircle(canvas!!, scale!!, ringBmp!!, stepsSweepAngle)
 //            Log.d(TAG, "stepsWidget ${ringBmp!!.width}")
+        }
+
+        if (progressBmp != null) {
+            drawProgress(canvas!!, progressBmp!!, clockHand!!, stepProgressGraphSweepAngle)
         }
 
     }

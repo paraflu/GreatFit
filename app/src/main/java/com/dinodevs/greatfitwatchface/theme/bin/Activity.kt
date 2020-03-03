@@ -21,5 +21,6 @@ data class Activity(
         @SerializedName("Steps") val steps: Steps?,
         @SerializedName("StarImage") val starImage: StarImage?,
         @SerializedName("PulseMeter") val pulseMeter: PulseMeter?,
-        @SerializedName("NoDataImageIndex") val noDataImageIndex: Int?
+        @SerializedName("NoDataImageIndex") val noDataImageIndex: Int?,
+        @SerializedName("PulseGraph") val pulseGraph : PulseGraph?
 )

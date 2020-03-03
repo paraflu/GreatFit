@@ -20,5 +20,6 @@ data class AnalogDialFace(
         @SerializedName("Minutes") val minutes: Minutes?,
         @SerializedName("Seconds") val seconds: Seconds?,
         @SerializedName("HourCenterImage") val hourCenterImage : HourCenterImage?,
-        @SerializedName("MinCenterImage") val minCenterImage : MinCenterImage?
+        @SerializedName("MinCenterImage") val minCenterImage : MinCenterImage?,
+        @SerializedName("SecCenterImage") val secCenterImage : SecCenterImage?
 )
