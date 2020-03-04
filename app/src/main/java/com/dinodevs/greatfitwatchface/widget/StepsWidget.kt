@@ -66,7 +66,6 @@ class StepsWidget() : CircleWidget() {
 
             stepsSweepAngle = angleLength * (steps.coerceAtMost(stepsData!!.target).toFloat() / stepsData!!.target)
             if (settings.theme.stepsProgress?.clockHand != null) {
-                val clockHand = settings.theme.activity!!.pulseGraph!!.clockHand;
                 stepProgressGraphSweepAngle = angleGraph * (steps.coerceAtMost(stepsData!!.target).toFloat() / stepsData!!.target)
             }
         }
@@ -84,7 +83,7 @@ class StepsWidget() : CircleWidget() {
             drawText(canvas!!, stepsData!!.steps, settings.theme.activity!!.steps!!.step)
         }
         val scale = settings.theme.stepsProgress!!.circle
-        val clockHand = settings.theme.activity?.pulseGraph?.clockHand
+        val clockHand = settings.theme.stepsProgress?.clockHand
 
         if (ring != null) {
             drawRing(canvas!!, scale!!, ring!!, stepsSweepAngle)

@@ -21,10 +21,10 @@ abstract class CircleWidget() : TextWidget() {
     }
 
     protected fun calcAngle(startAngle: Int, endAngle: Int): Int {
-        var start: Float = parseAngle(startAngle.toFloat())
-        var end: Float = parseAngle(endAngle.toFloat())
-        val res = if (start > end) (end % 360f) - (start % 360f) else (start % 360f) - (end % 360f)
-        return abs(res.toInt())
+        val start: Float = parseAngle(startAngle.toFloat())
+        val end: Float = parseAngle(endAngle.toFloat())
+        val res = /*if (start > end) (end % 360f) - (start % 360f) else (start % 360f) - (end % 360f)*/ (start % 360) - (end % 360);
+        return res.toInt()
     }
 
     private fun parseAngle(angle:Float): Float {
@@ -34,13 +34,13 @@ abstract class CircleWidget() : TextWidget() {
         return angle;
     }
 
-    protected fun drawProgress(canvas: Canvas, bmp: Bitmap, clockHand: ClockHand, batterySweepAngle: Float) {
+    protected fun drawProgress(canvas: Canvas, bmp: Bitmap, clockHand: ClockHand, progressAngle: Float) {
         val centerScreen = if (settings.isVerge) Point(180, 179) else Point(160, 159)
 
         val centerPoint = Point(centerScreen.x + clockHand.centerOffset.x,
                 centerScreen.y + clockHand.centerOffset.y)
         val count = canvas.save()
-        val degree = parseAngle(clockHand.sector.startAngle.toFloat()) - batterySweepAngle;
+        val degree = parseAngle(clockHand.sector.startAngle.toFloat()) - progressAngle;
         canvas.rotate(degree                /*degree*/, centerPoint.x.toFloat(), centerPoint.y.toFloat())
         canvas.drawBitmap(bmp,
                 (centerPoint.x - clockHand.image.x).toFloat(),

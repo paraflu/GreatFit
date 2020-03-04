@@ -17,7 +17,7 @@ class VergeIt : AbstractWatchFace() {
         clock = MainClock(settings)
         widgets.add(DateWidget(settings))
 
-        if (settings.theme.activity?.pulse != null) {
+        if (settings.theme.activity?.pulse != null || settings.theme.activity?.pulseGraph != null || settings.theme.activity?.pulseMeter != null) {
             widgets.add(HeartRateWidget(settings))
         }
 
@@ -33,9 +33,6 @@ class VergeIt : AbstractWatchFace() {
             widgets.add(BatteryWidget(settings))
         }
 
-        if (settings.theme.activity?.pulse != null) {
-            widgets.add(HeartRateWidget(settings));
-        }
         if (settings.theme.activity?.steps != null || settings.theme.stepsProgress != null) {
             widgets.add(StepsWidget(settings));
         }
