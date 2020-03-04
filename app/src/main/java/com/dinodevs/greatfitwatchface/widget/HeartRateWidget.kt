@@ -62,7 +62,6 @@ class HeartRateWidget() : CircleWidget() {
         heartRate = value as HeartRate
         heartRateSweepAngle = angleLength * (heartRate!!.heartRate / settings.target_calories).coerceAtMost(1f)
         if (settings.theme.activity?.pulseGraph?.clockHand != null) {
-            val clockHand = settings.theme.activity!!.pulseGraph!!.clockHand;
             heartGraphSweepAngle = angleGraph * (heartRate!!.heartRate / settings.target_calories).coerceAtMost(1f)
         }
     }

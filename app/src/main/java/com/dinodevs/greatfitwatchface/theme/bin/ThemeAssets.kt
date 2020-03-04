@@ -34,7 +34,8 @@ class ThemeAssets(val context: Context, private val themeName: String) {
     init {
         ///data/data/com.dinodevs.greatfitwatchface/files/theme/Nuclear_pure_analog_cmp_vergelite/config.json
         ///data/data/com.dinodevs.greatfitwatchface/files/theme/Nuclear_pure_analog_cmp_vergelite/config.json
-        localPath = context.filesDir.absolutePath + "/theme/$themeName/config.json";
+//        localPath = context.filesDir.absolutePath + "/theme/$themeName/config.json";
+        localPath = "/storage/emulated/0/vergeit/md131/config.json";
         Log.d(TAG, "theme $localPath")
         if (File(localPath).exists()) {
             isLocal = true

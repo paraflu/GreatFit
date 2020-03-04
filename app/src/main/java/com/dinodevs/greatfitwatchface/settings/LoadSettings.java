@@ -50,7 +50,7 @@ public class LoadSettings {
     private int versionCode;
     private Resources res;
     private final static String TAG = "VergeIT-LOG";
-    private final static String themeName = "nuclear";
+    private final static String themeName = "md131";
 
     public LoadSettings(Context context) {
         this.context = context;
