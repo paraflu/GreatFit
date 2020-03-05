@@ -10,10 +10,7 @@ import it.vergeit.watchface.theme.bin.Date
 import it.vergeit.watchface.theme.bin.MonthAndDay
 import it.vergeit.watchface.theme.bin.WeekDay
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
-import com.ingenic.iwds.slpt.view.digital.SlptDayHView
-import com.ingenic.iwds.slpt.view.digital.SlptDayLView
-import com.ingenic.iwds.slpt.view.digital.SlptMonthHView
-import com.ingenic.iwds.slpt.view.digital.SlptMonthLView
+import com.ingenic.iwds.slpt.view.digital.*
 import java.util.*
 
 class DateWidget() : TextWidget() {
@@ -67,9 +64,13 @@ class DateWidget() : TextWidget() {
 
     private fun drawWeekdaySlpt(weekDay: Int, wdSpec: WeekDay): ArrayList<SlptViewComponent> {
         val slptObjects = arrayListOf<SlptViewComponent>()
-        val weekDayView = SlptPictureView()
-        weekDayView.setImagePicture(Util.Bitmap2Bytes(getBitmap(wdSpec.imageIndex + weekDay)))
+        val weekDayView = SlptWeekView()
+        val weekDayImages = (0 until wdSpec.imagesCount).map {
+            Util.Bitmap2Bytes(getBitmap(wdSpec.imageIndex + it))
+        }.toTypedArray()
+        weekDayView.setImagePictureArray(weekDayImages)
         weekDayView.setStart(wdSpec.x, wdSpec.y)
+        slptObjects.add(weekDayView)
         return slptObjects
     }
 
@@ -110,6 +111,7 @@ class DateWidget() : TextWidget() {
                 monthName.setImagePicture(Util.Bitmap2Bytes(getBitmap(monthNameSpec.imageIndex + month)))
                 monthName.setStart(monthNameSpec.x, monthNameSpec.y)
                 result.add(monthName)
+
             }
 
             if (monthSpec != null) {

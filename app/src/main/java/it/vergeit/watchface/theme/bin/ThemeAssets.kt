@@ -56,7 +56,6 @@ class ThemeAssets(val context: Context, private val themeName: String) {
             } else {
                 Util.decodeImage(service.resources, getPath(imageIdx))
             }
-            Log.d(TAG, "cache image $imageIdx")
             imageCache[imageIdx] = bmp
         } else {
             bmp = imageCache[imageIdx]

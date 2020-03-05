@@ -10,6 +10,7 @@ import it.vergeit.watchface.settings.LoadSettings
 import com.ingenic.iwds.slpt.view.core.SlptBatteryView
 import com.ingenic.iwds.slpt.view.core.SlptPictureView
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
+import com.ingenic.iwds.slpt.view.sport.SlptPowerNumView
 import it.vergeit.watchface.theme.bin.Images
 import it.vergeit.watchface.theme.bin.Text
 import java.util.*
@@ -165,7 +166,7 @@ class BatteryWidget() : CircleWidget() {
 
         if (settings.theme.battery?.text != null) {
             val text = settings.theme.battery!!.text!!
-            val batteryView = SlptBatteryView()
+            val batteryView = SlptPowerNumView()
             val arrayDigit = (0 until text.imagesCount).map {
                 Util.Bitmap2Bytes(getBitmap(text.imageIndex + it))
             }.toTypedArray()
