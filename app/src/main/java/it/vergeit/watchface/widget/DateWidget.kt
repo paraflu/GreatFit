@@ -65,10 +65,11 @@ class DateWidget() : TextWidget() {
     private fun drawWeekdaySlpt(weekDay: Int, wdSpec: WeekDay): ArrayList<SlptViewComponent> {
         val slptObjects = arrayListOf<SlptViewComponent>()
         val weekDayView = SlptWeekView()
-        val weekDayImages = (0 until wdSpec.imagesCount).map {
+        val weekDayImages = arrayListOf<ByteArray>(Util.Bitmap2Bytes(getBitmap(wdSpec.imageIndex + wdSpec.imagesCount)))
+        weekDayImages.addAll((0 until wdSpec.imagesCount-1).map {
             Util.Bitmap2Bytes(getBitmap(wdSpec.imageIndex + it))
-        }.toTypedArray()
-        weekDayView.setImagePictureArray(weekDayImages)
+        }.toTypedArray())
+        weekDayView.setImagePictureArray(weekDayImages.toTypedArray())
         weekDayView.setStart(wdSpec.x, wdSpec.y)
         slptObjects.add(weekDayView)
         return slptObjects
