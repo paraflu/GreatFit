@@ -181,15 +181,6 @@ open class TextWidget() : AbstractWidget() {
      */
     protected fun getBitmap(imageIdx: Int): Bitmap {
         return settings.getBitmap(mService, imageIdx)
-//        var bmp: Bitmap?
-//        if (!imageCache.containsKey(imageIdx)) {
-//            bmp = Util.decodeImage(mService.resources, settings.getImagePath(imageIdx))
-//            Log.d(TAG, "cache image $imageIdx")
-//            imageCache[imageIdx] = bmp
-//        } else {
-//            bmp = imageCache.get(imageIdx)
-//        }
-//        return bmp!!;
     }
 
     protected fun drawBitmap(canvas: Canvas, imageIdx: Int, x: Int, y: Int) {

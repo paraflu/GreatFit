@@ -273,14 +273,11 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
                     val firstDigitArray: Array<ByteArray> = loadDigitArray(hour.tens.imageIndex, hour.tens.imagesCount)
                     val secondDigitArray: Array<ByteArray> = loadDigitArray(hour.ones.imageIndex, hour.ones.imagesCount)
 
-//                    val hourLayout = SlptLinearLayout()
                     val firstDigit = SlptHourHView()
                     firstDigit.setImagePictureArray(firstDigitArray)
                     firstDigit.setStart(hour.tens.x, hour.tens.y)
                     firstDigit.alignX = 0
                     slptObjects.add(firstDigit)
-
-//                    hourLayout.add(firstDigit)
 
                     val secondDigit = SlptHourLView()
                     secondDigit.setImagePictureArray(secondDigitArray)
