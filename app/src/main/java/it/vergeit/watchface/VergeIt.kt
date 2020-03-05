@@ -15,7 +15,9 @@ class VergeIt : AbstractWatchFace() {
         // Load settings
         val settings = LoadSettings(applicationContext)
         clock = MainClock(settings)
-        widgets.add(DateWidget(settings))
+        if (settings.theme?.date != null) {
+            widgets.add(DateWidget(settings))
+        }
 
         if (settings.theme.activity?.pulse != null || settings.theme.activity?.pulseGraph != null || settings.theme.activity?.pulseMeter != null) {
             widgets.add(HeartRateWidget(settings))

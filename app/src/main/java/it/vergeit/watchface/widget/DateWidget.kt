@@ -2,12 +2,18 @@ package it.vergeit.watchface.widget
 
 import android.app.Service
 import android.graphics.Canvas
-import android.util.Log
+import com.huami.watch.watchface.util.Util
+import com.ingenic.iwds.slpt.view.core.SlptLinearLayout
+import com.ingenic.iwds.slpt.view.core.SlptPictureView
 import it.vergeit.watchface.settings.LoadSettings
 import it.vergeit.watchface.theme.bin.Date
 import it.vergeit.watchface.theme.bin.MonthAndDay
 import it.vergeit.watchface.theme.bin.WeekDay
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
+import com.ingenic.iwds.slpt.view.digital.SlptDayHView
+import com.ingenic.iwds.slpt.view.digital.SlptDayLView
+import com.ingenic.iwds.slpt.view.digital.SlptMonthHView
+import com.ingenic.iwds.slpt.view.digital.SlptMonthLView
 import java.util.*
 
 class DateWidget() : TextWidget() {
@@ -21,19 +27,50 @@ class DateWidget() : TextWidget() {
     private var lastDate: String? = null
 
     override fun init(service: Service) {
-        mService = service
+        super.init(service)
         date = settings.theme.date
     }
 
     override fun buildSlptViewComponent(service: Service?): List<SlptViewComponent?>? {
-//        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        Log.d(TAG, "not implemented buildSlptViewComponent")
-        return null
+        return buildSlptViewComponent(service, false)
+    }
+
+    fun loadDigitArray(idx: Int, count: Int = 10): Array<ByteArray> {
+        return (0 until count).map {
+            Util.Bitmap2Bytes(getBitmap(idx + it))
+        }.toTypedArray()
     }
 
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent?>? {
-//        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        return null
+        mService = service!!
+        val slptObjects = arrayListOf<SlptViewComponent>()
+        val date = settings.theme.date
+        if (date != null) {
+            if (date.monthAndDay != null) {
+                val month = calendar.get(Calendar.MONTH)
+                val day = calendar.get(Calendar.DAY_OF_MONTH)
+                slptObjects.addAll(drawMonthDaySlpt(month, day, date.monthAndDay))
+            }
+            if (date.weekDay != null) {
+                val calendar = Calendar.getInstance()
+                var weekDay = calendar[Calendar.DAY_OF_WEEK]
+                if (weekDay == Calendar.SUNDAY) {
+                    weekDay = 6
+                } else {
+                    weekDay -= 2
+                }
+                slptObjects.addAll(drawWeekdaySlpt(weekDay, date.weekDay))
+            }
+        }
+        return slptObjects
+    }
+
+    private fun drawWeekdaySlpt(weekDay: Int, wdSpec: WeekDay): ArrayList<SlptViewComponent> {
+        val slptObjects = arrayListOf<SlptViewComponent>()
+        val weekDayView = SlptPictureView()
+        weekDayView.setImagePicture(Util.Bitmap2Bytes(getBitmap(wdSpec.imageIndex + weekDay)))
+        weekDayView.setStart(wdSpec.x, wdSpec.y)
+        return slptObjects
     }
 
     private fun drawWeekday(canvas: Canvas, weekDay: Int, spec: WeekDay) {
@@ -42,7 +79,7 @@ class DateWidget() : TextWidget() {
     }
 
     override fun draw(canvas: Canvas?, width: Float, height: Float, centerX: Float, centerY: Float) {
-        val date = settings.theme.date;
+        val date = settings.theme.date
         if (date != null) {
             if (date.monthAndDay != null) {
                 val month = calendar.get(Calendar.MONTH)
@@ -60,6 +97,60 @@ class DateWidget() : TextWidget() {
                 drawWeekday(canvas!!, weekDay, date.weekDay)
             }
         }
+    }
+
+    private fun drawMonthDaySlpt(month: Int, day: Int, monthAndDay: MonthAndDay): Array<SlptViewComponent> {
+        val result = ArrayList<SlptViewComponent>()
+        if (monthAndDay.separate != null) {
+            val monthNameSpec = monthAndDay.separate.monthName
+            val monthSpec = monthAndDay.separate.month
+            val daySpec = monthAndDay.separate.day
+            if (monthNameSpec?.imageIndex != null) {
+                var monthName = SlptPictureView()
+                monthName.setImagePicture(Util.Bitmap2Bytes(getBitmap(monthNameSpec.imageIndex + month)))
+                monthName.setStart(monthNameSpec.x, monthNameSpec.y)
+                result.add(monthName)
+            }
+
+            if (monthSpec != null) {
+                val layout = SlptLinearLayout()
+                val monthHView = SlptMonthHView()
+                monthHView.setImagePictureArray(loadDigitArray(monthSpec.imageIndex, monthSpec.imagesCount))
+                layout.add(monthHView)
+
+                val monthLView = SlptMonthLView()
+                monthLView.setImagePictureArray(loadDigitArray(monthSpec.imageIndex, monthSpec.imagesCount))
+                layout.add(monthLView)
+                layout.setStart(monthSpec.topLeftX, monthSpec.topLeftY)
+                result.add(layout)
+            }
+
+            if (daySpec != null) {
+                //drawText(canvas, String.format("%02d", day), daySpec, monthAndDay.twoDigitsDay == false)
+                val layout = SlptLinearLayout()
+                val dayHView = SlptDayHView()
+                dayHView.setImagePictureArray(loadDigitArray(daySpec.imageIndex, daySpec.imagesCount))
+                layout.add(dayHView)
+
+                val dayLView = SlptDayLView()
+                dayLView.setImagePictureArray(loadDigitArray(daySpec.imageIndex, daySpec.imagesCount))
+                layout.add(dayLView)
+                layout.setStart(daySpec.topLeftX, daySpec.topLeftY)
+                result.add(layout)
+
+//                dateLayout.add(SlptDayHView())
+//                dateLayout.add(SlptDayLView())
+//                dateLayout.add(point) //add .
+//                dateLayout.add(SlptMonthHView())
+//                dateLayout.add(SlptMonthLView())
+//                dateLayout.add(point2) //add .
+//                dateLayout.add(SlptYear3View())
+//                dateLayout.add(SlptYear2View())
+//                dateLayout.add(SlptYear1View())
+//                dateLayout.add(SlptYear0View())
+            }
+        }
+        return result.toTypedArray()
     }
 
     private fun drawMonthDay(canvas: Canvas, month: Int, day: Int, monthAndDay: MonthAndDay) {

@@ -2,19 +2,14 @@ package it.vergeit.watchface.widget
 
 import android.app.Service
 import android.graphics.*
-import android.nfc.Tag
 import android.text.TextPaint
 import android.util.Log
 import it.vergeit.watchface.resource.ResourceManager.getTypeFace
-import it.vergeit.watchface.resource.SlptSecondHView
-import it.vergeit.watchface.resource.SlptSecondLView
 import it.vergeit.watchface.settings.LoadSettings
 import it.vergeit.watchface.theme.bin.AnalogDialFace
-import it.vergeit.watchface.theme.bin.Hours
 import it.vergeit.watchface.theme.bin.ITimeDigit
 import com.huami.watch.watchface.util.Util
 import com.ingenic.iwds.slpt.view.core.SlptLinearLayout
-import com.ingenic.iwds.slpt.view.core.SlptNumView
 import com.ingenic.iwds.slpt.view.core.SlptPictureView
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
 import com.ingenic.iwds.slpt.view.digital.SlptHourHView
@@ -23,7 +18,6 @@ import com.ingenic.iwds.slpt.view.digital.SlptMinuteHView
 import com.ingenic.iwds.slpt.view.digital.SlptMinuteLView
 import com.ingenic.iwds.slpt.view.sport.SlptSportUtil
 import com.ingenic.iwds.slpt.view.utils.SimpleFile
-import java.io.ByteArrayOutputStream
 
 
 class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
@@ -231,19 +225,14 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
         return buildSlptViewComponent(service, false)
     }
 
-    fun loadCache(digit: ITimeDigit): Map<Int, ByteArray> {
-        var idx = settings.theme.time!!.hours!!.tens.imageIndex
-        var count = settings.theme.time!!.hours!!.tens.imagesCount
-        var array = mutableMapOf<Int, ByteArray>()
-        for (i in 0..count) {
-            val buff = Util.assetToBytes(settings.ctx, settings.getImagePath(idx + i))
-            array[idx + i] = buff
-        }
-        return array
+    fun loadDigitArray(idx: Int, count: Int = 10): Array<ByteArray> {
+        return (0 until count).map {
+            Util.Bitmap2Bytes(getBitmap(idx + it))
+        }.toTypedArray()
     }
 
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent?>? {
-        val slpt_objects: MutableList<SlptViewComponent?> = ArrayList()
+        val slptObjects = ArrayList<SlptViewComponent?>()
 
         try {
             var betterResolution = better_resolution
@@ -263,7 +252,7 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
             Log.d(TAG, "buildSlptViewComponent mainClock")
             val background = SlptPictureView()
             background.setImagePicture(Util.Bitmap2Bytes(getBitmap(settings.theme.background.image.imageIndex)))
-            slpt_objects.add(background)
+            slptObjects.add(background)
 
             // Set low power icon
             if (settings.low_power) { // Draw low power icon
@@ -275,172 +264,197 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
                         settings.low_powerTop.toInt()
                 )
                 SlptSportUtil.setLowBatteryIconView(lowpower)
-                slpt_objects.add(lowpower)
+                slptObjects.add(lowpower)
             }
 
-            val timeTypeFace = getTypeFace(service!!.resources, settings.font)
-
             if (settings.theme.time != null) {
-                val hourLayout = SlptLinearLayout()
-                val firstDigit: SlptViewComponent = SlptHourHView()
-                val pictureArray = loadCache(settings.theme.time!!.hours!!.tens).values.toTypedArray()
-                (firstDigit as SlptNumView)
-                        .setImagePictureArray(pictureArray)
-                hourLayout.add(firstDigit)
-                val secondDigit: SlptViewComponent = SlptHourLView()
-                (secondDigit as SlptNumView).setImagePictureArray(pictureArray)
-                hourLayout.add(secondDigit)
-                hourLayout.setTextAttrForAll(
-                        settings.hoursFontSize,
-                        settings.hoursColor,
-                        timeTypeFace
-                )
-                // Position based on screen on
-                hourLayout.alignX = 2
-                hourLayout.alignY = 0
-                hourLayout.setRect(
-                        (2 * settings.hoursLeft + 640).toInt(),
-                        (settings.font_ratio.toFloat() / 100 * settings.hoursFontSize).toInt()
-                )
-                hourLayout.setStart(
-                        -320,
-                        (settings.hoursTop - settings.font_ratio.toFloat() / 100 * settings.hoursFontSize).toInt()
-                )
-                //Add it to the list
-                slpt_objects.add(hourLayout)
+                if (settings.theme.time?.hours != null) {
+                    val hour = settings.theme.time!!.hours!!
+                    val firstDigitArray: Array<ByteArray> = loadDigitArray(hour.tens.imageIndex, hour.tens.imagesCount)
+                    val secondDigitArray: Array<ByteArray> = loadDigitArray(hour.ones.imageIndex, hour.ones.imagesCount)
+
+//                    val hourLayout = SlptLinearLayout()
+                    val firstDigit = SlptHourHView()
+                    firstDigit.setImagePictureArray(firstDigitArray)
+                    firstDigit.setStart(hour.tens.x, hour.tens.y)
+                    firstDigit.alignX = 0
+                    slptObjects.add(firstDigit)
+
+//                    hourLayout.add(firstDigit)
+
+                    val secondDigit = SlptHourLView()
+                    secondDigit.setImagePictureArray(secondDigitArray)
+                    secondDigit.setStart(hour.ones.x, hour.ones.y)
+                    secondDigit.alignX = 0
+//                    hourLayout.add(secondDigit)
+//
+//                    hourLayout.setStart(hour.tens.x, hour.tens.y)
+                    slptObjects.add(secondDigit)
+                }
+
+                if (settings.theme.time?.minutes != null) {
+                    val minutes = settings.theme.time!!.minutes!!
+                    val firstDigitArray: Array<ByteArray> = loadDigitArray(minutes.tens.imageIndex, minutes.tens.imagesCount)
+                    val secondDigitArray: Array<ByteArray> = loadDigitArray(minutes.ones.imageIndex, minutes.ones.imagesCount)
+
+                    val firstDigit = SlptMinuteHView()
+                    firstDigit.setImagePictureArray(firstDigitArray)
+                    firstDigit.setStart(minutes.tens.x, minutes.tens.y)
+                    firstDigit.alignX = 0
+                    slptObjects.add(firstDigit)
+
+                    val secondDigit = SlptMinuteLView()
+                    secondDigit.alignX = 0
+                    secondDigit.setImagePictureArray(secondDigitArray)
+                    secondDigit.setStart(minutes.ones.x, minutes.ones.y)
+                    slptObjects.add(secondDigit)
+                }
+
+                if (settings.theme.time?.amPm != null) {
+                    val amPm = settings.theme.time!!.amPm!!
+                    val amPmLayout = SlptLinearLayout()
+                    val ampm = SlptLinearLayout()
+                    val am = SlptPictureView()
+                    val pm = SlptPictureView()
+                    am.setImagePicture(Util.Bitmap2Bytes(getBitmap(amPm.imageIndexAMEN)))
+                    pm.setImagePicture(Util.Bitmap2Bytes(getBitmap(amPm.imageIndexPMEN)))
+                    SlptSportUtil.setAmBgView(am)
+                    SlptSportUtil.setPmBgView(pm)
+                    slptObjects.add(amPmLayout)
+                }
             }
 
             // Set font
             //val timeTypeFace = getTypeFace(service!!.resources, settings.font)
-            if (settings.digital_clock) { // Draw hours
-                if (settings.hoursBool && false) {
-                    val hourLayout = SlptLinearLayout()
-                    if (settings.no_0_on_hour_first_digit) { // No 0 on first digit
-                        val firstDigit: SlptViewComponent = SlptHourHView()
-                        (firstDigit as SlptNumView).setStringPictureArray(digitalNumsNo0)
-                        hourLayout.add(firstDigit)
-                        val secondDigit: SlptViewComponent = SlptHourLView()
-                        (secondDigit as SlptNumView).setStringPictureArray(digitalNums)
-                        hourLayout.add(secondDigit)
-                    } else {
-                        hourLayout.add(SlptHourHView())
-                        hourLayout.add(SlptHourLView())
-                        hourLayout.setStringPictureArrayForAll(digitalNums)
-                    }
-                    hourLayout.setTextAttrForAll(
-                            settings.hoursFontSize,
-                            settings.hoursColor,
-                            timeTypeFace
-                    )
-                    // Position based on screen on
-                    hourLayout.alignX = 2
-                    hourLayout.alignY = 0
-                    hourLayout.setRect(
-                            (2 * settings.hoursLeft + 640).toInt(),
-                            (settings.font_ratio.toFloat() / 100 * settings.hoursFontSize).toInt()
-                    )
-                    hourLayout.setStart(
-                            -320,
-                            (settings.hoursTop - settings.font_ratio.toFloat() / 100 * settings.hoursFontSize).toInt()
-                    )
-                    //Add it to the list
-                    slpt_objects.add(hourLayout)
-                }
-                // Draw minutes
-                if (settings.minutesBool) {
-                    val minuteLayout = SlptLinearLayout()
-                    minuteLayout.add(SlptMinuteHView())
-                    minuteLayout.add(SlptMinuteLView())
-                    minuteLayout.setStringPictureArrayForAll(digitalNums)
-                    minuteLayout.setTextAttrForAll(
-                            settings.minutesFontSize,
-                            settings.minutesColor,
-                            timeTypeFace
-                    )
-                    // Position based on screen on
-                    minuteLayout.alignX = 2
-                    minuteLayout.alignY = 0
-                    minuteLayout.setRect(
-                            (2 * settings.minutesLeft + 640).toInt(),
-                            (settings.font_ratio.toFloat() / 100 * settings.minutesFontSize).toInt()
-                    )
-                    minuteLayout.setStart(
-                            -320,
-                            (settings.minutesTop - settings.font_ratio.toFloat() / 100 * settings.minutesFontSize).toInt()
-                    )
-                    //Add it to the list
-                    slpt_objects.add(minuteLayout)
-                }
-                // Draw indicator
-                if (settings.indicatorBool) {
-                    val indicatorLayout = SlptLinearLayout()
-                    val colon = SlptPictureView()
-                    colon.setStringPicture(":")
-                    indicatorLayout.add(colon)
-                    indicatorLayout.setTextAttrForAll(
-                            settings.indicatorFontSize,
-                            settings.indicatorColor,
-                            timeTypeFace
-                    )
-                    // Position based on screen on
-                    indicatorLayout.alignX = 2
-                    indicatorLayout.alignY = 0
-                    indicatorLayout.setRect(
-                            (2 * settings.indicatorLeft + 640).toInt(),
-                            (settings.font_ratio.toFloat() / 100 * settings.indicatorFontSize).toInt()
-                    )
-                    indicatorLayout.setStart(
-                            -320,
-                            (settings.indicatorTop - settings.font_ratio.toFloat() / 100 * settings.indicatorFontSize).toInt()
-                    )
-                    //Add it to the list
-                    slpt_objects.add(indicatorLayout)
-                }
-                // Draw Seconds
-                if (settings.secondsBool) { //&& (!settings.isVerge() || better_resolution)
-                    val secondsLayout = SlptLinearLayout()
-                    secondsLayout.add(SlptSecondHView())
-                    secondsLayout.add(SlptSecondLView())
-                    secondsLayout.setTextAttrForAll(
-                            settings.secondsFontSize,
-                            settings.secondsColor,
-                            getTypeFace(service.resources, settings.font)
-                    )
-                    // Position based on screen on
-                    secondsLayout.alignX = 2
-                    secondsLayout.alignY = 0
-                    secondsLayout.setRect(
-                            (2 * settings.secondsLeft + 640).toInt(),
-                            (settings.font_ratio.toFloat() / 100 * settings.secondsFontSize).toInt()
-                    )
-                    secondsLayout.setStart(
-                            -320,
-                            (settings.secondsTop - settings.font_ratio.toFloat() / 100 * settings.secondsFontSize).toInt()
-                    )
-                    //Add it to the list
-                    slpt_objects.add(secondsLayout)
-                }
-                // AM-PM (ONLY FOR 12h format)
-                val ampm = SlptLinearLayout()
-                val am = SlptPictureView()
-                val pm = SlptPictureView()
-                am.setStringPicture("AM")
-                pm.setStringPicture("PM")
-                SlptSportUtil.setAmBgView(am)
-                SlptSportUtil.setPmBgView(pm)
-                ampm.add(am)
-                ampm.add(pm)
-                ampm.setTextAttrForAll(settings.am_pmFontSize, settings.am_pmColor, getTypeFace(service.resources, settings.font))
-                ampm.alignX = 2
-                ampm.alignY = 0
-                tmp_left = settings.am_pmLeft.toInt()
-                if (!settings.am_pmAlignLeft) {
-                    ampm.setRect(tmp_left * 2 + 640, settings.am_pmFontSize.toInt())
-                    tmp_left = -320
-                }
-                ampm.setStart(tmp_left, (settings.am_pmTop - settings.font_ratio / 100.0f * settings.am_pmFontSize).toInt())
-                slpt_objects.add(ampm)
-            }
+//            if (settings.digital_clock) { // Draw hours
+//                if (settings.hoursBool) {
+//                    val hourLayout = SlptLinearLayout()
+//                    if (settings.no_0_on_hour_first_digit) { // No 0 on first digit
+//                        val firstDigit: SlptViewComponent = SlptHourHView()
+//                        (firstDigit as SlptNumView).setStringPictureArray(digitalNumsNo0)
+//                        hourLayout.add(firstDigit)
+//                        val secondDigit: SlptViewComponent = SlptHourLView()
+//                        (secondDigit as SlptNumView).setStringPictureArray(digitalNums)
+//                        hourLayout.add(secondDigit)
+//                    } else {
+//                        hourLayout.add(SlptHourHView())
+//                        hourLayout.add(SlptHourLView())
+//                        hourLayout.setStringPictureArrayForAll(digitalNums)
+//                    }
+//                    hourLayout.setTextAttrForAll(
+//                            settings.hoursFontSize,
+//                            settings.hoursColor,
+//                            timeTypeFace
+//                    )
+//                    // Position based on screen on
+//                    hourLayout.alignX = 2
+//                    hourLayout.alignY = 0
+//                    hourLayout.setRect(
+//                            (2 * settings.hoursLeft + 640).toInt(),
+//                            (settings.font_ratio.toFloat() / 100 * settings.hoursFontSize).toInt()
+//                    )
+//                    hourLayout.setStart(
+//                            -320,
+//                            (settings.hoursTop - settings.font_ratio.toFloat() / 100 * settings.hoursFontSize).toInt()
+//                    )
+//                    //Add it to the list
+//                    slpt_objects.add(hourLayout)
+//                }
+//                // Draw minutes
+//                if (settings.minutesBool) {
+//                    val minuteLayout = SlptLinearLayout()
+//                    minuteLayout.add(SlptMinuteHView())
+//                    minuteLayout.add(SlptMinuteLView())
+//                    minuteLayout.setStringPictureArrayForAll(digitalNums)
+//                    minuteLayout.setTextAttrForAll(
+//                            settings.minutesFontSize,
+//                            settings.minutesColor,
+//                            timeTypeFace
+//                    )
+//                    // Position based on screen on
+//                    minuteLayout.alignX = 2
+//                    minuteLayout.alignY = 0
+//                    minuteLayout.setRect(
+//                            (2 * settings.minutesLeft + 640).toInt(),
+//                            (settings.font_ratio.toFloat() / 100 * settings.minutesFontSize).toInt()
+//                    )
+//                    minuteLayout.setStart(
+//                            -320,
+//                            (settings.minutesTop - settings.font_ratio.toFloat() / 100 * settings.minutesFontSize).toInt()
+//                    )
+//                    //Add it to the list
+//                    slpt_objects.add(minuteLayout)
+//                }
+//                // Draw indicator
+//                if (settings.indicatorBool) {
+//                    val indicatorLayout = SlptLinearLayout()
+//                    val colon = SlptPictureView()
+//                    colon.setStringPicture(":")
+//                    indicatorLayout.add(colon)
+//                    indicatorLayout.setTextAttrForAll(
+//                            settings.indicatorFontSize,
+//                            settings.indicatorColor,
+//                            timeTypeFace
+//                    )
+//                    // Position based on screen on
+//                    indicatorLayout.alignX = 2
+//                    indicatorLayout.alignY = 0
+//                    indicatorLayout.setRect(
+//                            (2 * settings.indicatorLeft + 640).toInt(),
+//                            (settings.font_ratio.toFloat() / 100 * settings.indicatorFontSize).toInt()
+//                    )
+//                    indicatorLayout.setStart(
+//                            -320,
+//                            (settings.indicatorTop - settings.font_ratio.toFloat() / 100 * settings.indicatorFontSize).toInt()
+//                    )
+//                    //Add it to the list
+//                    slpt_objects.add(indicatorLayout)
+//                }
+//                // Draw Seconds
+//                if (settings.secondsBool) { //&& (!settings.isVerge() || better_resolution)
+//                    val secondsLayout = SlptLinearLayout()
+//                    secondsLayout.add(SlptSecondHView())
+//                    secondsLayout.add(SlptSecondLView())
+//                    secondsLayout.setTextAttrForAll(
+//                            settings.secondsFontSize,
+//                            settings.secondsColor,
+//                            getTypeFace(service.resources, settings.font)
+//                    )
+//                    // Position based on screen on
+//                    secondsLayout.alignX = 2
+//                    secondsLayout.alignY = 0
+//                    secondsLayout.setRect(
+//                            (2 * settings.secondsLeft + 640).toInt(),
+//                            (settings.font_ratio.toFloat() / 100 * settings.secondsFontSize).toInt()
+//                    )
+//                    secondsLayout.setStart(
+//                            -320,
+//                            (settings.secondsTop - settings.font_ratio.toFloat() / 100 * settings.secondsFontSize).toInt()
+//                    )
+//                    //Add it to the list
+//                    slpt_objects.add(secondsLayout)
+//                }
+//                // AM-PM (ONLY FOR 12h format)
+//                val ampm = SlptLinearLayout()
+//                val am = SlptPictureView()
+//                val pm = SlptPictureView()
+//                am.setStringPicture("AM")
+//                pm.setStringPicture("PM")
+//                SlptSportUtil.setAmBgView(am)
+//                SlptSportUtil.setPmBgView(pm)
+//                ampm.add(am)
+//                ampm.add(pm)
+//                ampm.setTextAttrForAll(settings.am_pmFontSize, settings.am_pmColor, getTypeFace(service.resources, settings.font))
+//                ampm.alignX = 2
+//                ampm.alignY = 0
+//                tmp_left = settings.am_pmLeft.toInt()
+//                if (!settings.am_pmAlignLeft) {
+//                    ampm.setRect(tmp_left * 2 + 640, settings.am_pmFontSize.toInt())
+//                    tmp_left = -320
+//                }
+//                ampm.setStart(tmp_left, (settings.am_pmTop - settings.font_ratio / 100.0f * settings.am_pmFontSize).toInt())
+//                slpt_objects.add(ampm)
+//            }
             /*     if (settings.analog_clock) {
                          val slptAnalogHourView = SlptAnalogHourView()
                          slptAnalogHourView.setImagePicture(SimpleFile.readFileFromAssets(service, "timehand/8c/hour" + (if (settings.isVerge) "_verge" else "") + ".png"))
@@ -659,16 +673,18 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
         } catch (e: Exception) {
             Log.e(TAG, e.message)
         }
-        return slpt_objects
+        return slptObjects
     }
 
     companion object {
         private const val TAG = "VergeIT-LOG"
+
         // Languages
         var codes = arrayOf(
                 "English", "Български", "中文", "Hrvatski", "Czech", "Dansk", "Nederlands", "Français", "Deutsch", "Ελληνικά", "עברית", "Magyar", "Italiano", "日本語", "한국어", "Polski", "Português", "Română", "Русский", "Slovenčina", "Español", "ไทย", "Türkçe", "Tiếng Việt"
         )
         private val days = arrayOf(arrayOf("SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"), arrayOf("НЕДЕЛЯ", "ПОНЕДЕЛНИК", "ВТОРНИК", "СРЯДА", "ЧЕТВЪРТЪК", "ПЕТЪК", "СЪБОТА"), arrayOf("星期天", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"), arrayOf("NEDJELJA", "PONEDJELJAK", "UTORAK", "SRIJEDA", "ČETVRTAK", "PETAK", "SUBOTA"), arrayOf("NEDĚLE", "PONDĚLÍ", "ÚTERÝ", "STŘEDA", "ČTVRTEK", "PÁTEK", "SOBOTA"), arrayOf("SØNDAG", "MANDAG", "TIRSDAG", "ONSDAG", "TORSDAG", "FREDAG", "LØRDAG"), arrayOf("ZONDAG", "MAANDAG", "DINSDAG", "WOENSDAG", "DONDERDAG", "VRIJDAG", "ZATERDAG"), arrayOf("DIMANCHE", "LUNDI", "MARDI", "MERCREDI", "JEUDI", "VENDREDI", "SAMEDI"), arrayOf("SONNTAG", "MONTAG", "DIENSTAG", "MITTWOCH", "DONNERSTAG", "FREITAG", "SAMSTAG"), arrayOf("ΚΥΡΙΑΚΉ", "ΔΕΥΤΈΡΑ", "ΤΡΊΤΗ", "ΤΕΤΆΡΤΗ", "ΠΈΜΠΤΗ", "ΠΑΡΑΣΚΕΥΉ", "ΣΆΒΒΑΤΟ"), arrayOf("ש'", "ו'", "ה'", "ד'", "ג'", "ב'", "א'"), arrayOf("VASÁRNAP", "HÉTFŐ", "KEDD", "SZERDA", "CSÜTÖRTÖK", "PÉNTEK", "SZOMBAT"), arrayOf("DOMENICA", "LUNEDÌ", "MARTEDÌ", "MERCOLEDÌ", "GIOVEDÌ", "VENERDÌ", "SABATO"), arrayOf("日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"), arrayOf("일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"), arrayOf("NIEDZIELA", "PONIEDZIAŁEK", "WTOREK", "ŚRODA", "CZWARTEK", "PIĄTEK", "SOBOTA"), arrayOf("DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"), arrayOf("DUMINICĂ", "LUNI", "MARȚI", "MIERCURI", "JOI", "VINERI", "SÂMBĂTĂ"), arrayOf("ВОСКРЕСЕНЬЕ", "ПОНЕДЕЛЬНИК", "ВТОРНИК", "СРЕДА", "ЧЕТВЕРГ", "ПЯТНИЦА", "СУББОТА"), arrayOf("NEDEĽA", "PONDELOK", "UTOROK", "STREDA", "ŠTVRTOK", "PIATOK", "SOBOTA"), arrayOf("DOMINGO", "LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES", "SÁBADO"), arrayOf("อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ุกร์", "สาร์"), arrayOf("PAZAR", "PAZARTESI", "SALı", "ÇARŞAMBA", "PERŞEMBE", "CUMA", "CUMARTESI"), arrayOf("CHỦ NHẬT", "THỨ 2", "THỨ 3", "THỨ 4", "THỨ 5", "THỨ 6", "THỨ 7"))
+
         @JvmField
         var days_3let = arrayOf(arrayOf("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"), arrayOf("НЕД", "ПОН", "ВТО", "СРЯ", "ЧЕТ", "ПЕТ", "СЪБ"), arrayOf("星期天", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"), arrayOf("NED", "PON", "UTO", "SRI", "ČET", "PET", "SUB"), arrayOf("NE", "PO", "ÚT", "ST", "ČT", "PÁ", "SO"), arrayOf("SØN", "MAN", "TIR", "ONS", "TOR", "FRE", "LØR"), arrayOf("ZON", "MAA", "DIN", "WOE", "DON", "VRI", "ZAT"), arrayOf("DIM", "LUN", "MAR", "MER", "JEU", "VEN", "SAM"), arrayOf("SO", "MO", "DI", "MI", "DO", "FR", "SA"), arrayOf("ΚΥΡ", "ΔΕΥ", "ΤΡΙ", "ΤΕΤ", "ΠΕΜ", "ΠΑΡ", "ΣΑΒ"), arrayOf("א'", "ב'", "ג'", "ד'", "ה'", "ו'", "ש'"), arrayOf("VAS", "HÉT", "KED", "SZE", "CSÜ", "PÉN", "SZO"), arrayOf("DOM", "LUN", "MAR", "MER", "GIO", "VEN", "SAB"), arrayOf("日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"), arrayOf("일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"), arrayOf("NIE", "PON", "WTO", "ŚRO", "CZW", "PIĄ", "SOB"), arrayOf("DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"), arrayOf("DUM", "LUN", "MAR", "MIE", "JOI", "VIN", "SÂM"), arrayOf("ВСК", "ПНД", "ВТР", "СРД", "ЧТВ", "ПТН", "СБТ"), arrayOf("NED", "PON", "UTO", "STR", "ŠTV", "PIA", "SOB"), arrayOf("DOM", "LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB"), arrayOf("อา.", "จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส."), arrayOf("PAZ", "PZT", "SAL", "ÇAR", "PER", "CUM", "CMT"), arrayOf("CN", "T2", "T3", "T4", "T5", "T6", "T7"))
         private val months = arrayOf(arrayOf("DECEMBER", "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"), arrayOf("ДЕКЕМВРИ", "ЯНУАРИ", "ФЕВРУАРИ", "МАРТ", "АПРИЛ", "МАЙ", "ЮНИ", "ЮЛИ", "АВГУСТ", "СЕПТЕМВРИ", "ОКТОМВРИ", "НОЕМВРИ", "ДЕКЕМВРИ"), arrayOf("十二月", "一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"), arrayOf("PROSINAC", "SIJEČANJ", "VELJAČA", "OŽUJAK", "TRAVANJ", "SVIBANJ", "LIPANJ", "SRPANJ", "KOLOVOZ", "RUJAN", "LISTOPAD", "STUDENI", "PROSINAC"), arrayOf("PROSINEC", "LEDEN", "ÚNOR", "BŘEZEN", "DUBEN", "KVĚTEN", "ČERVEN", "ČERVENEC", "SRPEN", "ZÁŘÍ", "ŘÍJEN", "LISTOPAD", "PROSINEC"), arrayOf("DECEMBER", "JANUAR", "FEBRUAR", "MARTS", "APRIL", "MAJ", "JUNI", "JULI", "AUGUST", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DECEMBER"), arrayOf("DECEMBER", "JANUARI", "FEBRUARI", "MAART", "APRIL", "MEI", "JUNI", "JULI", "AUGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DECEMBER"), arrayOf("DÉCEMBRE", "JANVIER", "FÉVRIER", "MARS", "AVRIL", "MAI", "JUIN", "JUILLET", "AOÛT", "SEPTEMBRE", "OCTOBRE", "NOVEMBRE", "DÉCEMBRE"), arrayOf("DEZEMBER", "JANUAR", "FEBRUAR", "MÄRZ", "APRIL", "MAI", "JUNI", "JULI", "AUGUST", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DEZEMBER"), arrayOf("ΔΕΚΈΜΒΡΙΟΣ", "ΙΑΝΟΥΆΡΙΟΣ", "ΦΕΒΡΟΥΆΡΙΟΣ", "ΜΆΡΤΙΟΣ", "ΑΠΡΊΛΙΟΣ", "ΜΆΙΟΣ", "ΙΟΎΝΙΟΣ", "ΙΟΎΛΙΟΣ", "ΑΎΓΟΥΣΤΟΣ", "ΣΕΠΤΈΜΒΡΙΟΣ", "ΟΚΤΏΒΡΙΟΣ", "ΝΟΈΜΒΡΙΟΣ", "ΔΕΚΈΜΒΡΙΟΣ"), arrayOf("דצמבר", "ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"), arrayOf("DECEMBER", "JANUÁR", "FEBRUÁR", "MÁRCIUS", "ÁPRILIS", "MÁJUS", "JÚNIUS", "JÚLIUS", "AUGUSZTUS", "SZEPTEMBER", "OKTÓBER", "NOVEMBER", "DECEMBER"), arrayOf("DICEMBRE", "GENNAIO", "FEBBRAIO", "MARZO", "APRILE", "MAGGIO", "GIUGNO", "LUGLIO", "AGOSTO", "SETTEMBRE", "OTTOBRE", "NOVEMBRE", "DICEMBRE"), arrayOf("12月", "1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"), arrayOf("12월", "1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"), arrayOf("GRUDZIEŃ", "STYCZEŃ", "LUTY", "MARZEC", "KWIECIEŃ", "MAJ", "CZERWIEC", "LIPIEC", "SIERPIEŃ", "WRZESIEŃ", "PAŹDZIERNIK", "LISTOPAD", "GRUDZIEŃ"), arrayOf("DEZEMBRO", "JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"), arrayOf("DECEMBRIE", "IANUARIE", "FEBRUARIE", "MARTIE", "APRILIE", "MAI", "IUNIE", "IULIE", "AUGUST", "SEPTEMBRIE", "OCTOMBRIE", "NOIEMBRIE", "DECEMBRIE"), arrayOf("ДЕКАБРЬ", "ЯНВАРЬ", "ФЕВРАЛЬ", "МАРТ", "АПРЕЛЬ", "МАЙ", "ИЮНЬ", "ИЮЛЬ", "АВГУСТ", "СЕНТЯБРЬ", "ОКТЯБРЬ", "НОЯБРЬ", "ДЕКАБРЬ"), arrayOf("DECEMBER", "JANUÁR", "FEBRUÁR", "MAREC", "APRÍL", "MÁJ", "JÚN", "JÚL", "AUGUST", "SEPTEMBER", "OKTÓBER", "NOVEMBER", "DECEMBER"), arrayOf("DICIEMBRE", "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"), arrayOf("ันวาคม", "มกราคม", "กุมภาพันธ์", "ีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน"), arrayOf("ARALıK", "OCAK", "ŞUBAT", "MART", "NISAN", "MAYıS", "HAZIRAN", "TEMMUZ", "AĞUSTOS", "EYLÜL", "EKIM", "KASıM", "ARALıK"), arrayOf("THÁNG 12", "THÁNG 1", "THÁNG 2", "THÁNG 3", "THÁNG 4", "THÁNG 5", "THÁNG 6", "THÁNG 7", "THÁNG 8", "THÁNG 9", "THÁNG 10", "THÁNG 11", "THÁNG 12"))
