@@ -35,7 +35,7 @@ class ThemeAssets(val context: Context, private val themeName: String) {
         ///data/data/com.dinodevs.greatfitwatchface/files/theme/Nuclear_pure_analog_cmp_vergelite/config.json
         ///data/data/com.dinodevs.greatfitwatchface/files/theme/Nuclear_pure_analog_cmp_vergelite/config.json
 //        localPath = context.filesDir.absolutePath + "/theme/$themeName/config.json";
-        localPath = "/storage/emulated/0/vergeit/md131/config.json";
+        localPath = "/sdcard/vergeit/md131/config.json";
         Log.d(TAG, "theme $localPath")
         if (File(localPath).exists()) {
             isLocal = true
@@ -43,7 +43,7 @@ class ThemeAssets(val context: Context, private val themeName: String) {
             preCache()
         } else {
             Log.d(TAG, "theme not found")
-            val content = StringReader(String(SimpleFile.readFileFromAssets(context, "$themeName/config.json")))
+            val content = StringReader(String(SimpleFile.readFileFromAssets(context, "gtr/config.json")))
             _theme = Gson().fromJson<Theme>(content, Theme::class.java)
         }
     }
