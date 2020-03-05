@@ -1,4 +1,4 @@
-package com.dinodevs.greatfitwatchface.settings;
+package it.vergeit.watchface.settings;
 
 import android.content.Context;
 import android.graphics.Rect;

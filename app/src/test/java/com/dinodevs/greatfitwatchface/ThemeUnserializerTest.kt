@@ -1,4 +1,4 @@
-package com.dinodevs.greatfitwatchface
+package it.vergeit.watchface
 
 class ThemeUnserializerTest {
 }

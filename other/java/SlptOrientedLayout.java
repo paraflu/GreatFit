@@ -1,4 +1,4 @@
-package com.dinodevs.greatfitwatchface.resource;
+package it.vergeit.watchface.resource;
 
 import com.ingenic.iwds.slpt.view.core.SlptLayout;
 import com.ingenic.iwds.slpt.view.utils.KeyWriter;

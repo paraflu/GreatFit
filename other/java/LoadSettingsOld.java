@@ -1,11 +1,11 @@
-package com.dinodevs.greatfitwatchface.settings;
+package it.vergeit.watchface.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.provider.Settings;
 
-import com.dinodevs.greatfitwatchface.R;
+import it.vergeit.watchface.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
