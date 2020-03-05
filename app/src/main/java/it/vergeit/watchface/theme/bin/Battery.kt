@@ -15,5 +15,6 @@ import com.google.gson.annotations.SerializedName
 data class Battery(
         @SerializedName("Unknown4") val unknown4: ClockHand,
         @SerializedName("Text") val text: Text?,
-        @SerializedName("Scale") val scale: Circle?
+        @SerializedName("Scale") val scale: Circle?,
+        @SerializedName("Images") val images : Images?
 )

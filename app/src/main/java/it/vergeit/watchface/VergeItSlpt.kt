@@ -21,6 +21,9 @@ class VergeItSlpt : AbstractWatchFaceSlpt() {
         if (settings.theme?.date != null) {
             widgets.add(DateWidget(settings))
         }
+        if (settings.theme.battery != null) {
+            widgets.add(BatteryWidget(settings))
+        }
 
 
 //        if (settings.theme.activity?.calories != null) {

@@ -4,7 +4,6 @@ import android.app.Service
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Point
-import android.util.Log
 import android.util.Size
 import it.vergeit.watchface.data.DataType
 import it.vergeit.watchface.settings.LoadSettings
@@ -13,6 +12,7 @@ import it.vergeit.watchface.theme.bin.IImage
 import it.vergeit.watchface.theme.bin.IText
 import it.vergeit.watchface.theme.bin.Temperature
 import com.huami.watch.watchface.util.Util
+import com.ingenic.iwds.slpt.view.core.SlptPictureView
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
 import kotlin.math.roundToInt
 
@@ -141,16 +141,37 @@ open class TextWidget() : AbstractWidget() {
         return when (spec.alignment) {
             // #TopLeft, TopCenter, TopRight, Left, Center, Right, BottomLeft, BottomCenter, BottomRight
             "TopLeft" -> Point(x, y)
-            "TopCenter" -> Point(x + centerX - (stringLength / 2f).roundToInt(),
-                    y + centerY - (imageSize.height / 2f).roundToInt())
+            "TopCenter" -> Point(x + centerX - (stringLength / 2f).roundToInt(), (y + centerY - (imageSize.height / 2f).roundToInt()))
             "TopRight" -> Point(x + width - stringLength, y)
-            "Center" -> Point(x + centerX - (stringLength / 2f).roundToInt(), y + centerY - (imageSize.height / 2f).roundToInt())
+            "Center" -> Point((x + centerX - stringLength / 2f).roundToInt(), (y + centerY - imageSize.height / 2f).roundToInt())
             "Left" -> Point(x, y + centerY - imageSize.height)
-            "Right" -> Point(x + width - stringLength, y + centerY - imageSize.height)
+            "Right" -> Point(x + width - stringLength, (y + centerY - imageSize.height / 2f).roundToInt())
             "BottomLeft" -> Point(x, y + height - imageSize.height)
-            "BottomRight" -> Point(x + width - stringLength, y + height - imageSize.height)
+            "BottomRight" -> Point(x + width - stringLength, (y + height - imageSize.height / 2f).roundToInt())
             else -> Point(x, y)
         }
+    }
+
+    protected fun drawTextSlpt(valueToPrint: String, spec: IText, skipZero: Boolean = false): ArrayList<SlptViewComponent> {
+        val arrayDigit = (0 until spec.imagesCount).map {
+            Util.Bitmap2Bytes(getBitmap(spec.imageIndex + it))
+        }.toTypedArray()
+
+        val baseImage = getBitmap(spec.imageIndex)
+        val result = arrayListOf<SlptViewComponent>()
+        val startPoint = getStartPoint(spec, valueToPrint.length)
+        for (i in valueToPrint.toCharArray().indices) {
+            val charToPrint = valueToPrint.toCharArray()[i]
+            val va = charToPrint - '0'
+            if (skipZero && va == 0) continue
+
+            val bytImage = arrayDigit[va]
+            val digit = SlptPictureView()
+            digit.setImagePicture(bytImage)
+            digit.setStart(startPoint.x, startPoint.y)
+            startPoint.x += baseImage.width + spec.spacing
+        }
+        return result
     }
 
     /**

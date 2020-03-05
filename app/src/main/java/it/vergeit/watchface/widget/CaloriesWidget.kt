@@ -96,40 +96,6 @@ class CaloriesWidget() : CircleWidget() {
         if (ringBmp != null) {
             drawCircle(canvas!!, circle!!, ringBmp!!, caloriesSweepAngle)
         }
-//        ifB (settings.theme.activity.calories != null) { //            if(settings.caloriesIcon){
-//            drawText(canvas, calories!!.calories, settings.theme.activity.calories!!)
-//        }
-//        // Calories bar
-////        if (settings.caloriesProg > 0 && settings.caloriesProgType == 0) {
-//        if (settings.theme.activity.calories != null && settings.theme.activity.calories!!.circle != null) {
-//            val count = canvas.save()
-//            val cal = settings.theme.activity.calories
-//            // Rotate canvas to 0 degrees = 12 o'clock
-//            canvas.rotate(-90f, centerX, centerY)
-//            //            // Define circle
-////            float radius = settings.caloriesProgRadius - settings.caloriesProgThickness;
-////            RectF oval = new RectF(settings.caloriesProgLeft - radius, settings.caloriesProgTop - radius, settings.caloriesProgLeft + radius, settings.caloriesProgTop + radius);
-////
-////            // Background
-////            if (settings.caloriesProgBgBool) {
-////                this.ring.setColor(Color.parseColor("#999999"));
-////                canvas.drawArc(oval, settings.caloriesProgStartAngle, this.angleLength, false, ring);
-////            }
-////
-////            this.ring.setColor(settings.colorCodes[settings.caloriesProgColorIndex]);
-////            canvas.drawArc(oval, settings.caloriesProgStartAngle, this.caloriesSweepAngle, false, ring);
-//            val radius = cal!!.circle!!.radiusX /*- circle.getWidth()*/!!.toFloat()
-//            val oval = RectF(cal.circle!!.centerX!! - radius, cal.circle!!.centerY!! - radius,
-//                    cal.circle!!.centerX!! + radius,
-//                    cal.circle!!.centerY!! + radius)
-//            // Background
-//            Log.d(TAG, String.format("getStartAngle: %d angleLength: %d", cal.circle!!.startAngle, angleLength))
-//            ring!!.color = Color.parseColor(String.format("#%s", cal.circle.color.substring(12)))
-//            //            canvas.drawArc(oval, cal.getCircle().getStartAngle(), this.angleLength, false, ring);
-//// this.ring.setColor(settings.colorCodes[settings.batteryProgColorIndex]); progressione colore
-//            canvas.drawArc(oval, cal.circle!!.startAngle!!.toFloat(), caloriesSweepAngle, false, ring)
-//            canvas.restoreToCount(count)
-//        }
     }
 
     // Screen-off (SLPT)

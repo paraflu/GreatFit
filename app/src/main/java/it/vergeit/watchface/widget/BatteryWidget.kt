@@ -3,12 +3,15 @@ package it.vergeit.watchface.widget
 import android.app.Service
 import android.graphics.*
 import android.util.Log
+import com.huami.watch.watchface.util.Util
 import it.vergeit.watchface.data.Battery
 import it.vergeit.watchface.data.DataType
 import it.vergeit.watchface.settings.LoadSettings
 import com.ingenic.iwds.slpt.view.core.SlptBatteryView
+import com.ingenic.iwds.slpt.view.core.SlptPictureView
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
-import com.ingenic.iwds.slpt.view.utils.SimpleFile
+import it.vergeit.watchface.theme.bin.Images
+import it.vergeit.watchface.theme.bin.Text
 import java.util.*
 
 
@@ -26,6 +29,7 @@ class BatteryWidget() : CircleWidget() {
     private var batteryUnknown4SweepAngle = 0f
     private var angleLength: Int = 0
     private var batteryIcon: Bitmap? = null
+
     //    private Bitmap icon;
 //
     private var tempBattery = 0
@@ -137,6 +141,15 @@ class BatteryWidget() : CircleWidget() {
             drawProgress(canvas!!, progressBmp!!, settings.theme.battery?.unknown4!!, batteryUnknown4SweepAngle)
         }
 
+        if (settings.theme.battery?.images != null) {
+            val images = settings.theme.battery?.images!!
+            val arrayImages = (0 until images.imagesCount).map {
+                getBitmap(images.imageIndex + it)
+            }.toTypedArray()
+            val currentImage: Bitmap = arrayImages[(images.imagesCount / batteryData!!.level * 100).coerceAtMost(images.imagesCount)]
+            drawBitmap(canvas!!, currentImage, Point(images.x, images.y))
+        }
+
     }
 
     // Screen-off (SLPT)
@@ -146,9 +159,34 @@ class BatteryWidget() : CircleWidget() {
 
     // Screen-off (SLPT) - Better screen quality
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent> {
-//        var betterResolution = better_resolution
-//        betterResolution = betterResolution && settings.better_resolution_when_raising_hand
-        val slpt_objects: MutableList<SlptViewComponent> = ArrayList()
+        val slptObjects = arrayListOf<SlptViewComponent>()
+
+        mService = service!!
+
+        if (settings.theme.battery?.text != null) {
+            val text = settings.theme.battery!!.text!!
+            val batteryView = SlptBatteryView()
+            val arrayDigit = (0 until text.imagesCount).map {
+                Util.Bitmap2Bytes(getBitmap(text.imageIndex + it))
+            }.toTypedArray()
+
+            batteryView.setImagePictureArray(arrayDigit)
+            val startPoint = getStartPoint(text, 3)
+            batteryView.setStart(startPoint.x, startPoint.y)
+            slptObjects.add(batteryView)
+        }
+
+        if (settings.theme.battery?.images != null) {
+            val images = settings.theme.battery!!.images!!
+            val batteryView = SlptBatteryView()
+            val arrayDigit = (0 until images.imagesCount).map {
+                Util.Bitmap2Bytes(getBitmap(images.imageIndex + it))
+            }.toTypedArray()
+            batteryView.setImagePictureArray(arrayDigit)
+            batteryView.setStart(images.x, images.y)
+            slptObjects.add(batteryView)
+        }
+
 //        // Do not show in SLPT (but show on raise of hand)
 //        val show_all = !settings.clock_only_slpt || betterResolution
 //        if (!show_all) return slpt_objects
@@ -165,8 +203,22 @@ class BatteryWidget() : CircleWidget() {
 //            localSlptBatteryView.setStart(settings.batteryProgLeft.toInt(), settings.batteryProgTop.toInt())
 //            slpt_objects.add(localSlptBatteryView)
 //        }
-        return slpt_objects
+        return slptObjects
     }
+
+    private fun drawBitmapSlpt(level: Int, images: Images): ArrayList<SlptViewComponent> {
+        val arrayImages = (0 until images.imagesCount).map {
+            Util.Bitmap2Bytes(getBitmap(images.imageIndex + it))
+        }.toTypedArray()
+
+        val currentImage = arrayImages[(images.imagesCount / level * 100).coerceAtMost(images.imagesCount)]
+
+        val pict = SlptPictureView()
+        pict.setImagePicture(currentImage)
+        pict.setStart(images.x, images.y)
+        return arrayListOf(pict)
+    }
+
 
     companion object {
         private const val TAG = "VergeIT-LOG"
