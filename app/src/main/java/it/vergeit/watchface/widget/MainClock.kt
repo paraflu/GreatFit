@@ -138,7 +138,6 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
         for (i in text.toCharArray().indices) {
             val charToPrint = text.toCharArray()[i]
             val va = charToPrint - '0'
-            Log.d(TAG, "drawTime $text : $va")
             val charBmp = getBitmap(font.imageIndex + va)
             canvas.drawBitmap(charBmp, x.toFloat(), y.toFloat(), settings.mGPaint)
             x += charBmp.width

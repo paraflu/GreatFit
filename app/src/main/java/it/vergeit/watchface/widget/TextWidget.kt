@@ -134,29 +134,31 @@ open class TextWidget() : AbstractWidget() {
     }
 
     fun getStartPoint(spec: IText, stringLen: Int): Point {
-        val width = spec.bottomRightX - spec.topLeftX
-        val height = spec.bottomRightY - spec.topLeftY
-        val x = spec.topLeftX
-        val y = spec.topLeftY
-        val bmp: Bitmap = getBitmap(spec.imageIndex)
+        return getStartPoint(spec.topLeftX, spec.topLeftY, spec.bottomRightX, spec.bottomRightY, spec.alignment, spec.spacing, spec.imageIndex, stringLen)
+    }
+
+    private fun getStartPoint(topLeftX: Int, topLeftY: Int, bottomRightX: Int, bottomRightY: Int, alignment: String, spacing: Int, imageIndex: Int, stringLen: Int): Point {
+        val width = bottomRightX - topLeftX
+        val height = bottomRightY - topLeftY
+        val bmp: Bitmap = getBitmap(imageIndex)
         val imageSize = Size(bmp.width, bmp.height)
 
         // la lunghezza della stringa una volta stampata
         // numero di caratteri x dimensione dell'immagine più eventuale spaziatura
-        val stringLength = stringLen * imageSize.width + (stringLen - 1) * spec.spacing
+        val stringLength = stringLen * imageSize.width + (stringLen - 1) * spacing
         val centerX = (width / 2f).roundToInt()
         val centerY = (height / 2f).roundToInt()
-        return when (spec.alignment) {
+        return when (alignment) {
             // #TopLeft, TopCenter, TopRight, Left, Center, Right, BottomLeft, BottomCenter, BottomRight
-            "TopLeft" -> Point(x, y)
-            "TopCenter" -> Point((x + centerX - stringLength / 2f).roundToInt(), (y + centerY - (imageSize.height / 2f).roundToInt()))
-            "TopRight" -> Point(x + width - stringLength, y)
-            "Center" -> Point((x + centerX - stringLength / 2f).roundToInt(), (y + centerY - imageSize.height / 2f).roundToInt())
-            "Left" -> Point(x, (y + centerY - imageSize.height / 2f).roundToInt())
-            "Right" -> Point(x + width - stringLength, (y + centerY - imageSize.height / 2f).roundToInt())
-            "BottomLeft" -> Point(x, y + height - imageSize.height)
-            "BottomRight" -> Point(x + width - stringLength, y + height - imageSize.height)
-            else -> Point(x, y)
+            "TopLeft" -> Point(topLeftX, topLeftY)
+            "TopCenter" -> Point((topLeftX + centerX - stringLength / 2f).roundToInt(), (topLeftY + centerY - (imageSize.height / 2f).roundToInt()))
+            "TopRight" -> Point(topLeftX + width - stringLength, topLeftY)
+            "Center" -> Point((topLeftX + centerX - stringLength / 2f).roundToInt(), (topLeftY + centerY - imageSize.height / 2f).roundToInt())
+            "Left" -> Point(topLeftX, (topLeftY + centerY - imageSize.height / 2f).roundToInt())
+            "Right" -> Point(topLeftX + width - stringLength, (topLeftY + centerY - imageSize.height / 2f).roundToInt())
+            "BottomLeft" -> Point(topLeftX, topLeftY + height - imageSize.height)
+            "BottomRight" -> Point(topLeftX + width - stringLength, topLeftY + height - imageSize.height)
+            else -> Point(topLeftX, topLeftY)
         }
     }
 

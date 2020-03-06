@@ -108,7 +108,7 @@ class DateWidget() : TextWidget() {
             val monthSpec = monthAndDay.separate.month
             val daySpec = monthAndDay.separate.day
             if (monthNameSpec?.imageIndex != null) {
-                var monthName = SlptPictureView()
+                val monthName = SlptPictureView()
                 monthName.setImagePicture(Util.Bitmap2Bytes(getBitmap(monthNameSpec.imageIndex + month, true, slptBetter)))
                 monthName.setStart(monthNameSpec.x, monthNameSpec.y)
                 result.add(monthName)
@@ -116,30 +116,34 @@ class DateWidget() : TextWidget() {
             }
 
             if (monthSpec != null) {
-                val layout = SlptLinearLayout()
+                val startPoint = getStartPoint(monthSpec, 2)
+                val imagePlace = getBitmap(monthSpec.imageIndex)
                 val monthHView = SlptMonthHView()
                 monthHView.setImagePictureArray(loadDigitArray(monthSpec.imageIndex, monthSpec.imagesCount, true, slptBetter))
-                layout.add(monthHView)
+                monthHView.setStart(startPoint.x, startPoint.y)
+                result.add(monthHView)
+
+                startPoint.x += imagePlace.width + monthSpec.spacing
 
                 val monthLView = SlptMonthLView()
                 monthLView.setImagePictureArray(loadDigitArray(monthSpec.imageIndex, monthSpec.imagesCount, true, slptBetter))
-                layout.add(monthLView)
-                layout.setStart(monthSpec.topLeftX, monthSpec.topLeftY)
-                result.add(layout)
+                monthLView.setStart(monthSpec.topLeftX, monthSpec.topLeftY)
+                result.add(monthLView)
             }
 
             if (daySpec != null) {
-                //drawText(canvas, String.format("%02d", day), daySpec, monthAndDay.twoDigitsDay == false)
-                val layout = SlptLinearLayout()
+                val startPoint = getStartPoint(daySpec, 2)
                 val dayHView = SlptDayHView()
+                val imagePlace = getBitmap(daySpec.imageIndex)
                 dayHView.setImagePictureArray(loadDigitArray(daySpec.imageIndex, daySpec.imagesCount, true, slptBetter))
-                layout.add(dayHView)
+                dayHView.setStart(startPoint.x, startPoint.y)
+                result.add(dayHView)
+
+                startPoint.x += imagePlace.width + daySpec.spacing
 
                 val dayLView = SlptDayLView()
                 dayLView.setImagePictureArray(loadDigitArray(daySpec.imageIndex, daySpec.imagesCount, true, slptBetter))
-                layout.add(dayLView)
-                layout.setStart(daySpec.topLeftX, daySpec.topLeftY)
-                result.add(layout)
+                result.add(dayLView)
 
 //                dateLayout.add(SlptDayHView())
 //                dateLayout.add(SlptDayLView())
