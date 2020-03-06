@@ -32,9 +32,9 @@ class DateWidget() : TextWidget() {
         return buildSlptViewComponent(service, false)
     }
 
-    fun loadDigitArray(idx: Int, count: Int = 10): Array<ByteArray> {
+    private fun loadDigitArray(idx: Int, count: Int = 10, slpt: Boolean, slptBetter: Boolean): Array<ByteArray> {
         return (0 until count).map {
-            Util.Bitmap2Bytes(getBitmap(idx + it))
+            Util.Bitmap2Bytes(getBitmap(idx + it, slpt, slptBetter))
         }.toTypedArray()
     }
 
@@ -46,7 +46,7 @@ class DateWidget() : TextWidget() {
             if (date.monthAndDay != null) {
                 val month = calendar.get(Calendar.MONTH)
                 val day = calendar.get(Calendar.DAY_OF_MONTH)
-                slptObjects.addAll(drawMonthDaySlpt(month, day, date.monthAndDay))
+                slptObjects.addAll(drawMonthDaySlpt(month, day, date.monthAndDay, better_resolution))
             }
             if (date.weekDay != null) {
                 val calendar = Calendar.getInstance()
@@ -56,18 +56,18 @@ class DateWidget() : TextWidget() {
                 } else {
                     weekDay -= 2
                 }
-                slptObjects.addAll(drawWeekdaySlpt(weekDay, date.weekDay))
+                slptObjects.addAll(drawWeekdaySlpt(weekDay, date.weekDay, better_resolution))
             }
         }
         return slptObjects
     }
 
-    private fun drawWeekdaySlpt(weekDay: Int, wdSpec: WeekDay): ArrayList<SlptViewComponent> {
+    private fun drawWeekdaySlpt(weekDay: Int, wdSpec: WeekDay, slptBetter: Boolean): ArrayList<SlptViewComponent> {
         val slptObjects = arrayListOf<SlptViewComponent>()
         val weekDayView = SlptWeekView()
-        val weekDayImages = arrayListOf<ByteArray>(Util.Bitmap2Bytes(getBitmap(wdSpec.imageIndex + wdSpec.imagesCount)))
-        weekDayImages.addAll((0 until wdSpec.imagesCount-1).map {
-            Util.Bitmap2Bytes(getBitmap(wdSpec.imageIndex + it))
+        val weekDayImages = arrayListOf<ByteArray>(Util.Bitmap2Bytes(getBitmap(wdSpec.imageIndex + wdSpec.imagesCount, true, slptBetter)))
+        weekDayImages.addAll((0 until wdSpec.imagesCount - 1).map {
+            Util.Bitmap2Bytes(getBitmap(wdSpec.imageIndex + it, true, slptBetter))
         }.toTypedArray())
         weekDayView.setImagePictureArray(weekDayImages.toTypedArray())
         weekDayView.setStart(wdSpec.x, wdSpec.y)
@@ -101,7 +101,7 @@ class DateWidget() : TextWidget() {
         }
     }
 
-    private fun drawMonthDaySlpt(month: Int, day: Int, monthAndDay: MonthAndDay): Array<SlptViewComponent> {
+    private fun drawMonthDaySlpt(month: Int, day: Int, monthAndDay: MonthAndDay, slptBetter: Boolean): Array<SlptViewComponent> {
         val result = ArrayList<SlptViewComponent>()
         if (monthAndDay.separate != null) {
             val monthNameSpec = monthAndDay.separate.monthName
@@ -109,7 +109,7 @@ class DateWidget() : TextWidget() {
             val daySpec = monthAndDay.separate.day
             if (monthNameSpec?.imageIndex != null) {
                 var monthName = SlptPictureView()
-                monthName.setImagePicture(Util.Bitmap2Bytes(getBitmap(monthNameSpec.imageIndex + month)))
+                monthName.setImagePicture(Util.Bitmap2Bytes(getBitmap(monthNameSpec.imageIndex + month, true, slptBetter)))
                 monthName.setStart(monthNameSpec.x, monthNameSpec.y)
                 result.add(monthName)
 
@@ -118,11 +118,11 @@ class DateWidget() : TextWidget() {
             if (monthSpec != null) {
                 val layout = SlptLinearLayout()
                 val monthHView = SlptMonthHView()
-                monthHView.setImagePictureArray(loadDigitArray(monthSpec.imageIndex, monthSpec.imagesCount))
+                monthHView.setImagePictureArray(loadDigitArray(monthSpec.imageIndex, monthSpec.imagesCount, true, slptBetter))
                 layout.add(monthHView)
 
                 val monthLView = SlptMonthLView()
-                monthLView.setImagePictureArray(loadDigitArray(monthSpec.imageIndex, monthSpec.imagesCount))
+                monthLView.setImagePictureArray(loadDigitArray(monthSpec.imageIndex, monthSpec.imagesCount, true, slptBetter))
                 layout.add(monthLView)
                 layout.setStart(monthSpec.topLeftX, monthSpec.topLeftY)
                 result.add(layout)
@@ -132,11 +132,11 @@ class DateWidget() : TextWidget() {
                 //drawText(canvas, String.format("%02d", day), daySpec, monthAndDay.twoDigitsDay == false)
                 val layout = SlptLinearLayout()
                 val dayHView = SlptDayHView()
-                dayHView.setImagePictureArray(loadDigitArray(daySpec.imageIndex, daySpec.imagesCount))
+                dayHView.setImagePictureArray(loadDigitArray(daySpec.imageIndex, daySpec.imagesCount, true, slptBetter))
                 layout.add(dayHView)
 
                 val dayLView = SlptDayLView()
-                dayLView.setImagePictureArray(loadDigitArray(daySpec.imageIndex, daySpec.imagesCount))
+                dayLView.setImagePictureArray(loadDigitArray(daySpec.imageIndex, daySpec.imagesCount, true, slptBetter))
                 layout.add(dayLView)
                 layout.setStart(daySpec.topLeftX, daySpec.topLeftY)
                 result.add(layout)

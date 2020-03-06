@@ -8,14 +8,13 @@ import android.util.Log
 import com.google.gson.Gson
 import com.huami.watch.watchface.util.Util
 import com.ingenic.iwds.slpt.view.utils.SimpleFile
-import java.io.File
-import java.io.FileReader
-import java.io.StringReader
+import java.io.*
+import java.lang.Exception
 
 
 class ThemeAssets(val context: Context, private val themeName: String) {
 
-    private var imageCache = mutableMapOf<Int, Bitmap>()
+    private var imageCache = mutableMapOf<String, Bitmap>()
 
     private var _theme: Theme
     private var localPath: String = ""
@@ -32,9 +31,6 @@ class ThemeAssets(val context: Context, private val themeName: String) {
     }
 
     init {
-        ///data/data/it.vergeit.watchface/files/theme/Nuclear_pure_analog_cmp_vergelite/config.json
-        ///data/data/it.vergeit.watchface/files/theme/Nuclear_pure_analog_cmp_vergelite/config.json
-//        localPath = context.filesDir.absolutePath + "/theme/$themeName/config.json";
         localPath = "/sdcard/vergeit/md131/config.json";
         Log.d(TAG, "theme $localPath")
         if (File(localPath).exists()) {
@@ -48,25 +44,44 @@ class ThemeAssets(val context: Context, private val themeName: String) {
         }
     }
 
-    fun getBitmap(service: Service, imageIdx: Int): Bitmap {
-        val bmp: Bitmap?
-        if (!imageCache.containsKey(imageIdx)) {
-            bmp = if (isLocal) {
-                BitmapFactory.decodeFile(getPath(imageIdx))
-            } else {
-                Util.decodeImage(service.resources, getPath(imageIdx))
+    fun getBitmap(service: Service, imageIdx: Int, slpt: Boolean = false, slptBetter: Boolean = false): Bitmap {
+        val bmp: Bitmap
+        val key = "$imageIdx" + if (slpt) if (slptBetter) "_26w" else "_8c" else ""
+
+        if (!imageCache.containsKey(key)) {
+            val path = getPath(imageIdx, slpt, slptBetter)
+
+            bmp = try {
+                if (isLocal) {
+                    BitmapFactory.decodeFile(path) ?: throw IOException()
+                } else {
+                    Util.decodeImage(service.resources, path)
+                }
+            } catch (e: Exception) {
+                when (e) {
+                    is FileNotFoundException,
+                    is IOException -> {
+                        if (slptBetter) getBitmap(service, imageIdx, slpt, false)
+                        else getBitmap(service, imageIdx, slpt = false, slptBetter = false)
+                    }
+                    else -> throw e
+                }
+                // recupero prendendo l'immagine non ottimizzata
+                getBitmap(service, imageIdx)
             }
-            imageCache[imageIdx] = bmp
+
+            imageCache[key] = bmp
         } else {
-            bmp = imageCache[imageIdx]
+            bmp = imageCache[key]!!
         }
-        return bmp!!;
+        return bmp
     }
 
-    fun getPath(imageIdx: Int): String {
+    private fun getPath(imageIdx: Int, slpt: Boolean = false, slptBetter: Boolean = false): String {
+        val suffix = if (slpt) if (slptBetter) "_26w" else "_8c" else ""
         return if (isLocal)
-            String.format("%s/%04d.png", File(localPath).parent, imageIdx)
-        else String.format("%s/%04d.png", File(this.themeName).parent, imageIdx)
+            String.format("%s/%04d%s.png", File(localPath).parent, imageIdx, suffix)
+        else String.format("%s/%04d%s.png", File(this.themeName).parent, imageIdx, suffix)
     }
 
     val theme: Theme

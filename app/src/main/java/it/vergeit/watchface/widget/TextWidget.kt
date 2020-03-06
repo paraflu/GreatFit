@@ -7,13 +7,10 @@ import android.graphics.Point
 import android.util.Size
 import it.vergeit.watchface.data.DataType
 import it.vergeit.watchface.settings.LoadSettings
-import it.vergeit.watchface.theme.bin.Distance
-import it.vergeit.watchface.theme.bin.IImage
-import it.vergeit.watchface.theme.bin.IText
-import it.vergeit.watchface.theme.bin.Temperature
 import com.huami.watch.watchface.util.Util
 import com.ingenic.iwds.slpt.view.core.SlptPictureView
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
+import it.vergeit.watchface.theme.bin.*
 import kotlin.math.roundToInt
 
 
@@ -21,6 +18,8 @@ open class TextWidget() : AbstractWidget() {
 
     protected lateinit var settings: LoadSettings
 
+    val theme: Theme
+        get() = settings.theme
 
     companion object {
         const val TAG = "VergeIT-LOG"
@@ -30,6 +29,16 @@ open class TextWidget() : AbstractWidget() {
 
     protected constructor(_settings: LoadSettings) : this() {
         settings = _settings
+    }
+
+    internal fun bitmapArray(imageIndex: Int, imagesCount: Int, better_resolution: Boolean): Array<ByteArray> {
+        return (0 until imagesCount).map {
+            Util.Bitmap2Bytes(getBitmap(imageIndex + it, true, better_resolution))
+        }.toTypedArray()
+    }
+
+    internal fun bitmapArray(text: Text, better_resolution: Boolean): Array<ByteArray> {
+        return bitmapArray(text.imageIndex, text.imagesCount, better_resolution)
     }
 
     override fun buildSlptViewComponent(service: Service?): List<SlptViewComponent?>? {
@@ -131,7 +140,6 @@ open class TextWidget() : AbstractWidget() {
         val y = spec.topLeftY
         val bmp: Bitmap = getBitmap(spec.imageIndex)
         val imageSize = Size(bmp.width, bmp.height)
-//        val valueToPrint = value.toString()
 
         // la lunghezza della stringa una volta stampata
         // numero di caratteri x dimensione dell'immagine più eventuale spaziatura
@@ -141,23 +149,23 @@ open class TextWidget() : AbstractWidget() {
         return when (spec.alignment) {
             // #TopLeft, TopCenter, TopRight, Left, Center, Right, BottomLeft, BottomCenter, BottomRight
             "TopLeft" -> Point(x, y)
-            "TopCenter" -> Point(x + centerX - (stringLength / 2f).roundToInt(), (y + centerY - (imageSize.height / 2f).roundToInt()))
+            "TopCenter" -> Point((x + centerX - stringLength / 2f).roundToInt(), (y + centerY - (imageSize.height / 2f).roundToInt()))
             "TopRight" -> Point(x + width - stringLength, y)
             "Center" -> Point((x + centerX - stringLength / 2f).roundToInt(), (y + centerY - imageSize.height / 2f).roundToInt())
-            "Left" -> Point(x, y + centerY - imageSize.height)
+            "Left" -> Point(x, (y + centerY - imageSize.height / 2f).roundToInt())
             "Right" -> Point(x + width - stringLength, (y + centerY - imageSize.height / 2f).roundToInt())
             "BottomLeft" -> Point(x, y + height - imageSize.height)
-            "BottomRight" -> Point(x + width - stringLength, (y + height - imageSize.height / 2f).roundToInt())
+            "BottomRight" -> Point(x + width - stringLength, y + height - imageSize.height)
             else -> Point(x, y)
         }
     }
 
     protected fun drawTextSlpt(valueToPrint: String, spec: IText, skipZero: Boolean = false): ArrayList<SlptViewComponent> {
         val arrayDigit = (0 until spec.imagesCount).map {
-            Util.Bitmap2Bytes(getBitmap(spec.imageIndex + it))
+            Util.Bitmap2Bytes(getBitmap(spec.imageIndex + it, slpt = true, slptBetter = false))
         }.toTypedArray()
 
-        val baseImage = getBitmap(spec.imageIndex)
+        val baseImage = getBitmap(spec.imageIndex, slpt = true, slptBetter = false)
         val result = arrayListOf<SlptViewComponent>()
         val startPoint = getStartPoint(spec, valueToPrint.length)
         for (i in valueToPrint.toCharArray().indices) {
@@ -195,13 +203,17 @@ open class TextWidget() : AbstractWidget() {
         }
     }
 
+    internal fun getBitmapSlpt(imageIdx: Int, slptBetter: Boolean): ByteArray {
+        return Util.Bitmap2Bytes(getBitmap(imageIdx, true, slptBetter))
+    }
+
     /**
      * get an assets bitmap
      *
      * Implements cache
      */
-    protected fun getBitmap(imageIdx: Int): Bitmap {
-        return settings.getBitmap(mService, imageIdx)
+    internal fun getBitmap(imageIdx: Int, slpt: Boolean = false, slptBetter: Boolean = false): Bitmap {
+        return settings.getBitmap(mService, imageIdx, slpt, slptBetter)
     }
 
     protected fun drawBitmap(canvas: Canvas, imageIdx: Int, x: Int, y: Int) {

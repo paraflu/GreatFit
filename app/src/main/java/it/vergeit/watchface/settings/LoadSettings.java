@@ -17,6 +17,7 @@ import it.vergeit.watchface.R;
 import it.vergeit.watchface.resource.ResourceManager;
 import it.vergeit.watchface.theme.bin.Theme;
 import it.vergeit.watchface.theme.bin.ThemeAssets;
+
 import com.google.gson.Gson;
 import com.huami.watch.watchface.util.Util;
 
@@ -37,9 +38,9 @@ public class LoadSettings {
         return themeAssets.getTheme();
     }
 
-    public String getImagePath(int imageIndex) {
-        return themeAssets.getPath(imageIndex);
-    }
+//    public String getImagePath(int imageIndex) {
+//        return themeAssets.getPath(imageIndex);
+//    }
 
     public Context getCtx() {
         return context;
@@ -1859,7 +1860,7 @@ public class LoadSettings {
     }
 
     @NotNull
-    public Bitmap getBitmap(Service service, int imageIdx) {
-        return themeAssets.getBitmap(service, imageIdx);
+    public Bitmap getBitmap(Service service, int imageIdx, boolean slpt, boolean slptBetter) {
+        return themeAssets.getBitmap(service, imageIdx, slpt, slptBetter);
     }
 }

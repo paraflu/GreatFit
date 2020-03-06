@@ -8,12 +8,9 @@ import it.vergeit.watchface.data.Battery
 import it.vergeit.watchface.data.DataType
 import it.vergeit.watchface.settings.LoadSettings
 import com.ingenic.iwds.slpt.view.core.SlptBatteryView
-import com.ingenic.iwds.slpt.view.core.SlptPictureView
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
 import com.ingenic.iwds.slpt.view.sport.SlptPowerNumView
-import it.vergeit.watchface.theme.bin.Images
 import it.vergeit.watchface.theme.bin.Text
-import java.util.*
 
 
 class BatteryWidget() : CircleWidget() {
@@ -167,9 +164,7 @@ class BatteryWidget() : CircleWidget() {
         if (settings.theme.battery?.text != null) {
             val text = settings.theme.battery!!.text!!
             val batteryView = SlptPowerNumView()
-            val arrayDigit = (0 until text.imagesCount).map {
-                Util.Bitmap2Bytes(getBitmap(text.imageIndex + it))
-            }.toTypedArray()
+            val arrayDigit = bitmapArray(text, better_resolution)
 
             batteryView.setImagePictureArray(arrayDigit)
             val startPoint = getStartPoint(text, 3)
@@ -181,7 +176,7 @@ class BatteryWidget() : CircleWidget() {
             val images = settings.theme.battery!!.images!!
             val batteryView = SlptBatteryView()
             val arrayDigit = (0 until images.imagesCount).map {
-                Util.Bitmap2Bytes(getBitmap(images.imageIndex + it))
+                Util.Bitmap2Bytes(getBitmap(images.imageIndex + it, true, better_resolution))
             }.toTypedArray()
             batteryView.setImagePictureArray(arrayDigit)
             batteryView.setStart(images.x, images.y)
@@ -207,18 +202,18 @@ class BatteryWidget() : CircleWidget() {
         return slptObjects
     }
 
-    private fun drawBitmapSlpt(level: Int, images: Images): ArrayList<SlptViewComponent> {
-        val arrayImages = (0 until images.imagesCount).map {
-            Util.Bitmap2Bytes(getBitmap(images.imageIndex + it))
-        }.toTypedArray()
-
-        val currentImage = arrayImages[(images.imagesCount / level * 100).coerceAtMost(images.imagesCount)]
-
-        val pict = SlptPictureView()
-        pict.setImagePicture(currentImage)
-        pict.setStart(images.x, images.y)
-        return arrayListOf(pict)
-    }
+//    private fun drawBitmapSlpt(level: Int, images: Images, betterResolution: Boolean): ArrayList<SlptViewComponent> {
+//        val arrayImages = (0 until images.imagesCount).map {
+//            Util.Bitmap2Bytes(getBitmap(images.imageIndex + it,true, betterResolution))
+//        }.toTypedArray()
+//
+//        val currentImage = arrayImages[(images.imagesCount / level * 100).coerceAtMost(images.imagesCount)]
+//
+//        val pict = SlptPictureView()
+//        pict.setImagePicture(currentImage)
+//        pict.setStart(images.x, images.y)
+//        return arrayListOf(pict)
+//    }
 
 
     companion object {

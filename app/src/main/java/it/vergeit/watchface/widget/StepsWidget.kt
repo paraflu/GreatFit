@@ -2,17 +2,12 @@ package it.vergeit.watchface.widget
 
 import android.app.Service
 import android.graphics.*
-import android.util.Log
 import it.vergeit.watchface.data.DataType
 import it.vergeit.watchface.data.Steps
-import it.vergeit.watchface.resource.ResourceManager.getTypeFace
 import it.vergeit.watchface.settings.LoadSettings
 import com.ingenic.iwds.slpt.view.arc.SlptTodayStepArcAnglePicView
-import com.ingenic.iwds.slpt.view.core.SlptLinearLayout
-import com.ingenic.iwds.slpt.view.core.SlptPictureView
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
 import com.ingenic.iwds.slpt.view.sport.SlptTodayStepNumView
-import com.ingenic.iwds.slpt.view.utils.SimpleFile
 import java.util.*
 
 
@@ -32,11 +27,12 @@ class StepsWidget() : CircleWidget() {
     private val icon: Bitmap? = null
     private var stepsSweepAngle = 0f
     private var angleLength: Int = 0
+
     // Screen-on init (runs once)
     override fun init(service: Service) {
         mService = service
-        if (settings.theme.stepsProgress?.circle != null) {
-            val circle = settings.theme.stepsProgress!!.circle!!
+        if (theme.stepsProgress?.circle != null) {
+            val circle = theme.stepsProgress!!.circle!!
             angleLength = calcAngle(circle)
             if (circle.imageIndex == null) {
                 ring = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -50,8 +46,8 @@ class StepsWidget() : CircleWidget() {
 
         }
 
-        if (settings.theme.stepsProgress?.clockHand != null) {
-            val clockHand = settings.theme.stepsProgress!!.clockHand!!;
+        if (theme.stepsProgress?.clockHand != null) {
+            val clockHand = theme.stepsProgress!!.clockHand!!;
             angleGraph = calcAngle(clockHand.sector.startAngle, clockHand.sector.endAngle)
             progressBmp = getBitmap(clockHand.image.imageIndex);
         }
@@ -65,7 +61,7 @@ class StepsWidget() : CircleWidget() {
             val steps = stepsData!!.steps
 
             stepsSweepAngle = angleLength * (steps.coerceAtMost(stepsData!!.target).toFloat() / stepsData!!.target)
-            if (settings.theme.stepsProgress?.clockHand != null) {
+            if (theme.stepsProgress?.clockHand != null) {
                 stepProgressGraphSweepAngle = angleGraph * (steps.coerceAtMost(stepsData!!.target).toFloat() / stepsData!!.target)
             }
         }
@@ -79,11 +75,11 @@ class StepsWidget() : CircleWidget() {
         if (stepsData == null) {
             return
         }
-        if (settings.theme.activity?.steps != null) { // Draw icon
-            drawText(canvas!!, stepsData!!.steps, settings.theme.activity!!.steps!!.step)
+        if (theme.activity?.steps != null) { // Draw icon
+            drawText(canvas!!, stepsData!!.steps, theme.activity!!.steps!!.step)
         }
-        val scale = settings.theme.stepsProgress!!.circle
-        val clockHand = settings.theme.stepsProgress?.clockHand
+        val scale = theme.stepsProgress!!.circle
+        val clockHand = theme.stepsProgress?.clockHand
 
         if (ring != null) {
             drawRing(canvas!!, scale!!, ring!!, stepsSweepAngle)
@@ -105,72 +101,88 @@ class StepsWidget() : CircleWidget() {
     }
 
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent?>? {
-        var betterResolution = better_resolution
-        betterResolution = betterResolution && settings.better_resolution_when_raising_hand
-        val slpt_objects: MutableList<SlptViewComponent?> = ArrayList()
-        var tmp_left: Int
-        // Do not show in SLPT (but show on raise of hand)
-        val show_all = !settings.clock_only_slpt || betterResolution
-        if (!show_all) return slpt_objects
-        // Show steps
-        if (settings.steps > 0) { // Show or Not icon
-            if (settings.stepsIcon) {
-                val stepsIcon = SlptPictureView()
-                stepsIcon.setImagePicture(SimpleFile.readFileFromAssets(service, (if (betterResolution) "26wc_" else "slpt_") + "icons/" + settings.is_white_bg + "steps.png"))
-                stepsIcon.setStart(
-                        settings.stepsIconLeft.toInt(),
-                        settings.stepsIconTop.toInt()
-                )
-                slpt_objects.add(stepsIcon)
-            }
-            val steps = SlptLinearLayout()
-            steps.add(SlptTodayStepNumView())
-            steps.setTextAttrForAll(
-                    settings.stepsFontSize,
-                    settings.stepsColor,
-                    getTypeFace(service!!.resources, settings.font)
-            )
-            // Position based on screen on
-            steps.alignX = 2
-            steps.alignY = 0
-            tmp_left = settings.stepsLeft.toInt()
-            if (!settings.stepsAlignLeft) { // If text is centered, set rectangle
-                steps.setRect(
-                        (2 * tmp_left + 640),
-                        (settings.font_ratio.toFloat() / 100 * settings.stepsFontSize).toInt()
-                )
-                tmp_left = -320
-            }
-            steps.setStart(
-                    tmp_left,
-                    (settings.stepsTop - settings.font_ratio.toFloat() / 100 * settings.stepsFontSize).toInt()
-            )
-            slpt_objects.add(steps)
+        val slptObjects: MutableList<SlptViewComponent?> = ArrayList()
+        if (theme.stepsProgress != null) {
+            val stepProgress = theme.stepsProgress!!
+            val stepView = SlptTodayStepArcAnglePicView()
+            val stepProgressImage = getBitmapSlpt(stepProgress.circle!!.imageIndex!!, better_resolution)
+            stepView.setImagePicture(stepProgressImage)
+            slptObjects.add(stepView)
         }
-        // Steps image
-        if (settings.stepsProg > 0 && settings.stepsProgType == 1) { // Image
-// todo
-//SlptTodayStepPicGroupView
+        if (theme.activity?.steps != null) {
+            val step = theme.activity!!.steps!!
+            val stepView = SlptTodayStepNumView()
+            stepView.setImagePictureArray(bitmapArray(step.step.imageIndex, step.step.imagesCount, better_resolution))
+            val startPoint = getStartPoint(step.step, stepsData!!.steps.toString().length)
+            stepView.setStart(startPoint.x, startPoint.y)
+            slptObjects.add(stepView)
         }
-        // steps bar
-        if (settings.stepsProg > 0 && settings.stepsProgType == 0) { // Draw background image
-            if (settings.stepsProgBgBool) {
-                val ring_background = SlptPictureView()
-                ring_background.setImagePicture(SimpleFile.readFileFromAssets(service, (if (settings.isVerge) "verge_" else if (betterResolution) "" else "slpt_") + "circles/ring1_bg.png"))
-                ring_background.setStart((settings.stepsProgLeft - settings.stepsProgRadius).toInt(), (settings.stepsProgTop - settings.stepsProgRadius).toInt())
-                slpt_objects.add(ring_background)
-            }
-            val stepsArcAnglePicView = SlptTodayStepArcAnglePicView()
-            stepsArcAnglePicView.setImagePicture(SimpleFile.readFileFromAssets(service, (if (settings.isVerge) "verge_" else if (betterResolution) "" else "slpt_") + settings.stepsProgSlptImage))
-            stepsArcAnglePicView.setStart((settings.stepsProgLeft - settings.stepsProgRadius).toInt(), (settings.stepsProgTop - settings.stepsProgRadius).toInt())
-            stepsArcAnglePicView.start_angle = if (settings.stepsProgClockwise == 1) settings.stepsProgStartAngle else settings.stepsProgEndAngle
-            //stepsArcAnglePicView.start_angle = settings.stepsProgStartAngle;
-            stepsArcAnglePicView.len_angle = 0
-            stepsArcAnglePicView.full_angle = if (settings.stepsProgClockwise == 1) angleLength else -angleLength
-            stepsArcAnglePicView.draw_clockwise = settings.stepsProgClockwise
-            slpt_objects.add(stepsArcAnglePicView)
-        }
-        return slpt_objects
+        return slptObjects
+//        var betterResolution = better_resolution
+//        betterResolution = betterResolution && settings.better_resolution_when_raising_hand
+//        var tmp_left: Int
+//        // Do not show in SLPT (but show on raise of hand)
+//        val show_all = !settings.clock_only_slpt || betterResolution
+//        if (!show_all) return slpt_objects
+//        // Show steps
+//        if (settings.steps > 0) { // Show or Not icon
+//            if (settings.stepsIcon) {
+//                val stepsIcon = SlptPictureView()
+//                stepsIcon.setImagePicture(SimpleFile.readFileFromAssets(service, (if (betterResolution) "26wc_" else "slpt_") + "icons/" + settings.is_white_bg + "steps.png"))
+//                stepsIcon.setStart(
+//                        settings.stepsIconLeft.toInt(),
+//                        settings.stepsIconTop.toInt()
+//                )
+//                slpt_objects.add(stepsIcon)
+//            }
+//            val steps = SlptLinearLayout()
+//            steps.add(SlptTodayStepNumView())
+//            steps.setTextAttrForAll(
+//                    settings.stepsFontSize,
+//                    settings.stepsColor,
+//                    getTypeFace(service!!.resources, settings.font)
+//            )
+//            // Position based on screen on
+//            steps.alignX = 2
+//            steps.alignY = 0
+//            tmp_left = settings.stepsLeft.toInt()
+//            if (!settings.stepsAlignLeft) { // If text is centered, set rectangle
+//                steps.setRect(
+//                        (2 * tmp_left + 640),
+//                        (settings.font_ratio.toFloat() / 100 * settings.stepsFontSize).toInt()
+//                )
+//                tmp_left = -320
+//            }
+//            steps.setStart(
+//                    tmp_left,
+//                    (settings.stepsTop - settings.font_ratio.toFloat() / 100 * settings.stepsFontSize).toInt()
+//            )
+//            slpt_objects.add(steps)
+//        }
+//        // Steps image
+//        if (settings.stepsProg > 0 && settings.stepsProgType == 1) { // Image
+//// todo
+////SlptTodayStepPicGroupView
+//        }
+//        // steps bar
+//        if (settings.stepsProg > 0 && settings.stepsProgType == 0) { // Draw background image
+//            if (settings.stepsProgBgBool) {
+//                val ring_background = SlptPictureView()
+//                ring_background.setImagePicture(SimpleFile.readFileFromAssets(service, (if (settings.isVerge) "verge_" else if (betterResolution) "" else "slpt_") + "circles/ring1_bg.png"))
+//                ring_background.setStart((settings.stepsProgLeft - settings.stepsProgRadius).toInt(), (settings.stepsProgTop - settings.stepsProgRadius).toInt())
+//                slpt_objects.add(ring_background)
+//            }
+//            val stepsArcAnglePicView = SlptTodayStepArcAnglePicView()
+//            stepsArcAnglePicView.setImagePicture(SimpleFile.readFileFromAssets(service, (if (settings.isVerge) "verge_" else if (betterResolution) "" else "slpt_") + settings.stepsProgSlptImage))
+//            stepsArcAnglePicView.setStart((settings.stepsProgLeft - settings.stepsProgRadius).toInt(), (settings.stepsProgTop - settings.stepsProgRadius).toInt())
+//            stepsArcAnglePicView.start_angle = if (settings.stepsProgClockwise == 1) settings.stepsProgStartAngle else settings.stepsProgEndAngle
+//            //stepsArcAnglePicView.start_angle = settings.stepsProgStartAngle;
+//            stepsArcAnglePicView.len_angle = 0
+//            stepsArcAnglePicView.full_angle = if (settings.stepsProgClockwise == 1) angleLength else -angleLength
+//            stepsArcAnglePicView.draw_clockwise = settings.stepsProgClockwise
+//            slpt_objects.add(stepsArcAnglePicView)
+//        }
+//        return slpt_objects
     }
 
     companion object {

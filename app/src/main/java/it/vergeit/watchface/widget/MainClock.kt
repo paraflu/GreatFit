@@ -46,7 +46,7 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
     private val digitalNumsNo0 = arrayOf("", "1", "2", "3", "4", "5", "6", "7", "8", "9") //no 0 on first digit
     private var mService: Service? = null
 
-    fun getBitmap(imageIdx: Int): Bitmap = settings.getBitmap(mService, imageIdx)
+    fun getBitmap(imageIdx: Int, slpt: Boolean = false, slptBetter: Boolean = false): Bitmap = settings.getBitmap(mService, imageIdx, slpt, slptBetter)
 
     override fun init(service: Service?) {
 
@@ -149,7 +149,7 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
     override fun onDrawDigital(canvas: Canvas?, width: Float, height: Float, centerX: Float, centerY: Float, seconds: Int, minutes: Int, hours: Int, year: Int, month: Int, day: Int, week: Int, ampm: Int) {
 
         try {
-            canvas!!.drawBitmap(background, 0f, 0f, settings.mGPaint)
+            canvas!!.drawBitmap(background!!, 0f, 0f, settings.mGPaint)
 
             if (settings.theme.time != null) {
                 val time = settings.theme.time!!
@@ -225,9 +225,9 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
         return buildSlptViewComponent(service, false)
     }
 
-    fun loadDigitArray(idx: Int, count: Int = 10): Array<ByteArray> {
+    fun loadDigitArray(idx: Int, count: Int = 10, slpt: Boolean, slptBetter: Boolean): Array<ByteArray> {
         return (0 until count).map {
-            Util.Bitmap2Bytes(getBitmap(idx + it))
+            Util.Bitmap2Bytes(getBitmap(idx + it, slpt, slptBetter))
         }.toTypedArray()
     }
 
@@ -235,23 +235,13 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
         val slptObjects = ArrayList<SlptViewComponent?>()
 
         try {
-            var betterResolution = better_resolution
-            betterResolution = betterResolution && settings.better_resolution_when_raising_hand
             // SLPT only clock
-            val show_all = !settings.clock_only_slpt || betterResolution
-            // SLPT only clock white bg -> to black
-            if (!show_all && settings.isVerge && settings.white_bg) {
-                settings.is_white_bg = ""
-                settings.hoursColor = Color.parseColor("#ffffff")
-                settings.minutesColor = Color.parseColor("#ffffff")
-                settings.am_pmColor = Color.parseColor("#ffffff")
-            }
             mService = service
             var tmp_left: Int
             // Draw background image
             Log.d(TAG, "buildSlptViewComponent mainClock")
             val background = SlptPictureView()
-            background.setImagePicture(Util.Bitmap2Bytes(getBitmap(settings.theme.background.image.imageIndex)))
+            background.setImagePicture(Util.Bitmap2Bytes(getBitmap(settings.theme.background.image.imageIndex, true, better_resolution)))
             slptObjects.add(background)
 
             // Set low power icon
@@ -270,8 +260,8 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
             if (settings.theme.time != null) {
                 if (settings.theme.time?.hours != null) {
                     val hour = settings.theme.time!!.hours!!
-                    val firstDigitArray: Array<ByteArray> = loadDigitArray(hour.tens.imageIndex, hour.tens.imagesCount)
-                    val secondDigitArray: Array<ByteArray> = loadDigitArray(hour.ones.imageIndex, hour.ones.imagesCount)
+                    val firstDigitArray: Array<ByteArray> = loadDigitArray(hour.tens.imageIndex, hour.tens.imagesCount, true, better_resolution)
+                    val secondDigitArray: Array<ByteArray> = loadDigitArray(hour.ones.imageIndex, hour.ones.imagesCount, true, better_resolution)
 
                     val firstDigit = SlptHourHView()
                     firstDigit.setImagePictureArray(firstDigitArray)
@@ -291,8 +281,8 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
 
                 if (settings.theme.time?.minutes != null) {
                     val minutes = settings.theme.time!!.minutes!!
-                    val firstDigitArray: Array<ByteArray> = loadDigitArray(minutes.tens.imageIndex, minutes.tens.imagesCount)
-                    val secondDigitArray: Array<ByteArray> = loadDigitArray(minutes.ones.imageIndex, minutes.ones.imagesCount)
+                    val firstDigitArray: Array<ByteArray> = loadDigitArray(minutes.tens.imageIndex, minutes.tens.imagesCount, true, better_resolution)
+                    val secondDigitArray: Array<ByteArray> = loadDigitArray(minutes.ones.imageIndex, minutes.ones.imagesCount, true, better_resolution)
 
                     val firstDigit = SlptMinuteHView()
                     firstDigit.setImagePictureArray(firstDigitArray)
@@ -313,8 +303,8 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
                     val ampm = SlptLinearLayout()
                     val am = SlptPictureView()
                     val pm = SlptPictureView()
-                    am.setImagePicture(Util.Bitmap2Bytes(getBitmap(amPm.imageIndexAMEN)))
-                    pm.setImagePicture(Util.Bitmap2Bytes(getBitmap(amPm.imageIndexPMEN)))
+                    am.setImagePicture(Util.Bitmap2Bytes(getBitmap(amPm.imageIndexAMEN, true, better_resolution)))
+                    pm.setImagePicture(Util.Bitmap2Bytes(getBitmap(amPm.imageIndexPMEN, true, better_resolution)))
                     SlptSportUtil.setAmBgView(am)
                     SlptSportUtil.setPmBgView(pm)
                     slptObjects.add(amPmLayout)
@@ -480,7 +470,7 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
                      if (settings.date > 0) { // Show or Not icon
                          if (settings.dateIcon) {
                              val dateIcon = SlptPictureView()
-                             dateIcon.setImagePicture(SimpleFile.readFileFromAssets(service, (if (betterResolution) "26wc_" else "slpt_") + "icons/" + settings.is_white_bg + "date.png"))
+                             dateIcon.setImagePicture(SimpleFile.readFileFromAssets(service, (if (better_resolution) "26wc_" else "slpt_") + "icons/" + settings.is_white_bg + "date.png"))
                              dateIcon.setStart(
                                      settings.dateIconLeft.toInt(),
                                      settings.dateIconTop.toInt()
