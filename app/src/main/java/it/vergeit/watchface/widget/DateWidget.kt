@@ -143,6 +143,7 @@ class DateWidget() : TextWidget() {
 
                 val dayLView = SlptDayLView()
                 dayLView.setImagePictureArray(loadDigitArray(daySpec.imageIndex, daySpec.imagesCount, true, slptBetter))
+                dayLView.setStart(startPoint.x, startPoint.y)
                 result.add(dayLView)
 
 //                dateLayout.add(SlptDayHView())

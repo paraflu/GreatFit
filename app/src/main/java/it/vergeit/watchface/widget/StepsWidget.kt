@@ -134,7 +134,7 @@ class StepsWidget() : CircleWidget() {
             }
             stepView.start_angle = stepProgress.circle.startAngle!!
             stepView.len_angle = 0
-            stepView.full_angle = angleLength
+            stepView.full_angle = stepProgress.circle.endAngle!!
             slptObjects.add(stepView)
         }
         if (settings.theme.activity?.steps != null) {

@@ -23,12 +23,25 @@ abstract class CircleWidget() : TextWidget() {
     protected fun calcAngle(startAngle: Int, endAngle: Int): Int {
         val start: Float = parseAngle(startAngle.toFloat())
         val end: Float = parseAngle(endAngle.toFloat())
-        val res = /*if (start > end) (end % 360f) - (start % 360f) else (start % 360f) - (end % 360f)*/ (start % 360) - (end % 360);
+//        val res = /*if (start > end) (end % 360f) - (start % 360f) else (start % 360f) - (end % 360f)*/ (start % 360) - (end % 360);
+//        return res.toInt()
+//        val res = if (start > end) {
+//            if (end < start)
+//                360 - (start - end)
+//            else
+//                end - start
+//        } else {
+//            if (end > start)
+//                360 - (start - end)
+//            else
+//                end - start
+//        }
+        val res = end - start
         return res.toInt()
     }
 
-    private fun parseAngle(angle:Float): Float {
-        if (abs(angle) > 100) {
+    private fun parseAngle(angle: Float): Float {
+        if (abs(angle) > 360) {
             return angle / 100f
         }
         return angle;

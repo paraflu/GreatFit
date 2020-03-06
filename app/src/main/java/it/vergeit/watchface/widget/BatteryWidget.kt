@@ -68,9 +68,7 @@ class BatteryWidget() : CircleWidget() {
         val level: Int = batteryData!!.level
 
         // Bar angle
-        Log.d(TAG, String.format("settings.batteryProg > %d && settings.batteryProgType == %d", settings.batteryProg, settings.batteryProgType))
         if (settings.theme.battery?.scale != null) {
-            Log.d(TAG, String.format("angle %d", angleLength))
             batterySweepAngle = angleLength * (level / batteryData!!.scale.toFloat())
         }
 
