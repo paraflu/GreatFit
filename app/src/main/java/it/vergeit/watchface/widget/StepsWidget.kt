@@ -4,6 +4,7 @@ import android.app.Service
 import android.graphics.*
 import android.util.Log
 import com.huami.watch.watchface.util.Util
+import com.ingenic.iwds.slpt.view.analog.SlptRotateTodayStepView
 import com.ingenic.iwds.slpt.view.arc.SlptArcAnglePicView
 import com.ingenic.iwds.slpt.view.arc.SlptPowerArcAnglePicView
 import it.vergeit.watchface.data.DataType
@@ -13,6 +14,7 @@ import com.ingenic.iwds.slpt.view.arc.SlptTodayStepArcAnglePicView
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
 import com.ingenic.iwds.slpt.view.sport.SlptTodayStepNumView
 import java.util.*
+import kotlin.math.roundToInt
 
 
 class StepsWidget() : CircleWidget() {
@@ -104,6 +106,48 @@ class StepsWidget() : CircleWidget() {
         return buildSlptViewComponent(service, false)
     }
 
+    private fun setAllignment(alignment: String, stepView: SlptViewComponent) {
+        when (alignment) {
+            "TopLeft" -> {
+                stepView.alignX = 0
+                stepView.alignY = 0
+            }
+            "TopCenter" -> {
+                stepView.alignX = 2
+                stepView.alignY = 0
+            }
+            "TopRight" -> {
+                stepView.alignY = 0
+                stepView.alignX = 1
+            }
+            "Center" -> {
+                stepView.alignY = 2
+                stepView.alignX = 0
+            }
+            "Left" -> {
+                stepView.alignX = 0
+                stepView.alignY = 2
+            }
+            "Right" -> {
+                stepView.alignY = 1
+                stepView.alignX = 2
+            }
+            "BottomLeft" -> {
+                stepView.alignX = 0
+                stepView.alignY = 3
+            }
+            "BottomRight" -> {
+                stepView.alignY = 3
+                stepView.alignX = 3
+            }
+            else -> {
+                stepView.alignY = 0
+                stepView.alignX = 0
+            }
+        }
+    }
+
+
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent?>? {
         mService = service!!
         val slptObjects: MutableList<SlptViewComponent?> = ArrayList()
@@ -142,9 +186,11 @@ class StepsWidget() : CircleWidget() {
             val currentStep = stepsData?.steps ?: 0
             val stepView = SlptTodayStepNumView()
 //            stepView.setPadding(0, step.step.spacing, 0, 0)
-            val startPoint = getStartPoint(step.step, currentStep.toString().length)
+//            val startPoint = getStartPoint(step.step, currentStep.toString().length)
             stepView.setImagePictureArray(bitmapArray(step.step.imageIndex, step.step.imagesCount, better_resolution))
-            stepView.setStart(startPoint.x, startPoint.y)
+            stepView.setStart(step.step.topLeftX, step.step.topLeftY)
+            stepView.setRect(step.step.bottomRightX, step.step.bottomRightY)
+            setAllignment(step.step.alignment, stepView)
             slptObjects.add(stepView)
         }
         return slptObjects
@@ -214,6 +260,7 @@ class StepsWidget() : CircleWidget() {
 //        }
 //        return slpt_objects
     }
+
 
     companion object {
         private const val TAG = "VergeIT-LOG StepsWidget"
