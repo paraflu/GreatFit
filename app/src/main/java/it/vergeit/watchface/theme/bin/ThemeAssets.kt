@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Environment
 import android.util.Log
 import com.google.gson.Gson
 import com.huami.watch.watchface.util.Util
@@ -12,7 +13,21 @@ import java.io.*
 import java.lang.Exception
 
 
-class ThemeAssets(val context: Context, private val themeName: String) {
+class ThemeAssets(val context: Context) {
+
+    private var themeName: String
+
+    init {
+        try {
+            Log.d(TAG, "init")
+            val f = FileReader("${Environment.getExternalStorageDirectory()}/vergeit/theme.txt")
+            themeName = f.readLines().first()
+            Log.d(TAG, "themeName $themeName")
+            f.close()
+        } catch (e: IOException) {
+            themeName = "md131"
+        }
+    }
 
     private var imageCache = mutableMapOf<String, Bitmap>()
 
@@ -31,7 +46,7 @@ class ThemeAssets(val context: Context, private val themeName: String) {
     }
 
     init {
-        localPath = "/sdcard/vergeit/md131/config.json";
+        localPath = "${Environment.getExternalStorageDirectory()}/vergeit/$themeName/config.json";
         Log.d(TAG, "theme $localPath")
         if (File(localPath).exists()) {
             isLocal = true

@@ -9,6 +9,9 @@ import it.vergeit.watchface.settings.LoadSettings
 import it.vergeit.watchface.theme.bin.AnalogDialFace
 import it.vergeit.watchface.theme.bin.ITimeDigit
 import com.huami.watch.watchface.util.Util
+import com.ingenic.iwds.slpt.view.analog.SlptAnalogHourView
+import com.ingenic.iwds.slpt.view.analog.SlptAnalogHourWithMinuteView
+import com.ingenic.iwds.slpt.view.analog.SlptAnalogMinuteView
 import com.ingenic.iwds.slpt.view.core.SlptLinearLayout
 import com.ingenic.iwds.slpt.view.core.SlptPictureView
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
@@ -236,7 +239,6 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
         try {
             // SLPT only clock
             mService = service
-            var tmp_left: Int
             // Draw background image
             Log.d(TAG, "buildSlptViewComponent mainClock")
             val background = SlptPictureView()
@@ -310,6 +312,18 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
                 }
             }
 
+            if (settings.theme.analogDialFace != null) {
+                val analog = settings.theme.analogDialFace!!
+                val hourView = SlptAnalogHourView()
+                hourView.setStart(analog.hours!!.centerOffset.x, analog.hours!!.centerOffset.y)
+                hourView.setImagePicture(Util.Bitmap2Bytes(getBitmap(analog.hours.image.imageIndex, true, better_resolution)))
+                slptObjects.add(hourView)
+
+                val minuteView = SlptAnalogMinuteView()
+                minuteView.setStart(analog.minutes!!.centerOffset.x, analog.minutes!!.centerOffset.y)
+                minuteView.setImagePicture(Util.Bitmap2Bytes(getBitmap(analog.minutes.image.imageIndex, true, better_resolution)))
+                slptObjects.add(minuteView)
+            }
             // Set font
             //val timeTypeFace = getTypeFace(service!!.resources, settings.font)
 //            if (settings.digital_clock) { // Draw hours

@@ -58,7 +58,7 @@ public class LoadSettings {
         this.res = context.getResources();
         this.sharedPreferences = context.getSharedPreferences(context.getPackageName() + "_settings", Context.MODE_PRIVATE);
         defaultParameters();
-        this.themeAssets = new ThemeAssets(context, themeName);
+        this.themeAssets = new ThemeAssets(context);
     }
 
     // GENERAL

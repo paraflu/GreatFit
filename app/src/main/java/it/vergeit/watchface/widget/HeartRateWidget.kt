@@ -3,10 +3,13 @@ package it.vergeit.watchface.widget
 import android.app.Service
 import android.graphics.*
 import android.text.TextPaint
+import com.huami.watch.watchface.widget.slpt.SlptHeartRateWidget
 import it.vergeit.watchface.data.DataType
 import it.vergeit.watchface.data.HeartRate
 import it.vergeit.watchface.settings.LoadSettings
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
+import com.ingenic.iwds.slpt.view.sport.SlptLastHeartRateView
+import java.util.ArrayList
 
 class HeartRateWidget() : CircleWidget() {
 
@@ -119,7 +122,34 @@ class HeartRateWidget() : CircleWidget() {
 
     // Screen-off (SLPT) - Better screen quality
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent?>? {
-        return null;
+        mService = service!!
+        val slptObjects: MutableList<SlptViewComponent?> = ArrayList()
+
+        val pulse = settings.theme.activity!!.pulse!!
+        if (settings.theme.activity?.pulse != null) { // Draw icon
+            //drawTest(canvas!!, heartRate!!.heartRate, settings.theme.activity!!.pulse!!)
+            var heartView = SlptLastHeartRateView()
+            heartView.setImagePictureArray(bitmapArray(pulse.imageIndex, pulse.imagesCount, better_resolution))
+            heartView.setStart(pulse.topLeftX, pulse.topLeftY)
+            heartView.setRect(pulse.bottomRightX, pulse.bottomRightY)
+            slptObjects.add(heartView)
+        }
+//        val scale = settings.theme.activity?.pulseMeter
+//        val clockHand = settings.theme.activity?.pulseGraph?.clockHand
+//
+//        if (ring != null) {
+//            drawRing(canvas!!, scale!!, ring!!, heartRateSweepAngle)
+//        }
+
+//        if (ringBmp != null) {
+//            drawCircle(canvas!!, scale!!, ringBmp!!, heartRateSweepAngle)
+////            Log.d(TAG, "stepsWidget ${ringBmp!!.width}")
+//        }
+//
+//        if (progressBmp != null) {
+//            drawProgress(canvas!!, progressBmp!!, clockHand!!, heartGraphSweepAngle)
+//        }
+        return slptObjects;
         /*var betterResolution = better_resolution
         betterResolution = betterResolution && settings.better_resolution_when_raising_hand
         mService = service!!
