@@ -191,7 +191,7 @@ class AnalogWidget() : TextWidget() {
 //                it.alignY = 2.toByte()
 //            }
 
-            val minuteView = SlptAnalogHourView().also {
+            val minuteView = SlptAnalogMinuteView().also {
                 setHand(it, analog!!.minutes!!.image.imageIndex, better_resolution)
             }
 
