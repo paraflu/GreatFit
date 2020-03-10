@@ -650,11 +650,11 @@ public class LoadSettings {
         }
 
         // Select Font
-        this.font = ResourceManager.Font.values()[font_no];
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setTextSize(100);// 100 to get the 100% value
-        paint.setTypeface(ResourceManager.getTypeFace(context.getResources(), this.font));
-        this.font_ratio = (int) -paint.ascent(); // ascent() is negative
+//        this.font = ResourceManager.Font.values()[font_no];
+//        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+//        paint.setTextSize(100);// 100 to get the 100% value
+//        paint.setTypeface(ResourceManager.getTypeFace(context.getResources(), this.font));
+//        this.font_ratio = (int) -paint.ascent(); // ascent() is negative
 
         // Icon paint
         this.mGPaint = new Paint();

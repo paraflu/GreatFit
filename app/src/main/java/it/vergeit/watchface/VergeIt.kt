@@ -18,23 +18,15 @@ class VergeIt : AbstractWatchFace() {
         if (settings.theme?.date != null) {
             widgets.add(DateWidget(settings))
         }
-
         if (settings.theme.activity?.pulse != null || settings.theme.activity?.pulseGraph != null || settings.theme.activity?.pulseMeter != null) {
             widgets.add(HeartRateWidget(settings))
         }
-
-        if (settings.theme.activity?.steps != null) {
-            widgets.add(StepsWidget(settings))
-        }
-
         if (settings.theme.activity?.calories != null) {
             widgets.add(CaloriesWidget(settings))
         }
-
         if (settings.theme.battery != null) {
             widgets.add(BatteryWidget(settings))
         }
-
         if (settings.theme.activity?.steps != null || settings.theme.stepsProgress != null) {
             widgets.add(StepsWidget(settings));
         }
@@ -45,6 +37,10 @@ class VergeIt : AbstractWatchFace() {
 
         if (settings.theme.activity?.distance != null) {
             widgets.add(SportTodayDistanceWidget(settings))
+        }
+
+        if (settings.theme.analogDialFace != null) {
+            widgets.add(AnalogWidget(settings))
         }
 
 //        if(settings.isTodayDistanceRate()) {

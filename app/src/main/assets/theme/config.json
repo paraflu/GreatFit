@@ -1,0 +1,119 @@
+{
+  "Info": {
+    "DeviceId": 40
+  },
+  "Background": {
+    "Image": {
+      "X": 0,
+      "Y": 0,
+      "ImageIndex": 0
+    },
+    "Preview": {
+      "X": 0,
+      "Y": 0,
+      "ImageIndex": 1
+    }
+  },
+  "Activity": {
+    "Calories": {
+      "TopLeftX": 153,
+      "TopLeftY": 144,
+      "BottomRightX": 153,
+      "BottomRightY": 144,
+      "Alignment": "TopLeft",
+      "Spacing": 0,
+      "ImageIndex": 15,
+      "ImagesCount": 10
+    },
+    "Pulse": {
+      "TopLeftX": 150,
+      "TopLeftY": 99,
+      "BottomRightX": 150,
+      "BottomRightY": 99,
+      "Alignment": "TopLeft",
+      "Spacing": 0,
+      "ImageIndex": 15,
+      "ImagesCount": 10
+    },
+    "Distance": {
+      "Number": {
+        "TopLeftX": 147,
+        "TopLeftY": 304,
+        "BottomRightX": 147,
+        "BottomRightY": 304,
+        "Alignment": "TopLeft",
+        "Spacing": 0,
+        "ImageIndex": 25,
+        "ImagesCount": 10
+      },
+      "SuffixImageIndex": 36,
+      "DecimalPointImageIndex": 35
+    },
+    "Steps": {
+      "Step": {
+        "TopLeftX": 141,
+        "TopLeftY": 256,
+        "BottomRightX": 142,
+        "BottomRightY": 256,
+        "Alignment": "TopLeft",
+        "Spacing": 1,
+        "ImageIndex": 5,
+        "ImagesCount": 10
+      }
+    }
+  },
+  "StepsProgress": {
+    "Circle": {
+      "CenterX": 180,
+      "CenterY": 477,
+      "RadiusX": 256,
+      "RadiusY": 256,
+      "StartAngle": -27,
+      "EndAngle": 27,
+      "Width": 9,
+      "Color": "0x00000000008DBD07",
+      "Flatness": 180
+    }
+  },
+  "AnalogDialFace": {
+    "Hours": {
+      "OnlyBorder": false,
+      "Color": "0x0000000000000000",
+      "CenterOffset": {
+        "X": 0,
+        "Y": 0
+      },
+      "Image": {
+        "X": 21,
+        "Y": 130,
+        "ImageIndex": 2
+      }
+    },
+    "Minutes": {
+      "OnlyBorder": false,
+      "Color": "0x0000000000000000",
+      "CenterOffset": {
+        "X": 0,
+        "Y": 0
+      },
+      "Image": {
+        "X": 27,
+        "Y": 166,
+        "ImageIndex": 3
+      }
+    },
+    "Seconds": {
+      "OnlyBorder": false,
+      "Color": "0x0000000000000000",
+      "CenterOffset": {
+        "X": 0,
+        "Y": 0
+      },
+      "Image": {
+        "X": 17,
+        "Y": 156,
+        "ImageIndex": 4
+      }
+    }
+  }
+}

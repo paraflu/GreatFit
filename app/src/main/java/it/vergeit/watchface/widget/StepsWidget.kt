@@ -2,19 +2,12 @@ package it.vergeit.watchface.widget
 
 import android.app.Service
 import android.graphics.*
-import android.util.Log
-import com.huami.watch.watchface.util.Util
-import com.ingenic.iwds.slpt.view.analog.SlptRotateTodayStepView
-import com.ingenic.iwds.slpt.view.arc.SlptArcAnglePicView
-import com.ingenic.iwds.slpt.view.arc.SlptPowerArcAnglePicView
 import it.vergeit.watchface.data.DataType
 import it.vergeit.watchface.data.Steps
 import it.vergeit.watchface.settings.LoadSettings
-import com.ingenic.iwds.slpt.view.arc.SlptTodayStepArcAnglePicView
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
 import com.ingenic.iwds.slpt.view.sport.SlptTodayStepNumView
 import java.util.*
-import kotlin.math.roundToInt
 
 
 class StepsWidget() : CircleWidget() {
@@ -151,48 +144,59 @@ class StepsWidget() : CircleWidget() {
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent?>? {
         mService = service!!
         val slptObjects: MutableList<SlptViewComponent?> = ArrayList()
-        if (settings.theme.stepsProgress != null) {
-            val stepProgress = settings.theme.stepsProgress!!
-            val stepView = SlptTodayStepArcAnglePicView()
-            if (stepProgress.circle!!.imageIndex != null) {
-                val stepProgressImage = getBitmapSlpt(stepProgress.circle.imageIndex!!, better_resolution)
-                stepView.setImagePicture(stepProgressImage)
-            } else {
-                val width = stepProgress.circle.radiusX!!.times(2)
-                val height = stepProgress.circle.radiusY!!.times(2)
-                val mask = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-                val canvas = Canvas(mask)
-                canvas.drawColor(0x00000000)
-                val maskPaint = Paint()
-                maskPaint.color = -0x1 //pick highest value for bitwise AND operation
-                maskPaint.isAntiAlias = true
-                //choose entire bitmap as a rect
-                val rect = RectF(0f, 0f, width.toFloat(), height.toFloat())
-                canvas.drawArc(rect, stepProgress.circle.startAngle!!.toFloat(), stepProgress.circle.endAngle!!.toFloat(), true, maskPaint) //mask the pie
-//
-//                ring = Paint(Paint.ANTI_ALIAS_FLAG)
-//                ring!!.strokeCap = Paint.Cap.ROUND
-//                ring!!.style = Paint.Style.STROKE
-//                ring!!.strokeWidth = stepProgress.circle.width!!.toFloat()
-                stepView.setImagePicture(Util.Bitmap2Bytes(mask))
-            }
-            stepView.start_angle = stepProgress.circle.startAngle!!
-            stepView.len_angle = 0
-            stepView.full_angle = stepProgress.circle.endAngle!!
+
+        if (settings.theme.activity?.steps?.step != null) { // Draw icon
+            val step = settings.theme.activity!!.steps!!.step
+            var stepView = SlptTodayStepNumView()
+            stepView.setImagePictureArray(getBitmapSlptArray(step.imageIndex, step.imagesCount, better_resolution))
+            stepView.setStart(step.topLeftX, step.topLeftY)
+            stepView.setRect(step.bottomRightX, step.bottomRightY)
             slptObjects.add(stepView)
         }
-        if (settings.theme.activity?.steps != null) {
-            val step = settings.theme.activity!!.steps!!
-            val currentStep = stepsData?.steps ?: 0
-            val stepView = SlptTodayStepNumView()
-//            stepView.setPadding(0, step.step.spacing, 0, 0)
-//            val startPoint = getStartPoint(step.step, currentStep.toString().length)
-            stepView.setImagePictureArray(bitmapArray(step.step.imageIndex, step.step.imagesCount, better_resolution))
-            stepView.setStart(step.step.topLeftX, step.step.topLeftY)
-            stepView.setRect(step.step.bottomRightX, step.step.bottomRightY)
-            setAllignment(step.step.alignment, stepView)
-            slptObjects.add(stepView)
-        }
+
+        return slptObjects;
+//        if (settings.theme.stepsProgress != null) {
+//            val stepProgress = settings.theme.stepsProgress!!
+//            val stepView = SlptTodayStepArcAnglePicView()
+//            if (stepProgress.circle!!.imageIndex != null) {
+//                val stepProgressImage = getBitmapSlpt(stepProgress.circle.imageIndex!!, better_resolution)
+//                stepView.setImagePicture(stepProgressImage)
+//            } else {
+//                val width = stepProgress.circle.radiusX!!.times(2)
+//                val height = stepProgress.circle.radiusY!!.times(2)
+//                val mask = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+//                val canvas = Canvas(mask)
+//                canvas.drawColor(0x00000000)
+//                val maskPaint = Paint()
+//                maskPaint.color = -0x1 //pick highest value for bitwise AND operation
+//                maskPaint.isAntiAlias = true
+//                //choose entire bitmap as a rect
+//                val rect = RectF(0f, 0f, width.toFloat(), height.toFloat())
+//                canvas.drawArc(rect, stepProgress.circle.startAngle!!.toFloat(), stepProgress.circle.endAngle!!.toFloat(), true, maskPaint) //mask the pie
+////
+////                ring = Paint(Paint.ANTI_ALIAS_FLAG)
+////                ring!!.strokeCap = Paint.Cap.ROUND
+////                ring!!.style = Paint.Style.STROKE
+////                ring!!.strokeWidth = stepProgress.circle.width!!.toFloat()
+//                stepView.setImagePicture(Util.Bitmap2Bytes(mask))
+//            }
+//            stepView.start_angle = stepProgress.circle.startAngle!!
+//            stepView.len_angle = 0
+//            stepView.full_angle = stepProgress.circle.endAngle!!
+//            slptObjects.add(stepView)
+//        }
+//        if (settings.theme.activity?.steps != null) {
+//            val step = settings.theme.activity!!.steps!!
+//            val currentStep = stepsData?.steps ?: 0
+//            val stepView = SlptTodayStepNumView()
+////            stepView.setPadding(0, step.step.spacing, 0, 0)
+////            val startPoint = getStartPoint(step.step, currentStep.toString().length)
+//            stepView.setImagePictureArray(bitmapArray(step.step.imageIndex, step.step.imagesCount, better_resolution))
+//            stepView.setStart(step.step.topLeftX, step.step.topLeftY)
+//            stepView.setRect(step.step.bottomRightX, step.step.bottomRightY)
+//            setAllignment(step.step.alignment, stepView)
+//            slptObjects.add(stepView)
+//        }
         return slptObjects
 //        var betterResolution = better_resolution
 //        betterResolution = betterResolution && settings.better_resolution_when_raising_hand

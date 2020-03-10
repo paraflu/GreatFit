@@ -14,48 +14,35 @@ import java.lang.Exception
 
 
 class ThemeAssets(val context: Context) {
-
     private var themeName: String
-
-    init {
-        try {
-            Log.d(TAG, "init")
-            val f = FileReader("${Environment.getExternalStorageDirectory()}/vergeit/theme.txt")
-            themeName = f.readLines().first()
-            Log.d(TAG, "themeName $themeName")
-            f.close()
-        } catch (e: IOException) {
-            themeName = "md131"
-        }
-    }
-
     private var imageCache = mutableMapOf<String, Bitmap>()
-
     private var _theme: Theme
     private var localPath: String = ""
-
     private var isLocal = false
 
     companion object {
         const val TAG = "VergeIT Tools"
     }
 
-    private fun preCache() {
-        Log.d(TAG, "precache start")
-        Log.d(TAG, "precache stop")
-    }
-
     init {
+        try {
+            val f = FileReader("${Environment.getExternalStorageDirectory()}/vergeit/theme.txt")
+            themeName = f.readLines().first()
+            f.close()
+        } catch (e: IOException) {
+            themeName = "theme"
+        }
+
         localPath = "${Environment.getExternalStorageDirectory()}/vergeit/$themeName/config.json";
-        Log.d(TAG, "theme $localPath")
         if (File(localPath).exists()) {
             isLocal = true
             _theme = Gson().fromJson<Theme>(FileReader(localPath), Theme::class.java)
-            preCache()
         } else {
-            Log.d(TAG, "theme not found")
-            val content = StringReader(String(SimpleFile.readFileFromAssets(context, "gtr/config.json")))
+            themeName = "theme"
+            val content = StringReader(String(SimpleFile.readFileFromAssets(context, "$themeName/config.json")))
+            Log.d(TAG, "content $content")
             _theme = Gson().fromJson<Theme>(content, Theme::class.java)
+            Log.d(TAG, "NO Local, config $themeName/config.json")
         }
     }
 
@@ -70,9 +57,11 @@ class ThemeAssets(val context: Context) {
                 if (isLocal) {
                     BitmapFactory.decodeFile(path) ?: throw IOException()
                 } else {
+                    Log.d(TAG, "now load image from assets $path")
                     Util.decodeImage(service.resources, path)
                 }
             } catch (e: Exception) {
+                Log.e(TAG, e.toString())
                 when (e) {
                     is FileNotFoundException,
                     is IOException -> {
@@ -96,7 +85,7 @@ class ThemeAssets(val context: Context) {
         val suffix = if (slpt) if (slptBetter) "_26w" else "_8c" else ""
         return if (isLocal)
             String.format("%s/%04d%s.png", File(localPath).parent, imageIdx, suffix)
-        else String.format("%s/%04d%s.png", File(this.themeName).parent, imageIdx, suffix)
+        else String.format("%s/%04d%s.png", themeName, imageIdx, suffix)
     }
 
     val theme: Theme

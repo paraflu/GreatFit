@@ -21,50 +21,29 @@ class VergeItSlpt : AbstractWatchFaceSlpt() {
         if (settings.theme?.date != null) {
             widgets.add(DateWidget(settings))
         }
+        if (settings.theme.activity?.pulse != null || settings.theme.activity?.pulseGraph != null || settings.theme.activity?.pulseMeter != null) {
+            widgets.add(HeartRateWidget(settings))
+        }
+        if (settings.theme.activity?.calories != null) {
+            widgets.add(CaloriesWidget(settings))
+        }
         if (settings.theme.battery != null) {
             widgets.add(BatteryWidget(settings))
         }
         if (settings.theme.activity?.steps != null || settings.theme.stepsProgress != null) {
             widgets.add(StepsWidget(settings))
         }
-
-
-//        if (settings.theme.activity?.calories != null) {
-//            widgets.add(CaloriesWidget(settings))
+//        if (settings.theme.weather != null) {
+//            widgets.add(WeatherWidget(settings));
 //        }
-        // Disable all except clock in both SLPT modes
-//if(settings.clock_only_slpt)
-//    return super.onStartCommand(intent, flags, startId);
-//        if (settings.isHeartRate) {
-//            widgets.add(HeartRateWidget(settings))
-//        }
-//        if (settings.isStepsRate) {
-//            widgets.add(StepsWidget(settings))
-//        }
-//        if (settings.isTodayDistanceRate) {
+//
+//        if (settings.theme.activity?.distance != null) {
 //            widgets.add(SportTodayDistanceWidget(settings))
 //        }
-//        if (settings.isTotalDistanceRate) {
-//            widgets.add(SportTotalDistanceWidget(settings))
-//        }
-//        if (settings.isCalories) {
-//            widgets.add(CaloriesWidget(settings))
-//        }
-//        if (settings.isFloor) {
-//            widgets.add(FloorWidget(settings))
-//        }
-//        if (settings.isBattery) {
-//            widgets.add(BatteryWidget(settings))
-//        }
-//        if (settings.isWeather) {
-//            widgets.add(WeatherWidget(settings))
-//        }
-//        if (settings.isMoonPhase) {
-//            widgets.add(MoonPhaseWidget(settings))
-//        }
-//        if (settings.isGreat) {
-//            widgets.add(GreatWidget(settings))
-//        }
+        if (settings.theme.analogDialFace != null) {
+            widgets.add(AnalogWidget(settings))
+        }
+
         return super.onStartCommand(intent, flags, startId)
     }
 

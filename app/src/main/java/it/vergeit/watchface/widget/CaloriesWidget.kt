@@ -4,19 +4,13 @@ import android.app.Service
 import android.content.Context
 import android.graphics.*
 import android.text.TextPaint
-import android.util.Log
 import it.vergeit.watchface.AbstractWatchFace
 import it.vergeit.watchface.data.Calories
 import it.vergeit.watchface.data.DataType
-import it.vergeit.watchface.resource.ResourceManager.getTypeFace
 import it.vergeit.watchface.settings.LoadSettings
-import com.ingenic.iwds.slpt.view.arc.SlptArcAnglePicView
-import com.ingenic.iwds.slpt.view.core.SlptLinearLayout
-import com.ingenic.iwds.slpt.view.core.SlptPictureView
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
+import com.ingenic.iwds.slpt.view.sport.SlptLastHeartRateView
 import com.ingenic.iwds.slpt.view.sport.SlptTodayCaloriesView
-import com.ingenic.iwds.slpt.view.utils.SimpleFile
-import java.util.*
 import kotlin.math.abs
 
 class CaloriesWidget() : CircleWidget() {
@@ -106,74 +100,95 @@ class CaloriesWidget() : CircleWidget() {
     // Screen-off (SLPT) - Better screen quality
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean):
             List<SlptViewComponent> {
-        super.buildSlptViewComponent(service, better_resolution)
+        val slptObjects = mutableListOf<SlptViewComponent>()
+        mService = service!!
+        if (settings.theme.activity?.calories != null) {
+//            val calories = calories!!.calories
+            val calories = settings.theme.activity!!.calories!!
+            val caloriesView = SlptTodayCaloriesView()
+            caloriesView.setImagePictureArray(getBitmapSlptArray(calories.imageIndex, calories.imagesCount, better_resolution))
+            caloriesView.setStart(calories.topLeftX, calories.topLeftY)
+            caloriesView.setRect(calories.bottomRightX, calories.bottomRightY)
+            slptObjects.add(caloriesView)
+        }
 
-        Log.d(TAG, "buildSlptViewComponent Calories $mService $ring $ringBmp")
-        var betterResolution = better_resolution
-        betterResolution = betterResolution && settings.better_resolution_when_raising_hand
-        val slpt_objects: MutableList<SlptViewComponent> = ArrayList()
-        // Do not show in SLPT (but show on raise of hand)
-        val show_all = !settings.clock_only_slpt || betterResolution
-        if (!show_all) return slpt_objects
-        if (settings.calories > 0) { // Show or Not icon
-            if (settings.caloriesIcon) {
-                val caloriesIcon = SlptPictureView()
-                caloriesIcon.setImagePicture(SimpleFile.readFileFromAssets(service, (if (betterResolution) "26wc_" else "slpt_") + "icons/" + settings.is_white_bg + "calories.png"))
-                caloriesIcon.setStart(
-                        settings.caloriesIconLeft.toInt(),
-                        settings.caloriesIconTop.toInt()
-                )
-                slpt_objects.add(caloriesIcon)
-            }
-            val caloriesLayout = SlptLinearLayout()
-            caloriesLayout.add(SlptTodayCaloriesView())
-            // Show or Not Units
-            if (settings.caloriesUnits) {
-                val caloriesUnit = SlptPictureView()
-                caloriesUnit.setStringPicture(" kcal")
-                caloriesLayout.add(caloriesUnit)
-            }
-            caloriesLayout.setTextAttrForAll(
-                    settings.caloriesFontSize,
-                    settings.caloriesColor,
-                    getTypeFace(service!!.resources, settings.font)
-            )
-            // Position based on screen on
-            caloriesLayout.alignX = 2
-            caloriesLayout.alignY = 0
-            var tmp_left = settings.caloriesLeft.toInt()
-            if (!settings.caloriesAlignLeft) { // If text is centered, set rectangle
-                caloriesLayout.setRect(
-                        (2 * tmp_left + 640),
-                        (settings.font_ratio.toFloat() / 100 * settings.caloriesFontSize).toInt()
-                )
-                tmp_left = -320
-            }
-            caloriesLayout.setStart(
-                    tmp_left,
-                    (settings.caloriesTop - settings.font_ratio.toFloat() / 100 * settings.caloriesFontSize).toInt()
-            )
-            slpt_objects.add(caloriesLayout)
-        }
-        // Calories bar
-        if (settings.caloriesProg > 0 && settings.caloriesProgType == 0) { // Draw background image
-            if (settings.caloriesProgBgBool) {
-                val ring_background = SlptPictureView()
-                ring_background.setImagePicture(SimpleFile.readFileFromAssets(service, (if (settings.isVerge) "verge_" else if (betterResolution) "" else "slpt_") + "circles/ring1_bg.png"))
-                ring_background.setStart((settings.caloriesProgLeft - settings.caloriesProgRadius).toInt(), (settings.caloriesProgTop - settings.caloriesProgRadius).toInt())
-                slpt_objects.add(ring_background)
-            }
-            //if(calories==null){calories = new Calories(0);}
-            val localSlptArcAnglePicView = SlptArcAnglePicView()
-            localSlptArcAnglePicView.setImagePicture(SimpleFile.readFileFromAssets(service, (if (settings.isVerge) "verge_" else if (betterResolution) "" else "slpt_") + settings.caloriesProgSlptImage))
-            localSlptArcAnglePicView.setStart((settings.caloriesProgLeft - settings.caloriesProgRadius).toInt(), (settings.caloriesProgTop - settings.caloriesProgRadius).toInt())
-            localSlptArcAnglePicView.start_angle = if (settings.caloriesProgClockwise == 1) settings.caloriesProgStartAngle else settings.caloriesProgEndAngle
-            localSlptArcAnglePicView.len_angle = (angleLength * Math.min(settings.temp_calories / settings.target_calories, 1f)).toInt()
-            localSlptArcAnglePicView.full_angle = if (settings.caloriesProgClockwise == 1) angleLength else -angleLength
-            localSlptArcAnglePicView.draw_clockwise = settings.caloriesProgClockwise
-            slpt_objects.add(localSlptArcAnglePicView)
-        }
-        return slpt_objects
+//        val circle = settings.theme.activity!!.calories?.circle
+//
+//        if (ring != null) {
+//            drawRing(canvas!!, circle!!, ring!!, caloriesSweepAngle)
+//        }
+//
+//        if (ringBmp != null) {
+//            drawCircle(canvas!!, circle!!, ringBmp!!, caloriesSweepAngle)
+//        }
+        return slptObjects
+
+//        Log.d(TAG, "buildSlptViewComponent Calories $mService $ring $ringBmp")
+//        var betterResolution = better_resolution
+//        betterResolution = betterResolution && settings.better_resolution_when_raising_hand
+//        val slpt_objects: MutableList<SlptViewComponent> = ArrayList()
+//        // Do not show in SLPT (but show on raise of hand)
+//        val show_all = !settings.clock_only_slpt || betterResolution
+//        if (!show_all) return slpt_objects
+//        if (settings.calories > 0) { // Show or Not icon
+//            if (settings.caloriesIcon) {
+//                val caloriesIcon = SlptPictureView()
+//                caloriesIcon.setImagePicture(SimpleFile.readFileFromAssets(service, (if (betterResolution) "26wc_" else "slpt_") + "icons/" + settings.is_white_bg + "calories.png"))
+//                caloriesIcon.setStart(
+//                        settings.caloriesIconLeft.toInt(),
+//                        settings.caloriesIconTop.toInt()
+//                )
+//                slpt_objects.add(caloriesIcon)
+//            }
+//            val caloriesLayout = SlptLinearLayout()
+//            caloriesLayout.add(SlptTodayCaloriesView())
+//            // Show or Not Units
+//            if (settings.caloriesUnits) {
+//                val caloriesUnit = SlptPictureView()
+//                caloriesUnit.setStringPicture(" kcal")
+//                caloriesLayout.add(caloriesUnit)
+//            }
+//            caloriesLayout.setTextAttrForAll(
+//                    settings.caloriesFontSize,
+//                    settings.caloriesColor,
+//                    getTypeFace(service!!.resources, settings.font)
+//            )
+//            // Position based on screen on
+//            caloriesLayout.alignX = 2
+//            caloriesLayout.alignY = 0
+//            var tmp_left = settings.caloriesLeft.toInt()
+//            if (!settings.caloriesAlignLeft) { // If text is centered, set rectangle
+//                caloriesLayout.setRect(
+//                        (2 * tmp_left + 640),
+//                        (settings.font_ratio.toFloat() / 100 * settings.caloriesFontSize).toInt()
+//                )
+//                tmp_left = -320
+//            }
+//            caloriesLayout.setStart(
+//                    tmp_left,
+//                    (settings.caloriesTop - settings.font_ratio.toFloat() / 100 * settings.caloriesFontSize).toInt()
+//            )
+//            slpt_objects.add(caloriesLayout)
+//        }
+//        // Calories bar
+//        if (settings.caloriesProg > 0 && settings.caloriesProgType == 0) { // Draw background image
+//            if (settings.caloriesProgBgBool) {
+//                val ring_background = SlptPictureView()
+//                ring_background.setImagePicture(SimpleFile.readFileFromAssets(service, (if (settings.isVerge) "verge_" else if (betterResolution) "" else "slpt_") + "circles/ring1_bg.png"))
+//                ring_background.setStart((settings.caloriesProgLeft - settings.caloriesProgRadius).toInt(), (settings.caloriesProgTop - settings.caloriesProgRadius).toInt())
+//                slpt_objects.add(ring_background)
+//            }
+//            //if(calories==null){calories = new Calories(0);}
+//            val localSlptArcAnglePicView = SlptArcAnglePicView()
+//            localSlptArcAnglePicView.setImagePicture(SimpleFile.readFileFromAssets(service, (if (settings.isVerge) "verge_" else if (betterResolution) "" else "slpt_") + settings.caloriesProgSlptImage))
+//            localSlptArcAnglePicView.setStart((settings.caloriesProgLeft - settings.caloriesProgRadius).toInt(), (settings.caloriesProgTop - settings.caloriesProgRadius).toInt())
+//            localSlptArcAnglePicView.start_angle = if (settings.caloriesProgClockwise == 1) settings.caloriesProgStartAngle else settings.caloriesProgEndAngle
+//            localSlptArcAnglePicView.len_angle = (angleLength * Math.min(settings.temp_calories / settings.target_calories, 1f)).toInt()
+//            localSlptArcAnglePicView.full_angle = if (settings.caloriesProgClockwise == 1) angleLength else -angleLength
+//            localSlptArcAnglePicView.draw_clockwise = settings.caloriesProgClockwise
+//            slpt_objects.add(localSlptArcAnglePicView)
+//        }
+//        return slptObjects
     }
 
     companion object {

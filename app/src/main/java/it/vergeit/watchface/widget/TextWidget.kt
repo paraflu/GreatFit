@@ -41,9 +41,8 @@ open class TextWidget() : AbstractWidget() {
         return bitmapArray(text.imageIndex, text.imagesCount, better_resolution)
     }
 
-    override fun buildSlptViewComponent(service: Service?): List<SlptViewComponent?>? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun buildSlptViewComponent(service: Service?): List<SlptViewComponent?>? =
+            buildSlptViewComponent(service, false)
 
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent?>? {
         mService = service!!
@@ -207,6 +206,12 @@ open class TextWidget() : AbstractWidget() {
 
     internal fun getBitmapSlpt(imageIdx: Int, slptBetter: Boolean): ByteArray {
         return Util.Bitmap2Bytes(getBitmap(imageIdx, true, slptBetter))
+    }
+
+    internal fun getBitmapSlptArray(imageIdx: Int, imageCount: Int, slptBetter: Boolean): Array<ByteArray> {
+        return (0.rangeTo(imageCount)).map {
+            Util.Bitmap2Bytes(getBitmap(it + imageIdx, true, slptBetter))
+        }.toTypedArray()
     }
 
     /**

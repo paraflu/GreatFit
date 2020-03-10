@@ -13,6 +13,7 @@ import com.ingenic.iwds.slpt.view.analog.SlptAnalogHourView
 import com.ingenic.iwds.slpt.view.analog.SlptAnalogHourWithMinuteView
 import com.ingenic.iwds.slpt.view.analog.SlptAnalogMinuteView
 import com.ingenic.iwds.slpt.view.core.SlptLinearLayout
+import com.ingenic.iwds.slpt.view.core.SlptPictureGroupView
 import com.ingenic.iwds.slpt.view.core.SlptPictureView
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
 import com.ingenic.iwds.slpt.view.digital.SlptHourHView
@@ -21,13 +22,13 @@ import com.ingenic.iwds.slpt.view.digital.SlptMinuteHView
 import com.ingenic.iwds.slpt.view.digital.SlptMinuteLView
 import com.ingenic.iwds.slpt.view.sport.SlptSportUtil
 import com.ingenic.iwds.slpt.view.utils.SimpleFile
+import it.vergeit.watchface.Screen
 
 
 class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
     private var imageCache = mutableMapOf<Int, Bitmap>()
 
-    private var hourCenterBmp: Bitmap? = null
-    private var minCenterBmp: Bitmap? = null
+
     private var amBmp: Bitmap? = null
     private var pmBmp: Bitmap? = null
     private val hourFont: TextPaint? = null
@@ -41,9 +42,7 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
     private var yearFont: TextPaint? = null
     private val ampmFont: TextPaint? = null
     private var dateIcon: Bitmap? = null
-    private var hourHand: Bitmap? = null
-    private var minuteHand: Bitmap? = null
-    private var secondsHand: Bitmap? = null
+
     private var background: Bitmap? = null
     private val digitalNums = arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
     private val digitalNumsNo0 = arrayOf("", "1", "2", "3", "4", "5", "6", "7", "8", "9") //no 0 on first digit
@@ -69,53 +68,33 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
             }
         }
 
-        if (settings.theme.analogDialFace != null) {
-            val cfg = settings.theme.analogDialFace!!
-            Log.d(TAG, "theme ")
-            if (cfg.hours != null) {
-                hourHand = getBitmap(cfg.hours.image.imageIndex)
-            }
-            if (cfg.minutes != null) {
-                minuteHand = getBitmap(cfg.minutes.image.imageIndex)
-            }
-            if (cfg.seconds != null) {
-                secondsHand = getBitmap(cfg.seconds.image.imageIndex)
-            }
-            if (cfg.hourCenterImage != null) {
-                hourCenterBmp = getBitmap(cfg.hourCenterImage.imageIndex)
-                Log.d(TAG, "loadImage hour ${cfg.hourCenterImage.imageIndex}")
-            }
-            if (cfg.minCenterImage != null) {
-                minCenterBmp = getBitmap(cfg.minCenterImage.imageIndex)
-                Log.d(TAG, "loadImage min ${cfg.minCenterImage.imageIndex}")
-            }
-        }
-        weekdayFont = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
-        weekdayFont!!.typeface = getTypeFace(service.resources, settings.font)
-        weekdayFont!!.textSize = settings.weekdayFontSize
-        weekdayFont!!.color = settings.weekdayColor
-        weekdayFont!!.textAlign = if (settings.weekdayAlignLeft) Paint.Align.LEFT else Paint.Align.CENTER
-        dayFont = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
-        dayFont!!.typeface = getTypeFace(service.resources, settings.font)
-        dayFont!!.textSize = settings.dayFontSize
-        dayFont!!.color = settings.dayColor
-        dayFont!!.textAlign = if (settings.dayAlignLeft) Paint.Align.LEFT else Paint.Align.CENTER
-        monthFont = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
-        monthFont!!.typeface = getTypeFace(service.resources, settings.font)
-        monthFont!!.textSize = settings.monthFontSize
-        monthFont!!.color = settings.monthColor
-        monthFont!!.textAlign = if (settings.monthAlignLeft) Paint.Align.LEFT else Paint.Align.CENTER
-        yearFont = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
-        yearFont!!.typeface = getTypeFace(service.resources, settings.font)
-        yearFont!!.textSize = settings.yearFontSize
-        yearFont!!.color = settings.yearColor
-        yearFont!!.textAlign = if (settings.yearAlignLeft) Paint.Align.LEFT else Paint.Align.CENTER
 
-        if (settings.theme?.time?.amPm != null) {
-            val amPm = settings.theme!!.time!!.amPm!!
-            amBmp = getBitmap(amPm.imageIndexAMEN)
-            pmBmp = getBitmap(amPm.imageIndexPMEN)
-        }
+//        weekdayFont = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
+//        weekdayFont!!.typeface = getTypeFace(service.resources, settings.font)
+//        weekdayFont!!.textSize = settings.weekdayFontSize
+//        weekdayFont!!.color = settings.weekdayColor
+//        weekdayFont!!.textAlign = if (settings.weekdayAlignLeft) Paint.Align.LEFT else Paint.Align.CENTER
+//        dayFont = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
+//        dayFont!!.typeface = getTypeFace(service.resources, settings.font)
+//        dayFont!!.textSize = settings.dayFontSize
+//        dayFont!!.color = settings.dayColor
+//        dayFont!!.textAlign = if (settings.dayAlignLeft) Paint.Align.LEFT else Paint.Align.CENTER
+//        monthFont = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
+//        monthFont!!.typeface = getTypeFace(service.resources, settings.font)
+//        monthFont!!.textSize = settings.monthFontSize
+//        monthFont!!.color = settings.monthColor
+//        monthFont!!.textAlign = if (settings.monthAlignLeft) Paint.Align.LEFT else Paint.Align.CENTER
+//        yearFont = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
+//        yearFont!!.typeface = getTypeFace(service.resources, settings.font)
+//        yearFont!!.textSize = settings.yearFontSize
+//        yearFont!!.color = settings.yearColor
+//        yearFont!!.textAlign = if (settings.yearAlignLeft) Paint.Align.LEFT else Paint.Align.CENTER
+//
+//        if (settings.theme?.time?.amPm != null) {
+//            val amPm = settings.theme!!.time!!.amPm!!
+//            amBmp = getBitmap(amPm.imageIndexAMEN)
+//            pmBmp = getBitmap(amPm.imageIndexPMEN)
+//        }
         Log.d(TAG, "mainClock init end")
     }
 
@@ -171,56 +150,13 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
                 }
             }
 
-            if (settings.theme.analogDialFace != null) {
-                val cfg = settings.theme.analogDialFace!!
-                if (minCenterBmp != null) {
-                    canvas.drawBitmap(minCenterBmp!!, cfg.minCenterImage!!.x.toFloat(), cfg.minCenterImage.y.toFloat(), settings.mGPaint)
-                }
-                if (hourCenterBmp != null) {
-                    canvas.drawBitmap(hourCenterBmp!!, cfg.hourCenterImage!!.x.toFloat(), cfg.hourCenterImage.y.toFloat(), settings.mGPaint)
-                }
 
-                drawAnalogClock(canvas, cfg, hours, minutes, seconds)
-            }
         } catch (e: Exception) {
             Log.e(TAG, e.message)
         }
     }
 
-    private fun drawAnalogClock(canvas: Canvas, analogDialFace: AnalogDialFace, hours: Int, minutes: Int, seconds: Int) {
-        val centerScreen = if (settings.isVerge) Point(180, 179) else Point(160, 159)
-        if (analogDialFace.hours != null) {
-            val centerPoint = Point(centerScreen.x + analogDialFace.hours.centerOffset.x,
-                    centerScreen.y + analogDialFace.hours.centerOffset.y)
-            canvas.save()
-            canvas.rotate((hours * 30).toFloat() + minutes.toFloat() / 60.0f * 30.0f, centerPoint.x.toFloat(), centerPoint.y.toFloat())
-            canvas.drawBitmap(hourHand!!,
-                    (centerPoint.x - analogDialFace.hours.image.x).toFloat(),
-                    (centerPoint.y - analogDialFace.hours.image.y).toFloat(), null)
-            canvas.restore()
-        }
 
-        if (analogDialFace.minutes != null) {
-            val centerPoint = Point(centerScreen.x + analogDialFace.minutes.centerOffset.x,
-                    centerScreen.y + analogDialFace.minutes.centerOffset.y)
-            canvas.save()
-            canvas.rotate((minutes * 6).toFloat(), centerScreen.x.toFloat(), centerScreen.y.toFloat())
-            canvas.drawBitmap(minuteHand!!,
-                    (centerPoint.x - analogDialFace.minutes.image.x).toFloat(),
-                    (centerPoint.y - analogDialFace.minutes.image.y).toFloat(), null)
-            canvas.restore()
-        }
-        if (analogDialFace.seconds != null) {
-            val centerPoint = Point(centerScreen.x + analogDialFace.seconds.centerOffset.x,
-                    centerScreen.y + analogDialFace.seconds.centerOffset.y)
-            canvas.save()
-            canvas.rotate((seconds * 6).toFloat(), centerScreen.x.toFloat() + analogDialFace.seconds.centerOffset.x, centerScreen.y.toFloat() + analogDialFace.seconds.centerOffset.y)
-            canvas.drawBitmap(secondsHand!!,
-                    (centerPoint.x - analogDialFace.seconds.image.x).toFloat(),
-                    (centerPoint.y - analogDialFace.seconds.image.y).toFloat(), null)
-            canvas.restore()
-        }
-    }
 
     // Screen locked/closed watch mode (Slpt mode)
     override fun buildSlptViewComponent(service: Service?): List<SlptViewComponent?>? {
@@ -301,7 +237,6 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
                 if (settings.theme.time?.amPm != null) {
                     val amPm = settings.theme.time!!.amPm!!
                     val amPmLayout = SlptLinearLayout()
-                    val ampm = SlptLinearLayout()
                     val am = SlptPictureView()
                     val pm = SlptPictureView()
                     am.setImagePicture(Util.Bitmap2Bytes(getBitmap(amPm.imageIndexAMEN, true, better_resolution)))
@@ -312,18 +247,7 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
                 }
             }
 
-            if (settings.theme.analogDialFace != null) {
-                val analog = settings.theme.analogDialFace!!
-                val hourView = SlptAnalogHourView()
-                hourView.setStart(analog.hours!!.centerOffset.x, analog.hours!!.centerOffset.y)
-                hourView.setImagePicture(Util.Bitmap2Bytes(getBitmap(analog.hours.image.imageIndex, true, better_resolution)))
-                slptObjects.add(hourView)
 
-                val minuteView = SlptAnalogMinuteView()
-                minuteView.setStart(analog.minutes!!.centerOffset.x, analog.minutes!!.centerOffset.y)
-                minuteView.setImagePicture(Util.Bitmap2Bytes(getBitmap(analog.minutes.image.imageIndex, true, better_resolution)))
-                slptObjects.add(minuteView)
-            }
             // Set font
             //val timeTypeFace = getTypeFace(service!!.resources, settings.font)
 //            if (settings.digital_clock) { // Draw hours

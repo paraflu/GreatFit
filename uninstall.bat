@@ -1,0 +1,1 @@
+adb shell pm uninstall it.vergeit.watchface
