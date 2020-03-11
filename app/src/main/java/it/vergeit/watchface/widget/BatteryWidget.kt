@@ -173,10 +173,7 @@ class BatteryWidget() : CircleWidget() {
         if (settings.theme.battery?.images != null) {
             val images = settings.theme.battery!!.images!!
             val batteryView = SlptBatteryView()
-            val arrayDigit = (0 until images.imagesCount).map {
-                Util.Bitmap2Bytes(getBitmap(images.imageIndex + it, true, better_resolution))
-            }.toTypedArray()
-            batteryView.setImagePictureArray(arrayDigit)
+            batteryView.setImagePictureArray(getBitmapSlptArray(images.imageIndex, images.imagesCount, better_resolution))
             batteryView.setStart(images.x, images.y)
             slptObjects.add(batteryView)
         }

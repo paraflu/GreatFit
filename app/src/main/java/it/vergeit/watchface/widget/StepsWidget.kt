@@ -2,6 +2,7 @@ package it.vergeit.watchface.widget
 
 import android.app.Service
 import android.graphics.*
+import com.ingenic.iwds.slpt.view.arc.SlptTodayStepArcAnglePicView
 import it.vergeit.watchface.data.DataType
 import it.vergeit.watchface.data.Steps
 import it.vergeit.watchface.settings.LoadSettings
@@ -77,7 +78,7 @@ class StepsWidget() : CircleWidget() {
         if (settings.theme.activity?.steps != null) { // Draw icon
             drawText(canvas!!, stepsData!!.steps, settings.theme.activity!!.steps!!.step)
         }
-        val scale = settings.theme.stepsProgress!!.circle
+        val scale = settings.theme.stepsProgress?.circle
         val clockHand = settings.theme.stepsProgress?.clockHand
 
         if (ring != null) {
@@ -154,6 +155,22 @@ class StepsWidget() : CircleWidget() {
             slptObjects.add(stepView)
         }
 
+        val stepProgr = settings.theme.stepsProgress
+        if (stepProgr != null) {
+            if (stepProgr.circle != null) {
+                var circle = stepProgr.circle
+                var stepView = SlptTodayStepArcAnglePicView().also {
+                    it.setImagePicture(getBitmapSlpt(circle.imageIndex!!, better_resolution))
+                    it.setStart(circle.centerX!!, circle.centerY!!)
+                    it.setRect(circle.radiusX!! * 2, circle.radiusY!! * 2)
+                    it.start_angle = circle.startAngle!!
+                    it.len_angle = 0
+                    it.full_angle = circle.endAngle!!
+                }
+                slptObjects.add(stepView)
+            }
+        }
+
         return slptObjects;
 //        if (settings.theme.stepsProgress != null) {
 //            val stepProgress = settings.theme.stepsProgress!!
@@ -197,7 +214,7 @@ class StepsWidget() : CircleWidget() {
 //            setAllignment(step.step.alignment, stepView)
 //            slptObjects.add(stepView)
 //        }
-        return slptObjects
+//        return slptObjects
 //        var betterResolution = better_resolution
 //        betterResolution = betterResolution && settings.better_resolution_when_raising_hand
 //        var tmp_left: Int

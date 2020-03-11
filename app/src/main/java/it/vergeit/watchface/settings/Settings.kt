@@ -25,39 +25,39 @@ class Settings : FragmentActivity() {
         val root = RecyclerView(this)
         val sharedPreferences = getSharedPreferences(packageName + "_settings", Context.MODE_PRIVATE)
         // Load settings
-        val watchface_settings = LoadSettings(applicationContext)
+        val watchfaceSettings = LoadSettings(applicationContext)
         if (sharedPreferences.getString("widgets", null) == null) {
-            sharedPreferences.edit().putString("widgets", watchface_settings.widgets_list.toString()).apply()
+            sharedPreferences.edit().putString("widgets", watchfaceSettings.widgets_list.toString()).apply()
         }
         if (sharedPreferences.getString("progress_bars", null) == null) {
-            sharedPreferences.edit().putString("progress_bars", watchface_settings.circle_bars_list.toString()).apply()
+            sharedPreferences.edit().putString("progress_bars", watchfaceSettings.circle_bars_list.toString()).apply()
         }
         //Add header to a list of settings
-        val settings: MutableList<IBaseSettings> = ArrayList()
+        val settings = arrayListOf<IBaseSettings>()
         // Add IconSettings for each sub-setting. They contain an icon, title and subtitle, as well as a click action to launch the sub-setting's activity
         settings.add(HeaderSetting(getString(R.string.settings)))
         // Add color selection
-        settings.add(IconSetting(getDrawable(R.drawable.palette)!!, getString(R.string.main_color), getString(R.string.main_color_c), View.OnClickListener { startActivity(Intent(this@Settings, ColorActivity::class.java)) }, null))
-        // Add font selection
-        settings.add(IconSetting(getDrawable(R.drawable.font)!!, getString(R.string.font), getString(R.string.font_c), View.OnClickListener { startActivity(Intent(this@Settings, FontActivity::class.java)) }, null))
-        // Add other features
-        settings.add(IconSetting(getDrawable(R.drawable.gear)!!, getString(R.string.other_features), getString(R.string.other_features_c), View.OnClickListener { startActivity(Intent(this@Settings, OthersActivity::class.java)) }, null))
-        // One for each widget
-        for (i in watchface_settings.widgets_list.indices) {
-            settings.add(IconSetting(getDrawable(R.drawable.widgets)!!, getString(R.string.widget) + " " + (i + 1), getString(R.string.widget_c), View.OnClickListener {
-                sharedPreferences.edit().putInt("temp_widget", i).apply()
-                startActivity(Intent(this@Settings, WidgetsActivity::class.java))
-            }, null))
-        }
-        // One for each progress widget
-        for (i in watchface_settings.circle_bars_list.indices) {
-            settings.add(IconSetting(getDrawable(R.drawable.progress)!!, getString(R.string.progress_widget) + " " + (i + 1), getString(R.string.progress_widget_c), View.OnClickListener {
-                sharedPreferences.edit().putInt("temp_progress_bars", i).apply()
-                startActivity(Intent(this@Settings, ProgressWidgetsActivity::class.java))
-            }, null))
-        }
-        // Add language
-        settings.add(IconSetting(getDrawable(R.drawable.language)!!, getString(R.string.language), getString(R.string.language_c), View.OnClickListener { startActivity(Intent(this@Settings, LanguageActivity::class.java)) }, null))
+//        settings.add(IconSetting(getDrawable(R.drawable.palette)!!, getString(R.string.main_color), getString(R.string.main_color_c), View.OnClickListener { startActivity(Intent(this@Settings, ColorActivity::class.java)) }, null))
+//        // Add font selection
+//        settings.add(IconSetting(getDrawable(R.drawable.font)!!, getString(R.string.font), getString(R.string.font_c), View.OnClickListener { startActivity(Intent(this@Settings, FontActivity::class.java)) }, null))
+//        // Add other features
+//        settings.add(IconSetting(getDrawable(R.drawable.gear)!!, getString(R.string.other_features), getString(R.string.other_features_c), View.OnClickListener { startActivity(Intent(this@Settings, OthersActivity::class.java)) }, null))
+//        // One for each widget
+//        for (i in watchfaceSettings.widgets_list.indices) {
+//            settings.add(IconSetting(getDrawable(R.drawable.widgets)!!, getString(R.string.widget) + " " + (i + 1), getString(R.string.widget_c), View.OnClickListener {
+//                sharedPreferences.edit().putInt("temp_widget", i).apply()
+//                startActivity(Intent(this@Settings, WidgetsActivity::class.java))
+//            }, null))
+//        }
+//        // One for each progress widget
+//        for (i in watchfaceSettings.circle_bars_list.indices) {
+//            settings.add(IconSetting(getDrawable(R.drawable.progress)!!, getString(R.string.progress_widget) + " " + (i + 1), getString(R.string.progress_widget_c), View.OnClickListener {
+//                sharedPreferences.edit().putInt("temp_progress_bars", i).apply()
+//                startActivity(Intent(this@Settings, ProgressWidgetsActivity::class.java))
+//            }, null))
+//        }
+//        // Add language
+//        settings.add(IconSetting(getDrawable(R.drawable.language)!!, getString(R.string.language), getString(R.string.language_c), View.OnClickListener { startActivity(Intent(this@Settings, LanguageActivity::class.java)) }, null))
         // Add about
         settings.add(IconSetting(getDrawable(R.drawable.info)!!, getString(R.string.about), getString(R.string.about_c), View.OnClickListener {
             // Get pkg info
@@ -115,10 +115,12 @@ class Settings : FragmentActivity() {
             val greatWidget = VergeIt.getGreatWidget()
             greatWidget?.refreshSlpt("Apply settings", true)
             Handler().postDelayed({
-                settings.sendBroadcast(Intent("com.huami.intent.action.WATCHFACE_CONFIG_CHANGED"))
-                // Kill this
-                settings.setResult(-1)
-                settings.finish()
+                settings.run {
+                    sendBroadcast(Intent("com.huami.intent.action.WATCHFACE_CONFIG_CHANGED"))
+                    // Kill this
+                    setResult(-1)
+                    finish()
+                }
             }, 5)
         }
     }

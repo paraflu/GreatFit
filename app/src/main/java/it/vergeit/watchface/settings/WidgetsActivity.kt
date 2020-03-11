@@ -17,7 +17,7 @@ class WidgetsActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         val root = RecyclerView(this)
         //Add header to a list of settings
-        val settings: MutableList<IBaseSettings> = ArrayList()
+        val settings = arrayListOf<IBaseSettings>()
         settings.add(HeaderSetting(getString(R.string.set_elements)))
         //Setup items for each day
         val elements = resources.getStringArray(R.array.supported_widgets)

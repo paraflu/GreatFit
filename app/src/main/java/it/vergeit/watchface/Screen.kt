@@ -13,7 +13,7 @@ class Screen {
             get() = listOf<String>(*BUILD_VERGE_MODELS).contains(Build.PRODUCT)
 
         val width: Int
-            get() = if (isVerge) 360 else 340
+            get() = if (isVerge) 360 else 320
 
         val height: Int
             get() = width

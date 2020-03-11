@@ -25,18 +25,24 @@ class ThemeAssets(val context: Context) {
     }
 
     init {
+        Log.d(TAG, "init")
         try {
             val f = FileReader("${Environment.getExternalStorageDirectory()}/vergeit/theme.txt")
+            Log.d(TAG, "read theme ${Environment.getExternalStorageDirectory()}/vergeit/theme.txt")
             themeName = f.readLines().first()
+            Log.d(TAG, "theme name $themeName")
             f.close()
         } catch (e: IOException) {
             themeName = "theme"
         }
 
         localPath = "${Environment.getExternalStorageDirectory()}/vergeit/$themeName/config.json";
+        Log.d(TAG, "localPath $localPath")
         if (File(localPath).exists()) {
             isLocal = true
+            Log.d(TAG, "isLocal $isLocal")
             _theme = Gson().fromJson<Theme>(FileReader(localPath), Theme::class.java)
+            Log.d(TAG, "Theme loaded")
         } else {
             themeName = "theme"
             val content = StringReader(String(SimpleFile.readFileFromAssets(context, "$themeName/config.json")))

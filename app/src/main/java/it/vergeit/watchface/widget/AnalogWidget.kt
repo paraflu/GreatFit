@@ -5,7 +5,6 @@ import android.graphics.*
 import android.util.Log
 import com.huami.watch.watchface.util.Util
 import com.ingenic.iwds.slpt.view.analog.SlptAnalogMinuteView
-import com.ingenic.iwds.slpt.view.analog.SlptAnalogSecondView
 import com.ingenic.iwds.slpt.view.analog.SlptAnalogTimeView
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
 import it.vergeit.watchface.Screen
@@ -13,6 +12,7 @@ import it.vergeit.watchface.data.DataType
 import it.vergeit.watchface.resource.SlptAnalogHourView
 import it.vergeit.watchface.settings.LoadSettings
 import it.vergeit.watchface.theme.bin.AnalogDialFace
+import it.vergeit.watchface.theme.bin.Image
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -118,17 +118,22 @@ class AnalogWidget() : TextWidget() {
         super.onDataUpdate(type, value)
     }
 
-    fun setHand(it: SlptAnalogTimeView, imageIndex: Int, better_resolution: Boolean) {
-        val image = getBitmap(imageIndex, true, better_resolution)
-        val full = Bitmap.createBitmap(image.width, 320 + if (settings.isVerge) 40 else 0, Bitmap.Config.ARGB_8888)
-        var canvas = Canvas(full)
-//        canvas.drawColor(Color.CYAN);
-        canvas.drawBitmap(image, /*analog.hours.image.x.toFloat(), analog.hours.image.y.toFloat()*/ 0f, 0f, null)
+    private fun handSlpt(it: SlptAnalogTimeView, image: Image, better_resolution: Boolean) {
+        val bmp = getBitmap(image.imageIndex, true, better_resolution)
+        val full = Bitmap.createBitmap(bmp.width * 2, bmp.height * 2, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(full)
+        val centerY = full.height / 2f
+        val centerX = full.width / 2f
+        val y = centerY - image.y
+        val x = centerX - image.x
+
+        canvas.drawBitmap(bmp, /*analog.hours.image.x.toFloat(), analog.hours.image.y.toFloat()*/
+                x, y, null)
         val byteImage = Util.Bitmap2Bytes(full)
         it.setImagePicture(byteImage)
         it.alignX = 2.toByte()
         it.alignY = 2.toByte()
-        it.setRect(320 + if (settings.isVerge) 40 else 0, 320 + if (settings.isVerge) 40 else 0)
+        it.setRect(Screen.width + if (settings.isVerge) 40 else 0, Screen.height + if (settings.isVerge) 40 else 0)
     }
 
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent?>? {
@@ -139,100 +144,26 @@ class AnalogWidget() : TextWidget() {
 
         val analog = settings.theme.analogDialFace
 
-        if (settings.theme.analogDialFace != null) {
+        if (analog != null) {
             val hourView = SlptAnalogHourView().also {
-                setHand(it, analog!!.hours!!.image.imageIndex, better_resolution)
+                handSlpt(it, analog.hours!!.image, better_resolution)
             }
-//            val centerPoint = Screen.center
-//            val hourView = SlptAnalogHourView().also {
-//
-//                val image = getBitmap(analog.hours!!.image.imageIndex, true, better_resolution)
-//                val full = Bitmap.createBitmap(image.width, 320 + if (settings.isVerge) 40 else 0, Bitmap.Config.ARGB_8888)
-//                var canvas = Canvas(full)
-//                canvas.drawColor(Color.CYAN);
-//                canvas.drawBitmap(image, /*analog.hours.image.x.toFloat(), analog.hours.image.y.toFloat()*/ 0f, 0f, null)
-//                val byteImage = Util.Bitmap2Bytes(full)
-//                it.setImagePicture(byteImage)
-//                it.alignX = 2.toByte()
-//                it.alignY = 2.toByte()
-//                it.setRect(320 + if (settings.isVerge) 40 else 0, 320 + if (settings.isVerge) 40 else 0)
-////                val full = Bitmap.createBitmap(Screen.width, Screen.height, Bitmap.Config.ARGB_8888)
-////                var canvas = Canvas(full)
-////                var x = analog.hours!!.image.x + (Screen.width / 2f)
-////                val y = analog.hours!!.image.y + (Screen.height / 2f)
-////                val img = getBitmap(analog.hours!!.image.imageIndex, true, better_resolution)
-////                canvas.drawBitmap(img, analog.hours.image.x + (Screen.width / 2f),
-////                        analog.hours.image.y + (Screen.height / 2f), null)
-////                val paint = Paint()
-////                paint.style = Paint.Style.FILL
-////                paint.color = Color.YELLOW
-////                paint.isAntiAlias = true
-////                canvas.drawRect(Rect(0,0,310,310), paint)
-////                canvas.drawColor(Color.LTGRAY);
-////                it.setRect(320, 320)
-//////                it.setStart(x.toInt(), y.toInt())
-//////                it.setRect(Screen.width, Screen.height)
-////
-////                it.setImagePicture(Util.Bitmap2Bytes(full)/*getBitmapSlpt(analog.hours!!.image.imageIndex, better_resolution)*/)
-////                it.alignX = 2.toByte()
-////                it.alignY = 2.toByte()
-//            }
+
             slptObjects.add(hourView)
 
-//            val minuteView = SlptAnalogMinuteView().also {
-//                val img = getBitmap(analog.minutes!!.image.imageIndex)
-//                it.setRect(img.height, img.width)
-////                it.setStart(centerPoint.x + analog.minutes!!.centerOffset.x + analog.minutes.image.x,
-////                        centerPoint.y + analog.minutes.centerOffset.y + analog.minutes.image.y)
-////                it.setRect(Screen.width, Screen.height)
-//
-//                it.setImagePicture(getBitmapSlpt(analog.minutes!!.image.imageIndex, better_resolution))
-//                it.alignX = 2.toByte()
-//                it.alignY = 2.toByte()
-//            }
-
             val minuteView = SlptAnalogMinuteView().also {
-                setHand(it, analog!!.minutes!!.image.imageIndex, better_resolution)
+                handSlpt(it, analog.minutes!!.image, better_resolution)
             }
 
             slptObjects.add(minuteView)
 
-            if (analog!!.seconds != null) {
-//                val secondView = SlptAnalogSecondView().also {
-//                    val img = getBitmap(analog.seconds!!.image.imageIndex)
-//                    it.setRect(img.height, img.width)
-//
-//                    it.setImagePicture(getBitmapSlpt(analog.seconds!!.image.imageIndex, better_resolution))
-//                    it.alignX = 2.toByte()
-//                    it.alignY = 2.toByte()
-//                }
+            if (settings.secondsBool && analog.seconds != null) {
+
                 val secondView = SlptAnalogHourView().also {
-                    setHand(it, analog!!.seconds!!.image.imageIndex, better_resolution)
+                    handSlpt(it, analog.seconds.image, better_resolution)
                 }
                 slptObjects.add(secondView)
             }
-//            if (settings.analog_clock) {
-//                val slptAnalogHourView = SlptAnalogHourView()
-//                slptAnalogHourView.setImagePicture(SimpleFile.readFileFromAssets(service, "timehand/8c/hour" + (if (settings.isVerge) "_verge" else "") + ".png"))
-//                slptAnalogHourView.alignX = 2.toByte()
-//                slptAnalogHourView.alignY = 2.toByte()
-//                slptAnalogHourView.setRect(320 + if (settings.isVerge) 40 else 0, 320 + if (settings.isVerge) 40 else 0)
-//                slpt_objects.add(slptAnalogHourView)
-//                val slptAnalogMinuteView = SlptAnalogMinuteView()
-//                slptAnalogMinuteView.setImagePicture(SimpleFile.readFileFromAssets(service, "timehand/8c/minute" + (if (settings.isVerge) "_verge" else "") + ".png"))
-//                slptAnalogMinuteView.alignX = 2.toByte()
-//                slptAnalogMinuteView.alignY = 2.toByte()
-//                slptAnalogMinuteView.setRect(320 + if (settings.isVerge) 40 else 0, 320 + if (settings.isVerge) 40 else 0)
-//                slpt_objects.add(slptAnalogMinuteView)
-//                if (settings.secondsBool) {
-//                    val slptAnalogSecondView = SlptAnalogSecondView()
-//                    slptAnalogSecondView.setImagePicture(SimpleFile.readFileFromAssets(service, "timehand/8c/seconds" + (if (settings.isVerge) "_verge" else "") + ".png"))
-//                    slptAnalogSecondView.alignX = 2.toByte()
-//                    slptAnalogSecondView.alignY = 2.toByte()
-//                    slptAnalogSecondView.setRect(320 + if (settings.isVerge) 40 else 0, 320 + if (settings.isVerge) 40 else 0)
-//                    slpt_objects.add(slptAnalogSecondView)
-//                }
-//            }
         }
         return slptObjects
     }
