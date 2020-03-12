@@ -10,15 +10,19 @@ import com.google.gson.Gson
 import com.huami.watch.watchface.util.Util
 import com.ingenic.iwds.slpt.view.utils.SimpleFile
 import java.io.*
-import java.lang.Exception
+import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
+import java.util.zip.ZipInputStream
 
 
 class ThemeAssets(val context: Context) {
+    private var isArchive: Boolean = false
     private var themeName: String
     private var imageCache = mutableMapOf<String, Bitmap>()
-    private var _theme: Theme
+    private var _theme: Theme? = null
     private var localPath: String = ""
     private var isLocal = false
+    private var _archive: ZipInputStream? = null
 
     companion object {
         const val TAG = "VergeIT Tools"
@@ -36,19 +40,49 @@ class ThemeAssets(val context: Context) {
             themeName = "theme"
         }
 
-        localPath = "${Environment.getExternalStorageDirectory()}/vergeit/$themeName/config.json";
-        Log.d(TAG, "localPath $localPath")
+        localPath = "${Environment.getExternalStorageDirectory()}/vergeit/$themeName.zip";
         if (File(localPath).exists()) {
-            isLocal = true
-            Log.d(TAG, "isLocal $isLocal")
-            _theme = Gson().fromJson<Theme>(FileReader(localPath), Theme::class.java)
-            Log.d(TAG, "Theme loaded")
+            Log.d(TAG, "found zip file $localPath")
+            isArchive = true
+            val zip: ZipFile = ZipFile(File(localPath))
+            val entries = zip.entries()
+            while (entries.hasMoreElements()) {
+                // Get ZipEntry which is a file or a directory
+                val entry: ZipEntry = entries.nextElement() as ZipEntry
+                val inputStream: InputStream = zip.getInputStream(entry)
+                val isr = InputStreamReader(inputStream)
+                Log.d(TAG, "unpack zip file ${entry.name}")
+                if (entry.name == "config.json") {
+                    _theme = Gson().fromJson(isr, Theme::class.java)
+                    Log.d(TAG, "theme loaded")
+                } else if (entry.name.endsWith(".png")) {
+                    val buffer = ByteArray(1024)
+                    var buffList = ByteArrayOutputStream()
+                    while (inputStream.read(buffer, 0, buffer.size) != -1) {
+                        buffList.write(buffer)
+                    }
+                    Log.d(TAG, "${entry.name} siz ${buffList.size()}")
+                    val bmp = BitmapFactory.decodeByteArray(buffList.toByteArray(), 0, buffList.size())
+                    imageCache[File(entry.name).nameWithoutExtension] = bmp
+                    Log.d(TAG, "file loaded")
+                }
+            }
+            Log.d(TAG, "load complete")
         } else {
-            themeName = "theme"
-            val content = StringReader(String(SimpleFile.readFileFromAssets(context, "$themeName/config.json")))
-            Log.d(TAG, "content $content")
-            _theme = Gson().fromJson<Theme>(content, Theme::class.java)
-            Log.d(TAG, "NO Local, config $themeName/config.json")
+            localPath = "${Environment.getExternalStorageDirectory()}/vergeit/$themeName/config.json";
+            Log.d(TAG, "localPath $localPath")
+            if (File(localPath).exists()) {
+                isLocal = true
+                Log.d(TAG, "isLocal $isLocal")
+                _theme = Gson().fromJson<Theme>(FileReader(localPath), Theme::class.java)
+                Log.d(TAG, "Theme loaded")
+            } else {
+                themeName = "theme"
+                val content = StringReader(String(SimpleFile.readFileFromAssets(context, "$themeName/config.json")))
+                Log.d(TAG, "content $content")
+                _theme = Gson().fromJson<Theme>(content, Theme::class.java)
+                Log.d(TAG, "NO Local, config $themeName/config.json")
+            }
         }
     }
 
@@ -95,7 +129,7 @@ class ThemeAssets(val context: Context) {
     }
 
     val theme: Theme
-        get() = _theme
+        get() = _theme!!
 
 //    private fun path(imageIndex: Int): String {
 //        if (isLocal) {
