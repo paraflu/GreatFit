@@ -56,6 +56,7 @@ class BatteryWidget() : CircleWidget() {
             angleUnknown = calcAngle(unknown4.sector.startAngle, unknown4.sector.endAngle)
             progressBmp = getBitmap(settings.theme.battery!!.unknown4.image.imageIndex)
         }
+
     }
 
     // Value updater
@@ -139,10 +140,8 @@ class BatteryWidget() : CircleWidget() {
 
         if (settings.theme.battery?.images != null) {
             val images = settings.theme.battery?.images!!
-            val arrayImages = (0 until images.imagesCount).map {
-                getBitmap(images.imageIndex + it)
-            }.toTypedArray()
-            val currentImage: Bitmap = arrayImages[(images.imagesCount / batteryData!!.level * 100).coerceAtMost(images.imagesCount)]
+            val arrayImages = getBitmapArray(images.imageIndex, images.imagesCount)
+            val currentImage: Bitmap = arrayImages[(images.imagesCount / batteryData!!.level.toFloat() * 100f).coerceAtMost(images.imagesCount.toFloat()).toInt() - 1]
             drawBitmap(canvas!!, currentImage, Point(images.x, images.y))
         }
 

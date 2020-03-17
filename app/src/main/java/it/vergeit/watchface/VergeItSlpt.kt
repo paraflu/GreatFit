@@ -58,7 +58,7 @@ class VergeItSlpt : AbstractWatchFaceSlpt() {
                 Log.d(TAG, "start analogwidget")
                 widgets.add(AnalogWidget(settings))
             }
-
+            Log.d(TAG, "end widgets")
             return super.onStartCommand(intent, flags, startId)
         } catch (e: Exception) {
             Log.e(TAG, "OnStart fail ${e.toString()}")

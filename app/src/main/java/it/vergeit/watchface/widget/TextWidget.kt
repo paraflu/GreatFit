@@ -209,8 +209,14 @@ open class TextWidget() : AbstractWidget() {
     }
 
     internal fun getBitmapSlptArray(imageIdx: Int, imageCount: Int, slptBetter: Boolean): Array<ByteArray> {
-        return (0.rangeTo(imageCount)).map {
+        return (0.rangeTo(imageCount - 1)).map {
             Util.Bitmap2Bytes(getBitmap(it + imageIdx, true, slptBetter))
+        }.toTypedArray()
+    }
+
+    internal fun getBitmapArray(imageIdx: Int, imageCount: Int): Array<Bitmap> {
+        return (0.rangeTo(imageCount - 1)).map {
+            getBitmap(it + imageIdx)
         }.toTypedArray()
     }
 
