@@ -1,4 +1,4 @@
-package it.vergeit.watchface.settings;
+package it.vergeit.overigwhite.settings;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,8 +7,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import it.vergeit.watchface.widget.MainClock;
-import it.vergeit.watchface.R;
+import it.vergeit.overigwhite.widget.MainClock;
+import it.vergeit.overigwhite.R;
 
 // BY GREATAPO
 
@@ -17,7 +17,7 @@ public class SettingsOld extends FragmentActivity {
     public static String[] color = {"#ff0000", "#00ffff","#00ff00","#ff00ff","#ffffff","#ffff00"};
     public int currentColor = 3;
     public int currentLanguage = 0;
-    private it.vergeit.watchface.settings.APsettings settings;
+    private it.vergeit.overigwhite.settings.APsettings settings;
     // Languages
     public static String[] codes = {
             "English", "中文", "Czech", "Français", "Deutsch", "Ελληνικά", "עברית", "Magyar", "Italiano", "日本語", "Polski", "Português", "Русский", "Slovenčina", "Español"//, "Türkçe",

@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" 
-    xmlns:tools="http://schemas.android.com/tools" tools:ignore="GoogleAppIndexingWarning,ProtectedPermissions" package="it.vergeit.watchface">
+    xmlns:tools="http://schemas.android.com/tools" tools:ignore="GoogleAppIndexingWarning,ProtectedPermissions" package="it.vergeit.overigwhite">
 
     <!-- Required to act as a custom watch face. -->
     <uses-permission android:name="com.google.android.permission.PROVIDE_BACKGROUND" />
@@ -18,10 +18,10 @@
 
     <application android:name="com.huami.watch.watchface.WatchfaceApplication" android:icon="@mipmap/ic_launcher" android:label="@string/app_name" android:theme="@android:style/Theme.DeviceDefault" android:allowBackup="false">
         <!-- Mainface -->
-        <activity android:exported="true" android:launchMode="singleTask" android:name="it.vergeit.watchface.settings.Settings" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+        <activity android:exported="true" android:launchMode="singleTask" android:name="it.vergeit.overigwhite.settings.Settings" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
         <!-- <activity android:launchMode="singleTask" android:name="com.huami.watch.watchface.custom.ui.WatchFaceCustomActivity"/> -->
-        <service android:name="it.vergeit.watchface.VergeItSlpt"/>
-        <service android:name="it.vergeit.watchface.VergeIt" android:label="@string/watch_face" android:permission="android.permission.BIND_WALLPAPER">
+        <service android:name="it.vergeit.overigwhite.OverigWhiteSlpt"/>
+        <service android:name="it.vergeit.overigwhite.OverigWhite" android:label="@string/watch_face" android:permission="android.permission.BIND_WALLPAPER">
             <meta-data android:name="android.service.wallpaper" android:resource="@xml/custom_watch_face" />
             <meta-data android:name="com.google.android.wearable.watchface.preview" android:resource="@drawable/preview" />
             <meta-data android:name="com.google.android.wearable.watchface.preview_circular" android:resource="@drawable/preview" />
@@ -35,14 +35,14 @@
         <!--
             Here you can copy-paste the above code (under "Mainface") to add a second watch face
         -->
-        <activity android:name="it.vergeit.watchface.settings.ColorActivity"/>
-        <activity android:name="it.vergeit.watchface.settings.FontActivity"/>
-        <activity android:name="it.vergeit.watchface.settings.OthersActivity"/>
-        <activity android:name="it.vergeit.watchface.settings.WidgetsActivity"/>
-        <activity android:name="it.vergeit.watchface.settings.ProgressWidgetsActivity"/>
-        <activity android:name="it.vergeit.watchface.settings.LanguageActivity"/>
+        <activity android:name="it.vergeit.overigwhite.settings.ColorActivity"/>
+        <activity android:name="it.vergeit.overigwhite.settings.FontActivity"/>
+        <activity android:name="it.vergeit.overigwhite.settings.OthersActivity"/>
+        <activity android:name="it.vergeit.overigwhite.settings.WidgetsActivity"/>
+        <activity android:name="it.vergeit.overigwhite.settings.ProgressWidgetsActivity"/>
+        <activity android:name="it.vergeit.overigwhite.settings.LanguageActivity"/>
 
-        <receiver android:name="it.vergeit.watchface.widget.AlarmReceiver"/>
+        <receiver android:name="it.vergeit.overigwhite.widget.AlarmReceiver"/>
     </application>
 
 </manifest>

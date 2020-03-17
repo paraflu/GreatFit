@@ -1,4 +1,4 @@
-package it.vergeit.watchface.settings;
+package it.vergeit.overigwhite.settings;
 
 import android.content.Context;
 

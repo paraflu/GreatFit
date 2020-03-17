@@ -1,11 +1,11 @@
-package it.vergeit.watchface.settings;
+package it.vergeit.overigwhite.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.provider.Settings;
 
-import it.vergeit.watchface.R;
+import it.vergeit.overigwhite.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;

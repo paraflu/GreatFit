@@ -1,4 +1,4 @@
-package it.vergeit.watchface.widget;
+package it.vergeit.overigwhite.widget;
 
 import android.app.Service;
 import android.graphics.Canvas;
@@ -8,7 +8,7 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 
-import it.vergeit.watchface.settings.LoadSettings;
+import it.vergeit.overigwhite.settings.LoadSettings;
 import com.ingenic.iwds.slpt.view.arc.SlptArcAnglePicView;
 import com.ingenic.iwds.slpt.view.arc.SlptPowerArcAnglePicView;
 import com.ingenic.iwds.slpt.view.arc.SlptTodayDistanceArcAnglePicView;
@@ -28,13 +28,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import it.vergeit.watchface.R;
-import it.vergeit.watchface.data.Battery;
-import it.vergeit.watchface.data.DataType;
-import it.vergeit.watchface.data.Steps;
-import it.vergeit.watchface.data.TodayDistance;
-import it.vergeit.watchface.data.TotalDistance;
-import it.vergeit.watchface.resource.ResourceManager;
+import it.vergeit.overigwhite.R;
+import it.vergeit.overigwhite.data.Battery;
+import it.vergeit.overigwhite.data.DataType;
+import it.vergeit.overigwhite.data.Steps;
+import it.vergeit.overigwhite.data.TodayDistance;
+import it.vergeit.overigwhite.data.TotalDistance;
+import it.vergeit.overigwhite.resource.ResourceManager;
 
 public class CirclesWidget extends AbstractWidget {
 

@@ -1,4 +1,4 @@
-package it.vergeit.watchface.resource;
+package it.vergeit.overigwhite.resource;
 
 import com.ingenic.iwds.slpt.view.core.SlptLayout;
 import com.ingenic.iwds.slpt.view.utils.KeyWriter;
