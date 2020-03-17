@@ -1,4 +1,4 @@
-package it.vergeit.watchface.settings;
+package it.vergeit.gtrclassic.settings;
 
 import android.content.Context;
 import android.graphics.Rect;
