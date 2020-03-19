@@ -47,12 +47,12 @@ public class LoadSettings {
     private final static String TAG = "VergeIT-LOG";
     private final static String themeName = "md131";
 
-    public LoadSettings(Context context) {
+    public LoadSettings(Context context, String themeName) {
         this.context = context;
         this.res = context.getResources();
         this.sharedPreferences = context.getSharedPreferences(context.getPackageName() + "_settings", Context.MODE_PRIVATE);
         defaultParameters();
-        this.themeAssets = new ThemeAssets(context);
+        this.themeAssets = new ThemeAssets(context, themeName);
     }
 
     // GENERAL

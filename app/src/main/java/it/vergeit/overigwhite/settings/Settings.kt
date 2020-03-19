@@ -24,7 +24,7 @@ class Settings : FragmentActivity() {
         val root = RecyclerView(this)
         val sharedPreferences = getSharedPreferences(packageName + "_settings", Context.MODE_PRIVATE)
         // Load settings
-        val watchfaceSettings = LoadSettings(applicationContext)
+        val watchfaceSettings = LoadSettings(applicationContext, "white")
         if (sharedPreferences.getString("widgets", null) == null) {
             sharedPreferences.edit().putString("widgets", watchfaceSettings.widgets_list.toString()).apply()
         }

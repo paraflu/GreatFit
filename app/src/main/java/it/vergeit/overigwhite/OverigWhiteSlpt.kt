@@ -23,7 +23,7 @@ class OverigWhiteSlpt : AbstractWatchFaceSlpt() {
         context = this.applicationContext
         // Load settings
         try {
-            val settings = LoadSettings(context)
+            val settings = LoadSettings(context, "white")
             Log.d(TAG, "start mainclock")
             clock = MainClock(settings)
             if (settings.theme?.date != null) {

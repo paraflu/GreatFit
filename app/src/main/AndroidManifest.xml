@@ -16,7 +16,7 @@
     <uses-permission android:name="android.permission.BODY_SENSORS"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
 
-    <application android:name="com.huami.watch.watchface.WatchfaceApplication" android:icon="@mipmap/ic_launcher" android:label="@string/app_name" android:theme="@android:style/Theme.DeviceDefault" android:allowBackup="false">
+    <application android:name="com.huami.watch.watchface.WatchfaceApplication" android:icon="@mipmap/ic_launcher_white" android:label="@string/app_name" android:theme="@android:style/Theme.DeviceDefault" android:allowBackup="false">
         <!-- Mainface -->
         <activity android:exported="true" android:launchMode="singleTask" android:name="it.vergeit.overigwhite.settings.Settings" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
         <!-- <activity android:launchMode="singleTask" android:name="com.huami.watch.watchface.custom.ui.WatchFaceCustomActivity"/> -->
@@ -25,6 +25,18 @@
             <meta-data android:name="android.service.wallpaper" android:resource="@xml/custom_watch_face" />
             <meta-data android:name="com.google.android.wearable.watchface.preview" android:resource="@drawable/preview" />
             <meta-data android:name="com.google.android.wearable.watchface.preview_circular" android:resource="@drawable/preview" />
+            <meta-data android:name="com.huami.watch.watchface.hasslpt" android:value="false" />
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" />
+                <category android:name="com.google.android.wearable.watchface.category.WATCH_FACE" />
+            </intent-filter>
+        </service>
+
+        <service android:name="it.vergeit.overigwhite.OverigBlackSlpt"/>
+        <service android:name="it.vergeit.overigwhite.OverigBlack" android:label="@string/watch_face_black" android:permission="android.permission.BIND_WALLPAPER">
+            <meta-data android:name="android.service.wallpaper" android:resource="@xml/custom_watch_face" />
+            <meta-data android:name="com.google.android.wearable.watchface.preview" android:resource="@drawable/preview2" />
+            <meta-data android:name="com.google.android.wearable.watchface.preview_circular" android:resource="@drawable/preview2" />
             <meta-data android:name="com.huami.watch.watchface.hasslpt" android:value="false" />
             <intent-filter>
                 <action android:name="android.service.wallpaper.WallpaperService" />

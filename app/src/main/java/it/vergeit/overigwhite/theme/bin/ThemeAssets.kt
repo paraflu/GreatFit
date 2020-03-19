@@ -15,9 +15,8 @@ import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
 
 
-class ThemeAssets(val context: Context) {
+class ThemeAssets(val context: Context, var themeName: String = "white") {
     private var isArchive: Boolean = false
-    private var themeName: String
     private var imageCache = mutableMapOf<String, Bitmap>()
     private var _theme: Theme? = null
     private var localPath: String = ""
@@ -32,12 +31,10 @@ class ThemeAssets(val context: Context) {
         Log.d(TAG, "init")
         try {
             val f = FileReader("${Environment.getExternalStorageDirectory()}/vergeit/theme.txt")
-            Log.d(TAG, "read theme ${Environment.getExternalStorageDirectory()}/vergeit/theme.txt")
             themeName = f.readLines().first()
-            Log.d(TAG, "theme name $themeName")
             f.close()
-        } catch (e: IOException) {
-            themeName = "theme"
+        } catch (e:Exception) {
+            Log.d(TAG, "theme name $themeName ${e.message}")
         }
 
         localPath = "${Environment.getExternalStorageDirectory()}/vergeit/$themeName.zip";
@@ -57,7 +54,7 @@ class ThemeAssets(val context: Context) {
                     Log.d(TAG, "theme loaded")
                 } else if (entry.name.endsWith(".png")) {
                     val buffer = ByteArray(1024)
-                    var buffList = ByteArrayOutputStream()
+                    val buffList = ByteArrayOutputStream()
                     while (inputStream.read(buffer, 0, buffer.size) != -1) {
                         buffList.write(buffer)
                     }
@@ -77,7 +74,6 @@ class ThemeAssets(val context: Context) {
                 _theme = Gson().fromJson<Theme>(FileReader(localPath), Theme::class.java)
                 Log.d(TAG, "Theme loaded")
             } else {
-                themeName = "theme"
                 val content = StringReader(String(SimpleFile.readFileFromAssets(context, "$themeName/config.json")))
                 Log.d(TAG, "content $content")
                 _theme = Gson().fromJson<Theme>(content, Theme::class.java)

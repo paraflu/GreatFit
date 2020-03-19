@@ -36,7 +36,7 @@ class AnalogWidget() : TextWidget() {
         super.init(service)
         if (settings.theme.analogDialFace != null) {
             val cfg = settings.theme.analogDialFace!!
-            Log.d(TAG, "theme ")
+            Log.d(TAG, "white ")
             if (cfg.hours != null) {
                 hourHand = getBitmap(cfg.hours.image.imageIndex)
             }

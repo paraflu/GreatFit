@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Overig White Watchface</string>
     <string name="watch_face">OverigWhite</string>
+    <string name="watch_face_black">OverigBlack</string>
     <string name="author">paraFLU</string>
 
     <!-- Settings -->
@@ -104,5 +105,5 @@
     <string name="Thai">ไทย</string>
     <string name="Turkish">Türkçe</string>
     <string name="Vietnamese">Tiếng Việt</string>
-    <string name="theme">tecno_sport/config.json</string>
+
 </resources>

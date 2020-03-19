@@ -13,7 +13,7 @@ class OverigWhite : AbstractWatchFace() {
     override fun onCreate() {
         instance = WeakReference<OverigWhite?>(this)
         // Load settings
-        val settings = LoadSettings(applicationContext)
+        val settings = LoadSettings(applicationContext, "white")
         clock = MainClock(settings)
         if (settings.theme?.date != null) {
             widgets.add(DateWidget(settings))

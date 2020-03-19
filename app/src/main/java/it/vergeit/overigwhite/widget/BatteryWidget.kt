@@ -76,7 +76,6 @@ class BatteryWidget() : CircleWidget() {
         }
 
         if (settings.theme.battery?.unknown4 != null) {
-            val unknown4 = settings.theme.battery!!.unknown4
             batteryUnknown4SweepAngle = angleUnknown * (level / batteryData!!.scale.toFloat())
         }
     }
