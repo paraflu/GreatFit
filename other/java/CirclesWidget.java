@@ -1,4 +1,4 @@
-package it.vergeit.overigwhite.widget;
+package it.vergeit.galaxian.widget;
 
 import android.app.Service;
 import android.graphics.Canvas;
@@ -8,7 +8,7 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 
-import it.vergeit.overigwhite.settings.LoadSettings;
+import it.vergeit.galaxian.settings.LoadSettings;
 import com.ingenic.iwds.slpt.view.arc.SlptArcAnglePicView;
 import com.ingenic.iwds.slpt.view.arc.SlptPowerArcAnglePicView;
 import com.ingenic.iwds.slpt.view.arc.SlptTodayDistanceArcAnglePicView;
@@ -28,13 +28,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import it.vergeit.overigwhite.R;
-import it.vergeit.overigwhite.data.Battery;
-import it.vergeit.overigwhite.data.DataType;
-import it.vergeit.overigwhite.data.Steps;
-import it.vergeit.overigwhite.data.TodayDistance;
-import it.vergeit.overigwhite.data.TotalDistance;
-import it.vergeit.overigwhite.resource.ResourceManager;
+import it.vergeit.galaxian.R;
+import it.vergeit.galaxian.data.Battery;
+import it.vergeit.galaxian.data.DataType;
+import it.vergeit.galaxian.data.Steps;
+import it.vergeit.galaxian.data.TodayDistance;
+import it.vergeit.galaxian.data.TotalDistance;
+import it.vergeit.galaxian.resource.ResourceManager;
 
 public class CirclesWidget extends AbstractWidget {
 

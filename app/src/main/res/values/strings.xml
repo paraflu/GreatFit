@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Overig White Watchface</string>
-    <string name="watch_face">OverigWhite</string>
-    <string name="watch_face_black">OverigBlack</string>
+    <string name="app_name">Galaxian Watchface</string>
+    <string name="watch_face">Galaxian</string>
+    <string name="watch_face_black">Galaxian</string>
     <string name="author">paraFLU</string>
 
     <!-- Settings -->

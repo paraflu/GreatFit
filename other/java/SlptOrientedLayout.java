@@ -1,4 +1,4 @@
-package it.vergeit.overigwhite.resource;
+package it.vergeit.galaxian.resource;
 
 import com.ingenic.iwds.slpt.view.core.SlptLayout;
 import com.ingenic.iwds.slpt.view.utils.KeyWriter;

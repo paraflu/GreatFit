@@ -6,7 +6,7 @@ android {
     compileSdkVersion 27
     buildToolsVersion '28.0.3'
     defaultConfig {
-        applicationId 'it.vergeit.overigwhite'
+        applicationId 'it.vergeit.galaxian'
         minSdkVersion 22
         targetSdkVersion 27
         versionCode 15

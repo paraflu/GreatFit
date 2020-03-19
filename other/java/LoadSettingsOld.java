@@ -1,11 +1,11 @@
-package it.vergeit.overigwhite.settings;
+package it.vergeit.galaxian.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.provider.Settings;
 
-import it.vergeit.overigwhite.R;
+import it.vergeit.galaxian.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
