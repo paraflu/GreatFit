@@ -66,3 +66,5 @@ fastlane/readme.md
 .history/
 .idea/
 keystore.jks
+app/src/main/assets/theme/26w.sh
+app/src/main/assets/theme/palette.gif
