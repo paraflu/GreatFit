@@ -49,17 +49,17 @@ class WidgetsActivity : FragmentActivity() {
     }
 
     private fun prepareTitle(title: String): String {
-        var title = title
-        when (title) {
-            "altitude" -> title = "altitude/Dive"
-            "weather_img" -> title = "weather icon"
-            "min_max_temperatures" -> title = "Max/Min temperatures"
+        var _title = title
+        when (_title) {
+            "altitude" -> _title = "altitude/Dive"
+            "weather_img" -> _title = "weather icon"
+            "min_max_temperatures" -> _title = "Max/Min temperatures"
         }
         // Replace _ with spaces
-        title = title.replace("_".toRegex(), " ")
+        _title = _title.replace("_".toRegex(), " ")
         // Capitalize first letter
-        title = title.substring(0, 1).toUpperCase() + title.substring(1)
-        return title
+        _title = _title.substring(0, 1).toUpperCase() + _title.substring(1)
+        return _title
     }
 
     private fun prepareSubtitle(element: String): String? {

@@ -259,8 +259,24 @@ open class TextWidget() : AbstractWidget() {
         val rect: Rect = Rect(text.topLeftX, text.topLeftY, text.bottomRightX, text.bottomRightY)
         view.setStart(rect.left, rect.top)
         view.setRect(rect.right - rect.left, rect.bottom - rect.top)
-        view.alignY = 2
-        view.alignX = 2
+        when (text.alignment) {
+            "Center" -> {
+                view.alignX = 2
+                view.alignY = 2
+            }
+//            "CenterRight" -> {
+//                view.alignY = 2
+//                view.alignX = 1
+//            }
+            "CenterLeft" -> {
+                view.alignY = 2
+                view.alignX = 0
+            }
+            else -> {
+                view.alignX = 0
+                view.alignY = 0
+            }
+        }
         return view
     }
 
@@ -268,9 +284,9 @@ open class TextWidget() : AbstractWidget() {
         val sample = getBitmap(images.imageIndex)
         view.setImagePictureArray(getBitmapSlptArray(images.imageIndex, images.imagesCount, better_resolution))
         view.setStart(images.x, images.y)
-        view.setRect(images.x + sample.width * images.imagesCount, images.y + sample.height * images.imagesCount)
+        view.setRect(images.x + sample.width, images.y + sample.height)
         view.alignX = 0
-        view.alignY = 2
+        view.alignY = 0
         return view
     }
 }

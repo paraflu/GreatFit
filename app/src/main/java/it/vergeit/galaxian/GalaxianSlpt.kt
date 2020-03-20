@@ -46,6 +46,9 @@ class GalaxianSlpt : AbstractWatchFaceSlpt() {
                 Log.d(TAG, "start stepswidget")
                 widgets.add(StepsWidget(settings))
             }
+            if (settings.theme.weather != null) {
+                widgets.add(WeatherWidget(settings))
+            }
             //-----------------------
 //        if (settings.theme.weather != null) {
 //            widgets.add(WeatherWidget(settings));
@@ -71,11 +74,20 @@ class GalaxianSlpt : AbstractWatchFaceSlpt() {
         for (component in clock.buildSlptViewComponent(this, true)!!) {
             result.add(component)
         }
-        for (widget in widgets) {
-            for (component in widget.buildSlptViewComponent(this, true)!!) {
-                result.add(component)
+        widgets.forEach {
+            try {
+                Log.d(TAG, it.toString())
+                val items = it.buildSlptViewComponent(this, true)
+                items?.forEach { component -> result.add(component) }
+            } catch (e: Exception) {
+                Log.e(TAG, e.message)
             }
         }
+//        for (widget in widgets) {
+//            for (component in widget.buildSlptViewComponent(this, true)!!) {
+//                result.add(component)
+//            }
+//        }
         return result
     }
 
@@ -84,11 +96,20 @@ class GalaxianSlpt : AbstractWatchFaceSlpt() {
         for (component in clock.buildSlptViewComponent(this)!!) {
             result.add(component)
         }
-        for (widget in widgets) {
-            for (component in widget.buildSlptViewComponent(this)!!) {
-                result.add(component)
+        widgets.forEach {
+            try {
+                Log.d(TAG, it.toString())
+                val items = it.buildSlptViewComponent(this, true)
+                items?.forEach { component -> result.add(component) }
+            } catch (e: Exception) {
+                Log.e(TAG, e.message)
             }
         }
+//        for (widget in widgets) {
+//            for (component in widget.buildSlptViewComponent(this)!!) {
+//                result.add(component)
+//            }
+//        }
         return result
     }
 
@@ -96,11 +117,16 @@ class GalaxianSlpt : AbstractWatchFaceSlpt() {
     }
 
     override fun isClockPeriodSecond(): Boolean {
-        val context = this.applicationContext
-        val needRefreshSecond = Util.needSlptRefreshSecond(context)
-        if (needRefreshSecond) {
-            this.isClockPeriodSecond = true
+        try {
+            val context = this.applicationContext
+            val needRefreshSecond = Util.needSlptRefreshSecond(context)
+            if (needRefreshSecond) {
+                this.isClockPeriodSecond = true
+            }
+            return needRefreshSecond
+        } catch (e: Exception) {
+            Log.e(TAG, e.message)
+            return false
         }
-        return needRefreshSecond
     }
 }

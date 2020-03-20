@@ -2,6 +2,7 @@ package it.vergeit.galaxian.widget
 
 import android.app.Service
 import android.graphics.*
+import android.util.Log
 import com.ingenic.iwds.slpt.view.core.SlptBatteryView
 import com.ingenic.iwds.slpt.view.core.SlptNumView
 import com.ingenic.iwds.slpt.view.core.SlptPictureGroupView
@@ -12,6 +13,7 @@ import it.vergeit.galaxian.data.DataType
 import it.vergeit.galaxian.settings.LoadSettings
 import it.vergeit.galaxian.theme.bin.IText
 import it.vergeit.galaxian.theme.bin.Images
+import java.lang.Exception
 
 
 class BatteryWidget() : CircleWidget() {
@@ -157,35 +159,24 @@ class BatteryWidget() : CircleWidget() {
     // Screen-off (SLPT) - Better screen quality
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent> {
         val slptObjects = arrayListOf<SlptViewComponent>()
-
         mService = service!!
 
-        if (settings.theme.battery?.text != null) {
-            val text = settings.theme.battery!!.text!!
-//            val batteryView = SlptPowerNumView()
-//            val arrayDigit = bitmapArray(text, better_resolution)
-//            val sample = getBitmap(text.imageIndex)
-//
-//            batteryView.setImagePictureArray(arrayDigit)
-//            val startPoint = getStartPoint(text, 3)
-//            batteryView.setStart(startPoint.x, startPoint.y)
-//            batteryView.setRect(text.bottomRightX - text.topLeftX, text.bottomRightY - text.topLeftY)
-//            slptObjects.add(batteryView)
-            slptObjects.add(drawSlptNum(SlptPowerNumView(), text, better_resolution))
-        }
+        try {
 
-        if (settings.theme.battery?.images != null) {
-            val images = settings.theme.battery!!.images!!
-//            val batteryView = SlptBatteryView()
-//            val sample = getBitmap(images.imageIndex)
-//            batteryView.setImagePictureArray(getBitmapSlptArray(images.imageIndex, images.imagesCount, better_resolution))
-//            batteryView.setStart(images.x, images.y)
-//            batteryView.setRect(images.x + sample.width * images.imagesCount, images.y + sample.height * images.imagesCount)
-//            batteryView.alignX = 0
-//            batteryView.alignY = 2
-//            slptObjects.add(batteryView)
-            slptObjects.add(drawSlptPictureGroup(SlptBatteryView(), images, better_resolution))
+            if (settings.theme.battery?.text != null) {
+                val text = settings.theme.battery!!.text!!
+                slptObjects.add(drawSlptNum(SlptPowerNumView(), text, better_resolution))
+            }
+
+            if (settings.theme.battery?.images != null) {
+                val images = settings.theme.battery!!.images!!
+                slptObjects.add(drawSlptPictureGroup(SlptBatteryView(images.imagesCount), images, better_resolution))
+            }
+
+        } catch (e:Exception) {
+            Log.e(TAG, e.message)
         }
+        return slptObjects
 
 //        // Do not show in SLPT (but show on raise of hand)
 //        val show_all = !settings.clock_only_slpt || betterResolution
@@ -203,7 +194,6 @@ class BatteryWidget() : CircleWidget() {
 //            localSlptBatteryView.setStart(settings.batteryProgLeft.toInt(), settings.batteryProgTop.toInt())
 //            slpt_objects.add(localSlptBatteryView)
 //        }
-        return slptObjects
     }
 
 //    private fun drawBitmapSlpt(level: Int, images: Images, betterResolution: Boolean): ArrayList<SlptViewComponent> {

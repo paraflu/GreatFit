@@ -148,11 +148,12 @@ class StepsWidget() : CircleWidget() {
 
         if (settings.theme.activity?.steps?.step != null) { // Draw icon
             val step = settings.theme.activity!!.steps!!.step
-            var stepView = SlptTodayStepNumView()
-            stepView.setImagePictureArray(getBitmapSlptArray(step.imageIndex, step.imagesCount, better_resolution))
-            stepView.setStart(step.topLeftX, step.topLeftY)
-            stepView.setRect(step.bottomRightX, step.bottomRightY)
-            slptObjects.add(stepView)
+//            var stepView = SlptTodayStepNumView()
+//            stepView.setImagePictureArray(getBitmapSlptArray(step.imageIndex, step.imagesCount, better_resolution))
+//            stepView.setStart(step.topLeftX, step.topLeftY)
+//            stepView.setRect(step.bottomRightX, step.bottomRightY)
+//            slptObjects.add(stepView)
+            slptObjects.add(drawSlptNum(SlptTodayStepNumView(), step, better_resolution))
         }
 
         val stepProgr = settings.theme.stepsProgress

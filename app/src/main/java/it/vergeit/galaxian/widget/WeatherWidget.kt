@@ -177,9 +177,11 @@ class WeatherWidget() : TextWidget() {
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent?>? {
 
         val slptObjects = mutableListOf<SlptViewComponent?>()
+        mService = service!!
+
         try {
-//            weatherIcon.setImagePicture(SimpleFile.readFileFromAssets(service, String.format((if (better_resolution) "26wc_" else "slpt_") + "weather/%s.png", settings.is_white_bg + weatherImageStrList[weather!!.weatherType])))
-            var weatherIcon = settings.theme.weather!!.icon
+            weather = slptWeather
+            val weatherIcon = settings.theme.weather!!.icon
             if (weatherIcon?.images != null) {
                 val sampleImage = getBitmap(weatherIcon.images.imageIndex)
                 var image = getBitmapSlpt(weatherIcon.noWeatherImageIndex, better_resolution)
@@ -194,7 +196,9 @@ class WeatherWidget() : TextWidget() {
                 view.alignY = 2
                 slptObjects.add(view)
             }
-            if (settings.theme.weather?.temperature != null) {
+
+            if (settings.theme.weather?.temperature != null ) {
+
                 val temperature = settings.theme.weather!!.temperature!!
                 val center = getStartPoint(temperature.current!!, weather!!.tempString.length)
                 if (weather!!.tempString != "N/A") {
@@ -202,6 +206,7 @@ class WeatherWidget() : TextWidget() {
                     view.setImagePictureArray(getBitmapSlptArray(temperature.current.imageIndex, temperature.current.imagesCount, better_resolution))
                     view.setStart(center.x, center.y)
                     view.setRect(temperature.current.bottomRightX - temperature.current.topLeftX, temperature.current.bottomRightY - temperature.current.topLeftY)
+                    view.num = weather!!.temperatureValueCelsius
                     slptObjects.add(view)
 
                     val viewSymbol = SlptPictureView()
@@ -216,6 +221,7 @@ class WeatherWidget() : TextWidget() {
                     slptObjects.add(view)
                 }
             }
+
         } catch (e:Exception) {
             Log.e(TAG,e.message)
         } finally {

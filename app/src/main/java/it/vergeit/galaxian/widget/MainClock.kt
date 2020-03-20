@@ -144,7 +144,9 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
                             time.amPm.x.toFloat(),
                             time.amPm.y.toFloat(), settings.mGPaint)
                 }
-
+                if (time.delimiter != null) {
+                    canvas.drawBitmap(getBitmap(time.delimiter.imageIndex), time.delimiter.x.toFloat(), time.delimiter.y.toFloat(), settings.mGPaint)
+                }
                 if (time.seconds != null) {
                     drawTime(canvas, seconds / 10, time.seconds.tens)
                     drawTime(canvas, seconds % 10, time.seconds.ones)
@@ -156,7 +158,6 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
             Log.e(TAG, e.message)
         }
     }
-
 
 
     // Screen locked/closed watch mode (Slpt mode)
@@ -264,8 +265,14 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
                     SlptSportUtil.setPmBgView(pm)
                     slptObjects.add(amPmLayout)
                 }
-            }
 
+                if (settings.theme.time?.delimiter != null) {
+                    val separator = SlptPictureView()
+                    separator.setImagePicture(Util.Bitmap2Bytes(getBitmap(settings.theme.time!!.delimiter!!.imageIndex, true, better_resolution)))
+                    separator.setStart(settings.theme.time!!.delimiter!!.x, settings.theme.time!!.delimiter!!.y)
+                    slptObjects.add(separator)
+                }
+            }
 
             // Set font
             //val timeTypeFace = getTypeFace(service!!.resources, settings.font)
