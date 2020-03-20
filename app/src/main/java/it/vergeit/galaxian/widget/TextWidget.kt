@@ -4,10 +4,13 @@ import android.app.Service
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Point
+import android.graphics.Rect
 import android.util.Size
 import it.vergeit.galaxian.data.DataType
 import it.vergeit.galaxian.settings.LoadSettings
 import com.huami.watch.watchface.util.Util
+import com.ingenic.iwds.slpt.view.core.SlptNumView
+import com.ingenic.iwds.slpt.view.core.SlptPictureGroupView
 import com.ingenic.iwds.slpt.view.core.SlptPictureView
 import com.ingenic.iwds.slpt.view.core.SlptViewComponent
 import it.vergeit.galaxian.theme.bin.*
@@ -246,5 +249,28 @@ open class TextWidget() : AbstractWidget() {
             getBitmap(it)
         }
         return result.asList()
+    }
+
+    fun drawSlptNum(view: SlptNumView, text: IText, better_resolution: Boolean): SlptNumView {
+        val arrayDigit = getBitmapSlptArray(text.imageIndex, text.imagesCount, better_resolution)
+        val sample = getBitmap(text.imageIndex)
+
+        view.setImagePictureArray(arrayDigit)
+        val rect: Rect = Rect(text.topLeftX, text.topLeftY, text.bottomRightX, text.bottomRightY)
+        view.setStart(rect.left, rect.top)
+        view.setRect(rect.right - rect.left, rect.bottom - rect.top)
+        view.alignY = 2
+        view.alignX = 2
+        return view
+    }
+
+    fun drawSlptPictureGroup(view: SlptPictureGroupView, images: Images, better_resolution: Boolean): SlptPictureGroupView {
+        val sample = getBitmap(images.imageIndex)
+        view.setImagePictureArray(getBitmapSlptArray(images.imageIndex, images.imagesCount, better_resolution))
+        view.setStart(images.x, images.y)
+        view.setRect(images.x + sample.width * images.imagesCount, images.y + sample.height * images.imagesCount)
+        view.alignX = 0
+        view.alignY = 2
+        return view
     }
 }

@@ -24,13 +24,13 @@ class Settings : FragmentActivity() {
         val root = RecyclerView(this)
         val sharedPreferences = getSharedPreferences(packageName + "_settings", Context.MODE_PRIVATE)
         // Load settings
-        val watchfaceSettings = LoadSettings(applicationContext, "white")
-        if (sharedPreferences.getString("widgets", null) == null) {
-            sharedPreferences.edit().putString("widgets", watchfaceSettings.widgets_list.toString()).apply()
-        }
-        if (sharedPreferences.getString("progress_bars", null) == null) {
-            sharedPreferences.edit().putString("progress_bars", watchfaceSettings.circle_bars_list.toString()).apply()
-        }
+//        val watchfaceSettings = LoadSettings(applicationContext)
+//        if (sharedPreferences.getString("widgets", null) == null) {
+//            sharedPreferences.edit().putString("widgets", watchfaceSettings.widgets_list.toString()).apply()
+//        }
+//        if (sharedPreferences.getString("progress_bars", null) == null) {
+//            sharedPreferences.edit().putString("progress_bars", watchfaceSettings.circle_bars_list.toString()).apply()
+//        }
         //Add header to a list of settings
         val settings = arrayListOf<IBaseSettings>()
         // Add IconSettings for each sub-setting. They contain an icon, title and subtitle, as well as a click action to launch the sub-setting's activity

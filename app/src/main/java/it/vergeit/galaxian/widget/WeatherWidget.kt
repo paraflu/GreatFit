@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Point
 import android.provider.Settings
 import android.util.Log
+import com.ingenic.iwds.slpt.view.core.SlptNumView
 import it.vergeit.galaxian.data.DataType
 import it.vergeit.galaxian.data.WeatherData
 import it.vergeit.galaxian.settings.LoadSettings
@@ -175,14 +176,53 @@ class WeatherWidget() : TextWidget() {
     // Screen-off (SLPT) - Better screen quality
     override fun buildSlptViewComponent(service: Service?, better_resolution: Boolean): List<SlptViewComponent?>? {
 
-        val slpt_objects = mutableListOf<SlptViewComponent?>()
-        val weatherIcon = SlptPictureView()
+        val slptObjects = mutableListOf<SlptViewComponent?>()
+        try {
 //            weatherIcon.setImagePicture(SimpleFile.readFileFromAssets(service, String.format((if (better_resolution) "26wc_" else "slpt_") + "weather/%s.png", settings.is_white_bg + weatherImageStrList[weather!!.weatherType])))
-        weatherIcon.setStart(
-                settings.weather_imgIconLeft.toInt() - 2,  // the icons are 3px larger in width than other
-                settings.weather_imgIconTop.toInt() - 2 // icons, thus -2 to calibrate it a little
-        )
-        slpt_objects.add(weatherIcon)
+            var weatherIcon = settings.theme.weather!!.icon
+            if (weatherIcon?.images != null) {
+                val sampleImage = getBitmap(weatherIcon.images.imageIndex)
+                var image = getBitmapSlpt(weatherIcon.noWeatherImageIndex, better_resolution)
+                if (weather != null && weather!!.weatherType != 22) {
+                    image = getBitmapSlpt(weatherIcon.images.imageIndex + weather!!.weatherType, better_resolution);
+                }
+                val view = SlptPictureView()
+                view.setImagePicture(image)
+                view.setRect(sampleImage.width, sampleImage.height)
+                view.setStart(weatherIcon.images.x, weatherIcon.images.y)
+                view.alignX = 2
+                view.alignY = 2
+                slptObjects.add(view)
+            }
+            if (settings.theme.weather?.temperature != null) {
+                val temperature = settings.theme.weather!!.temperature!!
+                val center = getStartPoint(temperature.current!!, weather!!.tempString.length)
+                if (weather!!.tempString != "N/A") {
+                    val view = SlptNumView()
+                    view.setImagePictureArray(getBitmapSlptArray(temperature.current.imageIndex, temperature.current.imagesCount, better_resolution))
+                    view.setStart(center.x, center.y)
+                    view.setRect(temperature.current.bottomRightX - temperature.current.topLeftX, temperature.current.bottomRightY - temperature.current.topLeftY)
+                    slptObjects.add(view)
+
+                    val viewSymbol = SlptPictureView()
+                    view.setStart(center.x, center.y)
+                    view.setRect(temperature.current.bottomRightX - temperature.current.topLeftX, temperature.current.bottomRightY - temperature.current.topLeftY)
+                    viewSymbol.setImagePicture(getBitmapSlpt(temperature.symbols!!.degreesImageIndex, better_resolution))
+                    slptObjects.add(viewSymbol)
+                } else {
+                    val view = SlptPictureView()
+                    view.setStart(center.x, center.y)
+                    view.setImagePicture(getBitmapSlpt(temperature.symbols!!.noDataImageIndex, better_resolution))
+                    slptObjects.add(view)
+                }
+            }
+        } catch (e:Exception) {
+            Log.e(TAG,e.message)
+        } finally {
+            return slptObjects
+        }
+
+
 //        var better_resolution = better_resolution
 //        better_resolution = better_resolution && settings.better_resolution_when_raising_hand
 //        val slpt_objects: MutableList<SlptViewComponent?> = ArrayList()
@@ -712,7 +752,7 @@ class WeatherWidget() : TextWidget() {
 //            slpt_objects.add(cloudsLayout)
 //        }
 //        return slpt_objects
-        return null
+        //return null
     }
 
     companion object {
