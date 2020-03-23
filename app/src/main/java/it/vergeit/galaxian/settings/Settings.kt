@@ -58,48 +58,48 @@ class Settings : FragmentActivity() {
 //        // Add language
 //        settings.add(IconSetting(getDrawable(R.drawable.language)!!, getString(R.string.language), getString(R.string.language_c), View.OnClickListener { startActivity(Intent(this@Settings, LanguageActivity::class.java)) }, null))
         // Add about
-        settings.add(IconSetting(getDrawable(R.drawable.info)!!, getString(R.string.about), getString(R.string.about_c), View.OnClickListener {
-            // Get pkg info
-            var version = "n/a"
-            try {
-                val pInfo = packageManager.getPackageInfo(packageName, 0)
-                version = pInfo.versionName
-            } catch (e: PackageManager.NameNotFoundException) {
-                e.printStackTrace()
-            }
-            // Please do not change the following line
-            Toast.makeText(applicationContext, "GreatFit Project\nVersion: " + version + "\nAuthor: GreatApo\nStyle: " + resources.getString(R.string.author), Toast.LENGTH_LONG).show()
-        }, null))
+//        settings.add(IconSetting(getDrawable(R.drawable.info)!!, getString(R.string.about), getString(R.string.about_c), View.OnClickListener {
+//            // Get pkg info
+//            var version = "n/a"
+//            try {
+//                val pInfo = packageManager.getPackageInfo(packageName, 0)
+//                version = pInfo.versionName
+//            } catch (e: PackageManager.NameNotFoundException) {
+//                e.printStackTrace()
+//            }
+//            // Please do not change the following line
+//            Toast.makeText(applicationContext, "GreatFit Project\nVersion: " + version + "\nAuthor: GreatApo\nStyle: " + resources.getString(R.string.author), Toast.LENGTH_LONG).show()
+//        }, null))
         //Add save button
-        settings.add(ButtonSetting(getString(R.string.save), getDrawable(R.drawable.green_button)!!, View.OnClickListener {
-            quit(this@Settings)
-            /*
-                // CODE BASED ON STOCK WAY
-                // Restart watchface
-                Settings.this.sendBroadcast(new Intent("com.huami.intent.action.WATCHFACE_CONFIG_CHANGED"));
-                // Slpt some times doesn't run
-                startService(new Intent(getApplicationContext(), GreatFitSlpt.class));
-                // Kill this
-                Settings.this.setResult(-1);
-                Settings.this.finish();
-                */
-        }))
+//        settings.add(ButtonSetting(getString(R.string.save), getDrawable(R.drawable.green_button)!!, View.OnClickListener {
+//            quit(this@Settings)
+//            /*
+//                // CODE BASED ON STOCK WAY
+//                // Restart watchface
+//                Settings.this.sendBroadcast(new Intent("com.huami.intent.action.WATCHFACE_CONFIG_CHANGED"));
+//                // Slpt some times doesn't run
+//                startService(new Intent(getApplicationContext(), GreatFitSlpt.class));
+//                // Kill this
+//                Settings.this.setResult(-1);
+//                Settings.this.finish();
+//                */
+//        }))
         //Add reset button
-        settings.add(ButtonSetting(getString(R.string.reset), getDrawable(R.drawable.grey_button), View.OnClickListener { view ->
-            sharedPreferences.edit().clear().apply()
-            Toast.makeText(view.context, "Settings reset", Toast.LENGTH_SHORT).show()
-            quit(this@Settings)
-            /*
-                // CODE BASED ON STOCK WAY
-                // Restart watchface
-                Settings.this.sendBroadcast(new Intent("com.huami.intent.action.WATCHFACE_CONFIG_CHANGED"));
-                // Slpt some times doesn't run
-                startService(new Intent(getApplicationContext(), GreatFitSlpt.class));
-                // Kill this
-                Settings.this.setResult(-1);
-                Settings.this.finish();
-                 */
-        }))
+//        settings.add(ButtonSetting(getString(R.string.reset), getDrawable(R.drawable.grey_button), View.OnClickListener { view ->
+//            sharedPreferences.edit().clear().apply()
+//            Toast.makeText(view.context, "Settings reset", Toast.LENGTH_SHORT).show()
+//            quit(this@Settings)
+//            /*
+//                // CODE BASED ON STOCK WAY
+//                // Restart watchface
+//                Settings.this.sendBroadcast(new Intent("com.huami.intent.action.WATCHFACE_CONFIG_CHANGED"));
+//                // Slpt some times doesn't run
+//                startService(new Intent(getApplicationContext(), GreatFitSlpt.class));
+//                // Kill this
+//                Settings.this.setResult(-1);
+//                Settings.this.finish();
+//                 */
+//        }))
         //Setup layout
         root.setBackgroundResource(R.drawable.settings_background)
         root.layoutManager = LinearLayoutManager(this)

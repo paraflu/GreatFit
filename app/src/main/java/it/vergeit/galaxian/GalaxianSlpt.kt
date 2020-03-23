@@ -2,6 +2,7 @@ package it.vergeit.galaxian
 
 import android.content.Context
 import android.content.Intent
+import android.provider.Settings
 import android.util.Log
 import it.vergeit.galaxian.settings.LoadSettings
 import it.vergeit.galaxian.widget.*
@@ -24,8 +25,8 @@ class GalaxianSlpt : AbstractWatchFaceSlpt() {
         // Load settings
         try {
             val settings = LoadSettings(context)
-            Log.d(TAG, "start mainclock")
             clock = MainClock(settings)
+
             if (settings.theme?.date != null) {
                 Log.d(TAG, "start datewidget")
                 widgets.add(DateWidget(settings))
@@ -49,19 +50,17 @@ class GalaxianSlpt : AbstractWatchFaceSlpt() {
             if (settings.theme.weather != null) {
                 widgets.add(WeatherWidget(settings))
             }
-            //-----------------------
-//        if (settings.theme.weather != null) {
-//            widgets.add(WeatherWidget(settings));
-//        }
-//
-//        if (settings.theme.activity?.distance != null) {
-//            widgets.add(SportTodayDistanceWidget(settings))
-//        }
+            /*-----------------------
+        if (settings.theme.weather != null) {
+            widgets.add(WeatherWidget(settings));
+        }
+
+        if (settings.theme.activity?.distance != null) {
+            widgets.add(SportTodayDistanceWidget(settings))
+        }*/
             if (settings.theme.analogDialFace != null) {
-                Log.d(TAG, "start analogwidget")
                 widgets.add(AnalogWidget(settings))
             }
-            Log.d(TAG, "end widgets")
             return super.onStartCommand(intent, flags, startId)
         } catch (e: Exception) {
             Log.e(TAG, "OnStart fail ${e.toString()}")
@@ -69,64 +68,85 @@ class GalaxianSlpt : AbstractWatchFaceSlpt() {
         }
     }
 
-    override fun createClockLayout26WC(): SlptLayout {
+    private fun buildClockLayout(betterResolution: Boolean): SlptLayout {
         val result = SlptAbsoluteLayout()
-        for (component in clock.buildSlptViewComponent(this, true)!!) {
+        for (component in clock.buildSlptViewComponent(this, betterResolution)!!) {
             result.add(component)
         }
-        widgets.forEach {
-            try {
-                Log.d(TAG, it.toString())
-                val items = it.buildSlptViewComponent(this, true)
-                items?.forEach { component -> result.add(component) }
-            } catch (e: Exception) {
-                Log.e(TAG, e.message)
+        for (widget in widgets) {
+            for (component in widget.buildSlptViewComponent(this, betterResolution)!!) {
+                result.add(component)
             }
         }
-//        for (widget in widgets) {
-//            for (component in widget.buildSlptViewComponent(this, true)!!) {
-//                result.add(component)
-//            }
-//        }
         return result
     }
 
+    override fun createClockLayout26WC(): SlptLayout {
+        return buildClockLayout(true)
+    }
+
     override fun createClockLayout8C(): SlptLayout {
-        val result = SlptAbsoluteLayout()
-        for (component in clock.buildSlptViewComponent(this)!!) {
-            result.add(component)
-        }
-        widgets.forEach {
-            try {
-                Log.d(TAG, it.toString())
-                val items = it.buildSlptViewComponent(this, true)
-                items?.forEach { component -> result.add(component) }
-            } catch (e: Exception) {
-                Log.e(TAG, e.message)
-            }
-        }
-//        for (widget in widgets) {
-//            for (component in widget.buildSlptViewComponent(this)!!) {
-//                result.add(component)
+        return buildClockLayout(false)
+    }
+
+    //override fun createClockLayout26WC(): SlptLayout {
+//        val result = SlptAbsoluteLayout()
+//        for (component in clock.buildSlptViewComponent(this, true)!!) {
+//            result.add(component)
+//        }
+//        widgets.forEach {
+//            try {
+//                Log.d(TAG, it.toString())
+//                val items = it.buildSlptViewComponent(this, true)
+//                items?.forEach { component -> result.add(component) }
+//            } catch (e: Exception) {
+//                Log.e(TAG, e.message)
 //            }
 //        }
-        return result
-    }
+////        for (widget in widgets) {
+////            for (component in widget.buildSlptViewComponent(this, true)!!) {
+////                result.add(component)
+////            }
+////        }
+//        return result
+    //}
+
+//    override fun createClockLayout8C(): SlptLayout {
+//        val result = SlptAbsoluteLayout()
+//        for (component in clock.buildSlptViewComponent(this)!!) {
+//            result.add(component)
+//        }
+//        widgets.forEach {
+//            try {
+//                Log.d(TAG, it.toString())
+//                val items = it.buildSlptViewComponent(this, true)
+//                items?.forEach { component -> result.add(component) }
+//            } catch (e: Exception) {
+//                Log.e(TAG, e.message)
+//            }
+//        }
+////        for (widget in widgets) {
+////            for (component in widget.buildSlptViewComponent(this)!!) {
+////                result.add(component)
+////            }
+////        }
+//        return result
+//    }
 
     override fun initWatchFaceConfig() { //Log.w("VergeIT-LOG", "Initiating watchface");
     }
 
     override fun isClockPeriodSecond(): Boolean {
-        try {
+        return try {
             val context = this.applicationContext
             val needRefreshSecond = Util.needSlptRefreshSecond(context)
             if (needRefreshSecond) {
                 this.isClockPeriodSecond = true
             }
-            return needRefreshSecond
-        } catch (e: Exception) {
-            Log.e(TAG, e.message)
-            return false
+            needRefreshSecond
+        } catch (e: Settings.SettingNotFoundException) {
+            Log.e(TAG, "isClockPeriosSecond ${e.message}")
+            false
         }
     }
 }

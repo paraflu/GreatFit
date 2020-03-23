@@ -49,7 +49,6 @@ class WeatherWidget() : TextWidget() {
         var weatherIcon = settings.theme.weather!!.icon
         if (weatherIcon?.images != null) {
             if (weather != null && weather!!.weatherType != 22) {
-                Log.d(TAG, "weather ${weather!!.weatherType}")
                 drawBitmap(canvas!!, weatherIcon.images.imageIndex + weather!!.weatherType, Point(weatherIcon.images.x, weatherIcon.images.y))
             } else {
                 drawBitmap(canvas!!, weatherIcon.noWeatherImageIndex, weatherIcon.images.x, weatherIcon.images.y)
@@ -210,8 +209,9 @@ class WeatherWidget() : TextWidget() {
                     slptObjects.add(view)
 
                     val viewSymbol = SlptPictureView()
+//                    val symbolImage = getBitmap(temperature.symbols!!.degreesImageIndex)
                     view.setStart(center.x, center.y)
-                    view.setRect(temperature.current.bottomRightX - temperature.current.topLeftX, temperature.current.bottomRightY - temperature.current.topLeftY)
+                    //view.setRect(temperature.current.bottomRightX - temperature.current.topLeftX, temperature.current.bottomRightY - temperature.current.topLeftY)
                     viewSymbol.setImagePicture(getBitmapSlpt(temperature.symbols!!.degreesImageIndex, better_resolution))
                     slptObjects.add(viewSymbol)
                 } else {

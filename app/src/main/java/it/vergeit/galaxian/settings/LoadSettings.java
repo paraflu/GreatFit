@@ -666,12 +666,7 @@ public class LoadSettings {
         List theme_elements = Arrays.asList(context.getResources().getStringArray(R.array.theme_elements));
         String[] color_codes = context.getResources().getStringArray(R.array.color_codes);
 
-        try {
-            this.secondsBool = Util.needSlptRefreshSecond(context);
-        } catch (Exception e) {
-            this.secondsBool = false;
-        }
-
+        this.secondsBool = Util.needSlptRefreshSecond(context);
         //Log.d(TAG, "Language: "+this.language );
 
 //        @StyleableRes int i = 0;
@@ -1816,6 +1811,7 @@ public class LoadSettings {
 //            }
 //            widgetN.recycle();
 //        }
+        Log.d(TAG, "LoadSettings complete");
     }
 
     // STEPS WIDGET

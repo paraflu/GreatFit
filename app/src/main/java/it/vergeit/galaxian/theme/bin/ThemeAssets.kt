@@ -28,7 +28,7 @@ class ThemeAssets(val context: Context, var themeName: String? = "theme") {
     }
 
     init {
-        Log.d(TAG, "init")
+//        Log.d(TAG, "init")
         if (themeName == null) {
             themeName = "theme"
         }
@@ -37,12 +37,12 @@ class ThemeAssets(val context: Context, var themeName: String? = "theme") {
             themeName = f.readLines().first()
             f.close()
         } catch (e:Exception) {
-            Log.d(TAG, "theme name $themeName ${e.message}")
+//            Log.d(TAG, "theme name $themeName ${e.message}")
         }
 
         localPath = "${Environment.getExternalStorageDirectory()}/vergeit/$themeName.zip";
         if (File(localPath).exists()) {
-            Log.d(TAG, "found zip file $localPath")
+//            Log.d(TAG, "found zip file $localPath")
             isArchive = true
             val zip: ZipFile = ZipFile(File(localPath))
             val entries = zip.entries()
@@ -51,10 +51,10 @@ class ThemeAssets(val context: Context, var themeName: String? = "theme") {
                 val entry: ZipEntry = entries.nextElement() as ZipEntry
                 val inputStream: InputStream = zip.getInputStream(entry)
                 val isr = InputStreamReader(inputStream)
-                Log.d(TAG, "unpack zip file ${entry.name}")
+//                Log.d(TAG, "unpack zip file ${entry.name}")
                 if (entry.name == "config.json") {
                     _theme = Gson().fromJson(isr, Theme::class.java)
-                    Log.d(TAG, "theme loaded")
+//                    Log.d(TAG, "theme loaded")
                 } else if (entry.name.endsWith(".png")) {
                     val buffer = ByteArray(1024)
                     val buffList = ByteArrayOutputStream()
@@ -64,23 +64,23 @@ class ThemeAssets(val context: Context, var themeName: String? = "theme") {
                     Log.d(TAG, "${entry.name} siz ${buffList.size()}")
                     val bmp = BitmapFactory.decodeByteArray(buffList.toByteArray(), 0, buffList.size())
                     imageCache[File(entry.name).nameWithoutExtension] = bmp
-                    Log.d(TAG, "file loaded")
+//                    Log.d(TAG, "file loaded")
                 }
             }
-            Log.d(TAG, "load complete")
+//            Log.d(TAG, "load complete")
         } else {
             localPath = "${Environment.getExternalStorageDirectory()}/vergeit/$themeName/config.json";
-            Log.d(TAG, "localPath $localPath")
+//            Log.d(TAG, "localPath $localPath")
             if (File(localPath).exists()) {
                 isLocal = true
-                Log.d(TAG, "isLocal $isLocal")
+//                Log.d(TAG, "isLocal $isLocal")
                 _theme = Gson().fromJson<Theme>(FileReader(localPath), Theme::class.java)
-                Log.d(TAG, "Theme loaded")
+//                Log.d(TAG, "Theme loaded")
             } else {
                 val content = StringReader(String(SimpleFile.readFileFromAssets(context, "$themeName/config.json")))
-                Log.d(TAG, "content $content")
+//                Log.d(TAG, "content $content")
                 _theme = Gson().fromJson<Theme>(content, Theme::class.java)
-                Log.d(TAG, "NO Local, config $themeName/config.json")
+//                Log.d(TAG, "NO Local, config $themeName/config.json")
             }
         }
     }
@@ -96,7 +96,7 @@ class ThemeAssets(val context: Context, var themeName: String? = "theme") {
                 if (isLocal) {
                     BitmapFactory.decodeFile(path) ?: throw IOException()
                 } else {
-                    Log.d(TAG, "now load image from assets $path")
+//                    Log.d(TAG, "now load image from assets $path")
                     Util.decodeImage(service.resources, path)
                 }
             } catch (e: Exception) {
