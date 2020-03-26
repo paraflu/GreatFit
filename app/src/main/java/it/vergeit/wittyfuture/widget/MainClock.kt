@@ -86,11 +86,11 @@ class MainClock(private val settings: LoadSettings) : DigitalClockWidget() {
 //        yearFont!!.color = settings.yearColor
 //        yearFont!!.textAlign = if (settings.yearAlignLeft) Paint.Align.LEFT else Paint.Align.CENTER
 //
-//        if (settings.theme?.time?.amPm != null) {
-//            val amPm = settings.theme!!.time!!.amPm!!
-//            amBmp = getBitmap(amPm.imageIndexAMEN)
-//            pmBmp = getBitmap(amPm.imageIndexPMEN)
-//        }
+        if (settings.theme?.time?.amPm != null) {
+            val amPm = settings.theme!!.time!!.amPm!!
+            amBmp = getBitmap(amPm.imageIndexAMEN)
+            pmBmp = getBitmap(amPm.imageIndexPMEN)
+        }
         Log.d(TAG, "mainClock init end")
     }
 
