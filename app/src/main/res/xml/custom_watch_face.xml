@@ -1,3 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wallpaper android:settingsActivity="it.vergeit.galaxian.settings.Settings"
+<wallpaper android:settingsActivity="it.vergeit.wittyfuture.settings.Settings"
     xmlns:android="http://schemas.android.com/apk/res/android" />

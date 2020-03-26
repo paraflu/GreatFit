@@ -1,11 +1,11 @@
-package it.vergeit.galaxian.settings;
+package it.vergeit.wittyfuture.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.provider.Settings;
 
-import it.vergeit.galaxian.R;
+import it.vergeit.wittyfuture.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;

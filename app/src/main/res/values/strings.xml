@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Galaxian Watchface</string>
-    <string name="watch_face">Galaxian</string>
-    <string name="watch_face_black">Galaxian</string>
+    <string name="app_name">Witty Futuristic Watchface</string>
+    <string name="watch_face">Witty Futuristic</string>
+    <string name="watch_face_black">Witty Futuristic</string>
     <string name="author">paraFLU</string>
 
     <!-- Settings -->

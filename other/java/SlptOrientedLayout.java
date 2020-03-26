@@ -1,4 +1,4 @@
-package it.vergeit.galaxian.resource;
+package it.vergeit.wittyfuture.resource;
 
 import com.ingenic.iwds.slpt.view.core.SlptLayout;
 import com.ingenic.iwds.slpt.view.utils.KeyWriter;

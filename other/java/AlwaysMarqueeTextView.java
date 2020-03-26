@@ -1,4 +1,4 @@
-package it.vergeit.galaxian.settings;
+package it.vergeit.wittyfuture.settings;
 
 import android.content.Context;
 import android.graphics.Rect;
